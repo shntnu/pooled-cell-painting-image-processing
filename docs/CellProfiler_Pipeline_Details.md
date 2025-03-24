@@ -23,23 +23,14 @@ The workflow is orchestrated by AWS Lambda functions, with each function respons
 
 ## Lambda Function Orchestration
 
-Each pipeline in the workflow is orchestrated by a corresponding AWS Lambda function. These Lambda functions automate the pipeline execution and handle the transition of data between stages.
+Each pipeline in the workflow is orchestrated by a corresponding AWS Lambda function (PCP-1 through PCP-9). These Lambda functions automate the pipeline execution and handle the transition of data between stages in a sequential workflow:
 
-| Lambda Function | Trigger Event | Related Pipeline | Primary Output | Output Location |
-|-----------------|---------------|------------------|----------------|-----------------|
-| PCP-1-CP-IllumCorr | 1_CP_Illum.cppipe upload | Pipeline 1 | Illumination functions (.npy) | illum/PLATE/ |
-| PCP-2-CP-ApplyIllum | IllumMito.npy file upload | Pipeline 2 | Corrected cell images (.tiff) | images_corrected/painting/ |
-| PCP-3-CP-SegmentCheck | CSV file upload | Pipeline 3 | QC segmentation images | images_segmentation/PLATE/ |
-| PCP-4-CP-Stitching | CSV file upload | FIJI scripts | Stitched and cropped images | images_corrected_cropped/, images_corrected_stitched/ |
-| PCP-5-BC-IllumCorr | 5_BC_Illum.cppipe upload | Pipeline 5 | Barcoding illumination functions | illum/PLATE/ |
-| PCP-6-BC-ApplyIllum | Cycle1_IllumA.npy upload | Pipeline 6 | Aligned barcoding images | images_aligned/barcoding/ |
-| PCP-7-BC-Preprocess | CSV file upload | Pipeline 7 | Processed barcoding images | images_corrected/barcoding |
-| PCP-8-BC-Stitching | CSV file upload | FIJI scripts | Stitched barcoding images | images_corrected_cropped/, images_corrected_stitched/ |
-| PCP-9-Analysis | Manual trigger | Pipeline 9 | Integrated analysis results | workspace/analysis/ |
+1. The workflow begins with two parallel tracks: cell painting processing (PCP-1 through PCP-4) and barcoding processing (PCP-5 through PCP-8)
+2. Each Lambda function is triggered by the output of the previous step (typically a file upload to S3)
+3. For example, PCP-1-CP-IllumCorr is triggered by the upload of the 1_CP_Illum.cppipe file, and produces illumination function files that then trigger PCP-2-CP-ApplyIllum
+4. The final Lambda function (PCP-9-Analysis) integrates the outputs from both tracks for comprehensive analysis
 
 Each Lambda function follows a common pattern: it processes a trigger event, loads experimental metadata, creates pipeline-specific CSV files, configures and launches AWS Batch jobs to execute the CellProfiler pipelines, and monitors job completion.
-
-The Lambda functions are designed to be triggered sequentially, with each function triggered by the output of the previous step.
 
 > **Note:** For detailed information about Lambda function implementation, configuration parameters, and utility functions, see [lambda_pipeline_overview.md](./lambda_pipeline_overview.md).
 
