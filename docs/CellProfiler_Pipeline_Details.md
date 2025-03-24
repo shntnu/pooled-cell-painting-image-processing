@@ -200,6 +200,7 @@ The `metadata.json` file (based on `configs/metadatatemplate.json`) defines all 
 - `painting_rows`, `painting_columns`, `painting_imperwell`: Define cell painting image layout
 - `barcoding_rows`, `barcoding_columns`, `barcoding_imperwell`: Define barcoding image layout
 - These determine how many images should be expected per well
+- Note: If `*_imperwell` is provided with a non-zero value, it will override the rows x columns calculation
 
 ##### Channel Dictionary Configuration
 ```json
@@ -207,18 +208,27 @@ The `metadata.json` file (based on `configs/metadatatemplate.json`) defines all 
 ```
 - Maps microscope channel names to biological stains
 - Supports both single-round and multi-round (SABER) experiments
-- First value is the stain name, second is the frame index
+- For single-round experiments: `{'20X_CP':{'DAPI':['DNA', 0], 'GFP':['Phalloidin',1], ...}}`
+- For multi-round experiments: Include round-specific stain identifiers (e.g., `DNA_round0`, `DNA_round1`)
+- First value is the stain name, second is the frame index (0-based)
 - Influences which images are processed and how they're organized
+- Used to determine the pipeline variant (SABER vs. standard)
 
 ##### Processing Configuration
-- `one_or_many_files`: Controls if each well is stored as a single file or multiple files
+- `one_or_many_files`: Controls if each well is stored as a single file (`"one"`) or multiple files (`"many"`)
 - `fast_or_slow_mode`: Determines CSV generation strategy and processing path
 - `barcoding_cycles`: Sets the number of barcoding cycles to process
+- `range_skip`: Sets sampling frequency for Pipeline 3 (SegmentCheck), to process subset of images for validation
 
 ##### Stitching Configuration
-- `overlap_pct`: Controls image overlap percentage
-- `stitchorder`: Specifies tile arrangement (e.g., "Grid: snake by rows")
-- `tileperside` and `final_tile_size`: Define output tile dimensions
+- `overlap_pct`: Controls image overlap percentage between adjacent fields
+- `stitchorder`: Specifies tile arrangement (e.g., "Grid: snake by rows", "Grid: row-by-row", "Filename defined position")
+- `tileperside`: Number of tiles along each side of the stitched image grid
+- `final_tile_size`: Pixel dimensions of each output tile after cropping
+- `round_or_square`: Shape of the well for cropping calculations (`"round"` or `"square"`)
+- `quarter_if_round`: Whether to divide round wells into quarters for processing (`"True"` or `"False"`)
+- `*_xoffset_tiles`, `*_yoffset_tiles`: Optional offsets for troubleshooting stitching misalignments
+- `compress`: Whether to compress output files (`"True"` or `"False"`)
 
 #### 2. Computing Resource Configuration (Lambda config_dict)
 
