@@ -27,22 +27,22 @@ The workflow is orchestrated by AWS Lambda functions, with each function respons
 ```mermaid
 flowchart TD
     subgraph "Cell Painting Track"
-        PCP1[PCP-1-CP-IllumCorr] -->|IllumDNA.npy etc.| PCP2[PCP-2-CP-ApplyIllum]
-        PCP2 -->|CorrDNA.tiff etc.| PCP3[PCP-3-CP-SegmentCheck]
-        PCP3 -->|SegCheck_Experiment.csv| PCP4[PCP-4-CP-Stitching]
+        PCP1[PCP-1-CP-IllumCorr] --> PCP2[PCP-2-CP-ApplyIllum]
+        PCP2 --> PCP3[PCP-3-CP-SegmentCheck]
+        PCP3 --> PCP4[PCP-4-CP-Stitching]
     end
     
     subgraph "Barcoding Track"
-        PCP5[PCP-5-BC-IllumCorr] -->|Cycle1_IllumA.npy etc.| PCP6[PCP-6-BC-ApplyIllum]
-        PCP6 -->|BarcodingApplication.csv| PCP7[PCP-7-BC-Preprocess]
-        PCP7 -->|BarcodePreprocessing.csv| PCP8[PCP-8-BC-Stitching]
+        PCP5[PCP-5-BC-IllumCorr] --> PCP6[PCP-6-BC-ApplyIllum]
+        PCP6 --> PCP7[PCP-7-BC-Preprocess]
+        PCP7 --> PCP8[PCP-8-BC-Stitching]
         PCP8 --> PCP8Y[PCP-8Y-BC-CheckAlignmentPostStitch]
         PCP8Y --> PCP8Z[PCP-8Z-StitchAlignedBarcoding]
     end
     
     PCP4 & PCP8Z --> PCP9[PCP-9-Analysis]
     
-    PCP7A[PCP-7A-BC-PreprocessTroubleshoot] -.->|Troubleshooting variant| PCP7
+    PCP7A[PCP-7A-BC-PreprocessTroubleshoot] -.-> PCP7
 ```
 
 Each pipeline in the workflow is orchestrated by a corresponding AWS Lambda function (PCP-1 through PCP-9). These Lambda functions automate the pipeline execution and handle the transition of data between stages in a sequential workflow:
