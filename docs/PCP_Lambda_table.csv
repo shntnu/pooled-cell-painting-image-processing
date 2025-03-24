@@ -1,0 +1,15 @@
+,Lambda event Trigger,Config in lambda function,,Monitor on DCP,,Expected output on S3,,
+Lambda function name,,APPNAME in config_dict,EXPECTED_NUMBER_FILES,STEP,STEPNAME,Output folder,Output grouping,Output structure
+PCP-1-CP-IllumCorr,1_CP_Illum.cppipe or 1_SABER_CP_Illum.cppipe into projects/PROJECT/workspace/pipelines,PROJECT_IllumPainting,# of cell painting channels (5),1,IllumPainting,illum/PLATE/,Plate,Plate
+PCP-2-CP-ApplyIlum,IllumMito.npy into projects/PROJECT,PROJECT_ApplyIllumPainting,(# CP Channels * # sites) + 5 for the csvs,2,ApplyIllumPainting,images_corrected/painting/,"Plate, Well",Plate-Well
+PCP-3-CP-SegmentCheck,PaintingIllumApplication_Image.csv into projects/PROJECT,PROJECT_PaintingSegmentationCheck,"Can ignore, ""CHECK_IF_DONE_BOOL"": ""False"",",3,PaintingSegmentationCheck,images_segmentation/PLATE/,"Plate, Well, Site",
+PCP-4-CP-Stitching,SegmentationCheck_Experiment.csv into projects/PROJECT,PROJECT_PaintingStitching,NA,4,PaintingStitching,"images_corrected_cropped/
+images_corrected_stitched/
+images_corrected_stitched_10X/","Plate, Well",Plate-Well
+PCP-5-BC-IllumCorr,5_BC_Illum.cppipe into projects/PROJECT/workspace/pipelines,PROJECT_IllumBarcoding,# Barcoding channels (5)* # plates (1)* # cycles(8),5,IllumBarcoding,illum/PLATE/,Plate,Plate
+PCP-6-BC-ApplyIllum,Cycle1_IllumA.npy into projects/PROJECT,PROJECT_ApplyIllumBarcoding,"Can ignore, ""CHECK_IF_DONE_BOOL"": ""False"",",6,ApplyIllumBarcoding,images_aligned/barcoding/,"Plate, Well, Site",Plate-Well-Site
+PCP-7-BC-Preprocess, BarcodingApplication_Experiment.csv into projects/PROJECT,PROJECT_PreprocessBarcoding,# CSVs (8) + 1 (overlay) + cycles(8)* (#bases + DAPI (5) = 49,7,PreprocessBarcoding,images_corrected/barcoding,"Plate, Well, Site",Plate-Well-Site
+PCP-8-BC-Stitching,BarcodePreprocessing_Experiment.csv into projects/PROJECT,PROJECT_BarcodingStitching,Calculated in the lambda function (fixed for quartering or not depending on quarter_if_round),8,BarcodingStitching,"images_corrected_cropped/
+images_corrected_stitched/
+images_corrected_stitched_10X/","Plate, Well",Plate-Well
+PCP-9-Analysis,Edit lambda function with correct information in the #Manual Trigger section and create a dummy test event that is “{}”,PROJECT_Analysis,,9,Analysis,,,
