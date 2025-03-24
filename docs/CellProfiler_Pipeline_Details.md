@@ -163,9 +163,9 @@ flowchart TD
     end
     
     %% Configuration flow with numbered sequence
-    metadata -->|1. First loaded| download_metadata
-    config_dict -->|2. Defined in each Lambda| batch_creation
-    aws_config -->|3. Loaded when needed| grab_config
+    metadata -->|First loaded| download_metadata
+    config_dict -->|Defined in each Lambda| batch_creation
+    aws_config -->|Loaded when needed| grab_config
     
     download_metadata --> pipeline_selection
     download_metadata --> csv_gen
