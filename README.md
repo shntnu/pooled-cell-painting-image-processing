@@ -30,8 +30,8 @@ This repository contains several documentation files:
 
 - **[Technical Implementation Overview](docs/Technical_Implementation_Overview.md)** - High-level system architecture and component interactions
 - **[CellProfiler Pipeline Details](docs/CellProfiler_Pipeline_Details.md)** - Detailed explanation of each pipeline and its configuration
-- **[PCP_Pooled_Cell_Painting_Guide](docs/PCP_Pooled_Cell_Painting_Guide.md)** - Step-by-step instructions for running experiments
-- **[High_Throughput_Image_Flow_-_TI2_Pipeline_Details](docs/High_Throughput_Image_Flow_-_TI2_Pipeline_Details.md)** - Pipeline-specific information
+- **[PCP_Pooled_Cell_Painting_Guide](<docs/PCP Pooled Cell Painting Guide.md>)** - Step-by-step instructions for running experiments
+- **[High_Throughput_Image_Flow_-_TI2_Pipeline_Details](<docs/High Throughput Image Flow - TI2 Pipeline Details.md>)** - Pipeline-specific information
 
 For development guidelines, see [CLAUDE.md](CLAUDE.md).
 

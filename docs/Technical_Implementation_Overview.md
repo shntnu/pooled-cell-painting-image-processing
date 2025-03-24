@@ -1,6 +1,8 @@
 # Pooled Cell Painting Image Processing: Technical Implementation Overview
 
-This document provides a technical overview of the pooled-cell-painting-image-processing codebase, explaining how the various components work together to process high-throughput microscopy data in the cloud.
+This document provides a high-level technical overview of the system architecture, components, and data flow for processing pooled cell painting microscopy data in the cloud. It focuses on architectural aspects and component relationships rather than detailed implementation steps.
+
+> **Note:** For detailed pipeline implementations, configuration parameters, and experiment setup instructions, see the companion document [CellProfiler_Pipeline_Details.md](./CellProfiler_Pipeline_Details.md).
 
 ## System Architecture
 
@@ -55,63 +57,57 @@ The `pipelines/12cycles/` directory contains the CellProfiler analysis pipelines
 - Feature extraction
 - Quality control
 
-### 4. Multi-Layered Configuration
+### 4. Multi-Layered Configuration Architecture
 
-The system employs a three-tiered configuration approach where each layer controls a different aspect of the workflow:
+The system employs a three-tiered configuration architecture that separates concerns and enables flexibility:
 
-#### Experiment Configuration Layer
-- **metadata.json**: Controls experimental parameters and image processing logic:
-  - **Image Grid Parameters**: `painting_rows/columns/imperwell` and `barcoding_rows/columns/imperwell` define the physical layout of images
-  - **Channel-to-Stain Mapping**: The complex `Channeldict` object maps microscope channels to biological stains across imaging rounds
-  - **Pipeline Flow Control**: `one_or_many_files`, `fast_or_slow_mode`, and `barcoding_cycles` control how pipelines process data
-  - **Stitching Parameters**: `overlap_pct`, `stitchorder`, `tileperside`, and others control image stitching behavior
-  - **Troubleshooting Parameters**: Offset parameters allow manual adjustment of stitching alignment
+#### Configuration Layer Relationships
+![Configuration Layers](configuration_layers_diagram.png)
 
-#### Computing Resource Configuration Layer
-- **Lambda `config_dict`**: Each Lambda function contains a Python dictionary that controls:
-  - **AWS Resource Allocation**: Machine type, memory, EBS volume size, cores
-  - **Job Configuration**: Tasks per machine, timeout settings, visibility
-  - **Quality Control**: Expected file counts, minimum file sizes
-  - **Application Identity**: APP_NAME that identifies the experiment in logs and AWS resources
+The three configuration layers work together to provide a complete system definition:
 
-#### Infrastructure Configuration Layer
-- **configFleet.json**: AWS Spot Fleet configuration controlling instance types, networking, and IAM roles
-- **configAWS.py**: General AWS settings such as region, bucket names, and SQS queue identifiers
+- **Experiment Configuration** (metadata.json): Defines **WHAT** data is processed and **HOW** it's processed
+- **Computing Resource Configuration** (Lambda config_dict): Controls **HOW MUCH** computing power is allocated and **WHEN** jobs complete
+- **Infrastructure Configuration** (AWS config files): Determines **WHERE** in AWS the processing happens
+
+This separation of concerns allows for independent modification of experimental parameters, resource allocation, and AWS infrastructure, enabling system evolution without wholesale redesign.
+
+> **Note:** For detailed configuration parameters, specific settings, and setup instructions for each layer, see the [Configuration sections in CellProfiler_Pipeline_Details.md](./CellProfiler_Pipeline_Details.md#multi-layered-configuration-system).
 
 ### 5. QC and Analysis 
 
 - **notebooks/**: Jupyter notebooks for troubleshooting, visualization, and analysis
 - **qc/QC.py**: Quality control script analyzing key metrics like barcode quality, alignment quality, and cell segmentation
 
-## Workflow Implementation
+## Workflow Architecture
 
-Each Lambda function follows a similar pattern that integrates the three configuration layers:
+The system implements an event-driven serverless architecture that orchestrates image processing across multiple AWS services. Each Lambda function in the pipeline acts as both a trigger handler and an orchestrator for the next stage.
 
-1. **Parse Event**: Extract bucket and key information from the S3 trigger event
-2. **Load Configuration**:
-   - Read experiment configuration from S3's metadata.json file
-   - Use the internal Lambda `config_dict` for AWS resource settings
-   - Download AWS infrastructure configuration files when needed
-3. **Configure Pipeline Behavior**: Use metadata parameters to determine:
-   - Which pipeline file to run (e.g., standard vs. SABER for multi-round experiments)
-   - How many images to expect per well
-   - Which channels to process
-   - How to organize the data (one file vs. many files)
-4. **Identify Images**: List S3 objects matching specific patterns and filter for completeness
-5. **Generate CSVs**: Create CellProfiler LoadData CSV files containing:
-   - File paths derived from metadata parameters
-   - Channel-to-stain mapping from the `Channeldict`
-   - Metadata columns for grouping and organization
-   - Frame indices based on acquisition configuration
-6. **Configure Jobs**: Set up AWS Batch jobs using settings from all three configuration layers:
-   - Pipeline selection from metadata.json
-   - AWS resource allocation from Lambda `config_dict`
-   - Instance fleet configuration from configFleet.json
-7. **Run Cluster**: Launch EC2 instances to execute CellProfiler pipelines
-8. **Monitor Execution**: Track job completion and handle failures using SQS queues and monitoring thresholds from `config_dict`
-9. **Trigger Next Step**: When all jobs complete, initiate the next pipeline stage
+### Event Flow and Orchestration
 
-This multi-layered configuration approach allows the system to adapt to different experimental designs (via metadata.json), resource requirements (via Lambda `config_dict`), and infrastructure changes (via AWS config files) independently.
+1. **S3 Event Trigger**: Object creation in S3 triggers the appropriate Lambda function
+2. **Configuration Integration**: Lambda loads and integrates all configuration layers
+3. **Pipeline Orchestration**: Lambda determines which CellProfiler pipeline to run
+4. **Resource Orchestration**: Lambda configures and launches AWS Batch jobs
+5. **Job Monitoring**: Lambda sets up monitoring of job completion via SQS
+6. **Pipeline Transition**: Successful job completion triggers the next Lambda function
+
+This architecture enables:
+- **Scalability**: Process thousands of images in parallel
+- **Resilience**: Each pipeline stage operates independently
+- **Cost Efficiency**: Computing resources are provisioned only when needed
+
+### Pipeline Progression Logic
+
+The system employs a sequential processing model with built-in dependency management:
+
+```
+S3 Event → Lambda → Batch Jobs → S3 Output → Next Lambda → ...
+```
+
+Each Lambda validates the outputs of the previous stage before launching the next stage, ensuring data integrity throughout the workflow.
+
+> **Note:** For detailed implementation of pipeline-specific workflows, CSV generation, and configuration usage, see the [Pipeline Workflow section in CellProfiler_Pipeline_Details.md](./CellProfiler_Pipeline_Details.md#how-the-configuration-layers-drive-the-pipeline-workflow).
 
 ## Data Flow
 
