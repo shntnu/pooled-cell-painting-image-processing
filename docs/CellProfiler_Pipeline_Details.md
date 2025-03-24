@@ -118,32 +118,34 @@ This section details the configuration parameters and settings needed to set up 
 
 ### Multi-layered Configuration Architecture
 
-The system employs a three-tiered configuration approach that separates experimental, computational, and infrastructure concerns:
+The system employs a three-tiered configuration approach that separates experimental, computational, and infrastructure concerns. This separation allows independent modification of experimental parameters, resource allocation, and AWS infrastructure without requiring wholesale redesign of the system.
 
 ```mermaid
 flowchart TD
-    subgraph "Configuration Sources"
-        metadata[metadata.json]
-        config_dict["Lambda config_dict"]
-        aws_config["AWS config files"]
+    %% Color-coded configuration sources by layer
+    subgraph "Configuration Sources" 
+        metadata[metadata.json<br>WHAT data to process<br>HOW to process it<br><font color='blue'>painting_rows, barcoding_cycles, Channeldict</font>]:::experimentConfig
+        config_dict["Lambda config_dict<br>HOW MUCH compute power<br>WHEN jobs complete<br><font color='green'>MACHINE_TYPE, MEMORY, EXPECTED_NUMBER_FILES</font>"]:::computeConfig
+        aws_config["AWS config files<br>WHERE in AWS to run<br><font color='orange'>AWS_REGION, ECS_CLUSTER, IamFleetRole</font>"]:::infraConfig
     end
     
-    subgraph "Configuration Processing"
-        download_metadata[download_and_read_metadata_file]
-        grab_config[grab_batch_config]
-        loadConfig[loadConfig]
+    subgraph "Configuration Processing" 
+        download_metadata[download_and_read_metadata_file<br><font size=1>(in every Lambda function)</font>]
+        grab_config[grab_batch_config<br><font size=1>(loads from S3)</font>]
+        loadConfig[loadConfig<br><font size=1>(processes infrastructure settings)</font>]
     end
     
     subgraph "Configuration Consumers"
-        csv_gen["CSV Generation"]
-        batch_creation["Batch Job Creation"]
-        pipeline_selection["Pipeline Selection"]
-        ec2_config["EC2 Configuration"]
+        csv_gen["CSV Generation<br><font color='blue'>Uses image grid, channels,<br>acquisition mode, cycles</font>"]
+        batch_creation["Batch Job Creation<br><font color='blue'>Experiment parameters</font> +<br><font color='green'>Resource allocation</font> +<br><font color='orange'>Infrastructure location</font>"]
+        pipeline_selection["Pipeline Selection<br><font color='blue'>Based on cycle count, channels,<br>experiment type</font>"]
+        ec2_config["EC2 Configuration<br><font color='orange'>Subnet, security groups,<br>AMI, instance profile</font>"]
     end
     
-    metadata --> download_metadata
-    config_dict --> batch_creation
-    aws_config --> grab_config
+    %% Configuration flow with numbered sequence
+    metadata -->|1. First loaded| download_metadata
+    config_dict -->|2. Defined in each Lambda| batch_creation
+    aws_config -->|3. Loaded when needed| grab_config
     
     download_metadata --> pipeline_selection
     download_metadata --> csv_gen
@@ -153,7 +155,20 @@ flowchart TD
     pipeline_selection --> batch_creation
     csv_gen --> batch_creation
     ec2_config --> batch_creation
+    
+    %% Style definitions
+    classDef experimentConfig fill:#e6f3ff,stroke:#0066cc
+    classDef computeConfig fill:#e6ffe6,stroke:#009900  
+    classDef infraConfig fill:#fff2e6,stroke:#ff8c1a
 ```
+
+#### Configuration Layer Relationships
+
+Each layer serves a distinct purpose in the overall system:
+
+- **Experiment Configuration** (metadata.json): Controls WHAT data is processed and HOW it's processed
+- **Computing Resource Configuration** (Lambda config_dict): Specifies HOW MUCH computing power is allocated and WHEN jobs are considered complete
+- **Infrastructure Configuration** (AWS config files): Determines WHERE in AWS the processing happens
 
 ### Detailed Configuration Parameters
 
