@@ -21,55 +21,28 @@ The diagram above illustrates the complete workflow with both Cell Painting (top
 The workflow is orchestrated by AWS Lambda functions, with each function responsible for a specific pipeline stage. These Lambda functions serve as the automation backbone that coordinates pipeline execution, handles configuration, and manages the processing of thousands of images across AWS resources.
 
 
-## Lambda Function Configuration
+## Lambda Function Orchestration
 
-Each Lambda function in the workflow requires specific configuration to function properly. These settings are defined in the `config_dict` section of each Lambda function:
+Each pipeline in the workflow is orchestrated by a corresponding AWS Lambda function. These Lambda functions automate the pipeline execution and handle the transition of data between stages.
 
-| Lambda Function       | Trigger Event                              | APP_NAME Configuration            | Expected Files                                                  | Output Location                                                                       | Output Structure              |
-| --------------------- | ------------------------------------------ | --------------------------------- | --------------------------------------------------------------- | ------------------------------------------------------------------------------------- | ----------------------------- |
-| PCP-1-CP-IllumCorr    | 1_CP_Illum.cppipe upload                   | PROJECT_IllumPainting             | # of cell painting channels (5)                                 | illum/PLATE/                                                                          | Per-plate                     |
-| PCP-2-CP-ApplyIllum   | IllumMito.npy file upload                  | PROJECT_ApplyIllumPainting        | (# CP Channels * # sites) + 5 for CSVs                          | images_corrected/painting/                                                            | Per-plate, per-well           |
-| PCP-3-CP-SegmentCheck | PaintingIllumApplication_Image.csv upload  | PROJECT_PaintingSegmentationCheck | CHECK_IF_DONE_BOOL set to False                                 | images_segmentation/PLATE/                                                            | Per-plate, per-well, per-site |
-| PCP-4-CP-Stitching    | SegmentationCheck_Experiment.csv upload    | PROJECT_PaintingStitching         | N/A                                                             | images_corrected_cropped/, images_corrected_stitched/, images_corrected_stitched_10X/ | Per-plate, per-well           |
-| PCP-5-BC-IllumCorr    | 5_BC_Illum.cppipe upload                   | PROJECT_IllumBarcoding            | # Barcoding channels (5) * # plates (1) * # cycles(8)           | illum/PLATE/                                                                          | Per-plate                     |
-| PCP-6-BC-ApplyIllum   | Cycle1_IllumA.npy upload                   | PROJECT_ApplyIllumBarcoding       | CHECK_IF_DONE_BOOL set to False                                 | images_aligned/barcoding/                                                             | Per-plate, per-well, per-site |
-| PCP-7-BC-Preprocess   | BarcodingApplication_Experiment.csv upload | PROJECT_PreprocessBarcoding       | # CSVs (8) + 1 (overlay) + cycles(8) * (#bases + DAPI (5)) = 49 | images_corrected/barcoding                                                            | Per-plate, per-well, per-site |
-| PCP-8-BC-Stitching    | BarcodePreprocessing_Experiment.csv upload | PROJECT_BarcodingStitching        | Calculated in the lambda function                               | images_corrected_cropped/, images_corrected_stitched/, images_corrected_stitched_10X/ | Per-plate, per-well           |
-| PCP-9-Analysis        | Manual trigger with empty event            | PROJECT_Analysis                  | N/A                                                             | workspace/analysis/                                                                   | Various                       |
+| Lambda Function | Trigger Event | Related Pipeline | Primary Output | Output Location |
+|-----------------|---------------|------------------|----------------|-----------------|
+| PCP-1-CP-IllumCorr | 1_CP_Illum.cppipe upload | Pipeline 1 | Illumination functions (.npy) | illum/PLATE/ |
+| PCP-2-CP-ApplyIllum | IllumMito.npy file upload | Pipeline 2 | Corrected cell images (.tiff) | images_corrected/painting/ |
+| PCP-3-CP-SegmentCheck | CSV file upload | Pipeline 3 | QC segmentation images | images_segmentation/PLATE/ |
+| PCP-4-CP-Stitching | CSV file upload | FIJI scripts | Stitched and cropped images | images_corrected_cropped/, images_corrected_stitched/ |
+| PCP-5-BC-IllumCorr | 5_BC_Illum.cppipe upload | Pipeline 5 | Barcoding illumination functions | illum/PLATE/ |
+| PCP-6-BC-ApplyIllum | Cycle1_IllumA.npy upload | Pipeline 6 | Aligned barcoding images | images_aligned/barcoding/ |
+| PCP-7-BC-Preprocess | CSV file upload | Pipeline 7 | Processed barcoding images | images_corrected/barcoding |
+| PCP-8-BC-Stitching | CSV file upload | FIJI scripts | Stitched barcoding images | images_corrected_cropped/, images_corrected_stitched/ |
+| PCP-9-Analysis | Manual trigger | Pipeline 9 | Integrated analysis results | workspace/analysis/ |
 
-When configuring a new experiment, these parameters need to be set in each Lambda function's configuration. The `APP_NAME` should be changed to include the specific project identifier (e.g., "MyProject_IllumPainting").
+Each Lambda function follows a common pattern: it processes a trigger event, loads experimental metadata, creates pipeline-specific CSV files, configures and launches AWS Batch jobs to execute the CellProfiler pipelines, and monitors job completion.
 
 The Lambda functions are designed to be triggered sequentially, with each function triggered by the output of the previous step.
 
+> **Note:** For detailed information about Lambda function implementation, configuration parameters, and utility functions, see [lambda_pipeline_overview.md](./lambda_pipeline_overview.md).
 
-## Lambda Function Implementation
-
-Each Lambda function in the workflow follows a common implementation pattern:
-
-1. **Trigger**: Responds to S3 event or manual invocation
-   - Each Lambda's `lambda_handler` function serves as the entry point
-   - S3 event trigger pattern: `event["Records"][0]["s3"]["object"]["key"]`
-
-2. **Configuration**: 
-   - Loads metadata.json via `download_and_read_metadata_file()`
-   - Uses internal `config_dict` for AWS resources
-   - Determines pipeline variant based on metadata (e.g., SABER vs. standard)
-
-3. **Input Processing**:
-   - Lists images via `paginate_a_folder()`
-   - Parses images using `parse_image_names()`
-   - Creates pipeline-specific CSV files using appropriate `create_CSV_pipeline*()`
-
-4. **Job Execution**:
-   - Initializes AWS applications via `run_setup()`
-   - Calls specific `create_batch_jobs_*()` function
-   - Launches EC2 cluster via `run_cluster()`
-
-5. **Monitoring**:
-   - Sets up monitoring via `run_monitor()`
-   - All Lambda functions converge on the same monitoring approach
-
-For a more detailed analysis of Lambda function implementation, including dependency diagrams and utility function descriptions, see [lambda_pipeline_overview.md](./lambda_pipeline_overview.md).
 ## Pipeline Configuration System
 
 This section details the configuration parameters and settings needed to set up the CellProfiler pipelines for Pooled Cell Painting experiments.

@@ -1,5 +1,34 @@
 # Lambda Functions Overview for Pooled Cell Painting Pipeline
 
+> **Note:** This document provides detailed technical information about the Lambda function implementation used in the Pooled Cell Painting workflow. For information about the CellProfiler pipelines and higher-level workflow, see [CellProfiler_Pipeline_Details.md](./CellProfiler_Pipeline_Details.md).
+
+## Lambda Function Configuration
+
+Each Lambda function contains a specific `config_dict` with pipeline-appropriate settings:
+
+```python
+config_dict = {
+    "APP_NAME": "2018_11_20_Periscope_X_IllumPainting",
+    "DOCKERHUB_TAG": "cellprofiler/distributed-cellprofiler:2.0.0_4.2.1",
+    "TASKS_PER_MACHINE": "1",
+    "MACHINE_TYPE": ["c5.xlarge"],
+    "MEMORY": "7500",
+    "DOCKER_CORES": "4",
+    "CHECK_IF_DONE_BOOL": "True",
+    "EXPECTED_NUMBER_FILES": "5",  # Varies by pipeline
+    # Additional parameters...
+}
+```
+
+The key parameters that need configuration for each pipeline are:
+- **APP_NAME**: Unique identifier for the specific experiment
+- **MACHINE_TYPE**: EC2 instance type appropriate for the pipeline's computational needs
+- **MEMORY**: RAM allocation for the Docker container
+- **EXPECTED_NUMBER_FILES**: Number of output files to expect from each pipeline stage
+- **CHECK_IF_DONE_BOOL**: Whether to validate job completion
+
+These parameters control the AWS resources allocated to run each CellProfiler pipeline.
+
 ## Pipeline Flow Diagram
 
 ```mermaid
