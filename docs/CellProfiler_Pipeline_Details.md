@@ -197,38 +197,57 @@ Each layer serves a distinct purpose in the overall system:
 The `metadata.json` file (based on `configs/metadatatemplate.json`) defines all experiment-specific parameters:
 
 ##### Image Grid Configuration
-- `painting_rows`, `painting_columns`, `painting_imperwell`: Define cell painting image layout
-- `barcoding_rows`, `barcoding_columns`, `barcoding_imperwell`: Define barcoding image layout
-- These determine how many images should be expected per well
-- Note: If `*_imperwell` is provided with a non-zero value, it will override the rows x columns calculation
+- `painting_rows`, `painting_columns`: Define cell painting image layout for square acquisitions
+- `painting_imperwell`: Defines total images per well for circular acquisitions (overrides rows/columns)
+- `barcoding_rows`, `barcoding_columns`: Define barcoding image layout for square acquisitions
+- `barcoding_imperwell`: Defines total images per well for circular acquisitions (overrides rows/columns)
+- Note: Use rows/columns for square acquisition patterns; use imperwell for circular acquisition patterns
 
 ##### Channel Dictionary Configuration
 ```json
 "Channeldict":"{'round0':{'DAPI':['DNA_round0',0], 'GFP':['Phalloidin',1]}, 'round1':{'DAPI':['DNA_round1',0],'GFP':['GM130',1], ...}}"
 ```
-- Maps microscope channel names to biological stains
-- Supports both single-round and multi-round (SABER) experiments
-- For single-round experiments: `{'20X_CP':{'DAPI':['DNA', 0], 'GFP':['Phalloidin',1], ...}}`
-- For multi-round experiments: Include round-specific stain identifiers (e.g., `DNA_round0`, `DNA_round1`)
-- First value is the stain name, second is the frame index (0-based)
-- Influences which images are processed and how they're organized
+- Maps microscope channel names to biological stains and frame indices
+- For multiple rounds (SABER) experiments:
+  - Keys are the folder names of the rounds (e.g., '20X_c0-SABER-0', '20X_c1-SABER-1')
+  - Common stains between rounds should include round identifiers (e.g., 'DNA_round0', 'DNA_round1')
+  - Example: 
+    ```json
+    "Channeldict":"{'20X_c0-SABER-0':{'DAPI':['DNA_round0',0], 'GFP':['Phalloidin',1]}, '20X_c1-SABER-1':{'DAPI':['DNA_round1',0],'GFP':['GM130',1], 'A594':['Tubulin',2], 'Cy5':['Calnexin', 3]}, '20X_c2-SABER-2':{'DAPI':['DNA_round2',0],'GFP':['COX-IV',1], 'A594':['TDP-43',2], 'Cy5':['G3BP1',3], '750':['LAMP1',4]}}"
+    ```
+- For single-round experiments:
+  - Single key matching the Cell Painting folder name (typically '20X_CP')
+  - Example: 
+    ```json
+    "Channeldict":"{'20X_CP':{'DAPI':['DNA', 0], 'GFP':['Phalloidin',1], 'A594':['Mito',2], 'Cy5':['ER',3], '750':['WGA',4]}}"
+    ```
+- First value in each array is the stain name, second is the frame index (0-based)
 - Used to determine the pipeline variant (SABER vs. standard)
 
 ##### Processing Configuration
 - `one_or_many_files`: Controls if each well is stored as a single file (`"one"`) or multiple files (`"many"`)
+  - Should be locked to `"many"` for production runs
 - `fast_or_slow_mode`: Determines CSV generation strategy and processing path
+  - Should be locked to `"slow"` for production runs
 - `barcoding_cycles`: Sets the number of barcoding cycles to process
 - `range_skip`: Sets sampling frequency for Pipeline 3 (SegmentCheck), to process subset of images for validation
+  - Typically doesn't need to be changed from default
 
 ##### Stitching Configuration
 - `overlap_pct`: Controls image overlap percentage between adjacent fields
-- `stitchorder`: Specifies tile arrangement (e.g., "Grid: snake by rows", "Grid: row-by-row", "Filename defined position")
+- `stitchorder`: Specifies tile arrangement
+  - For square acquisitions: "Grid: snake by rows" or "Grid: row-by-row"
+  - For round acquisitions: "Filename defined position"
 - `tileperside`: Number of tiles along each side of the stitched image grid
+  - Typically doesn't need to be changed from default
 - `final_tile_size`: Pixel dimensions of each output tile after cropping
+  - Typically doesn't need to be changed from default
 - `round_or_square`: Shape of the well for cropping calculations (`"round"` or `"square"`)
 - `quarter_if_round`: Whether to divide round wells into quarters for processing (`"True"` or `"False"`)
 - `*_xoffset_tiles`, `*_yoffset_tiles`: Optional offsets for troubleshooting stitching misalignments
+  - Should be 0 unless troubleshooting gross stitching misalignments
 - `compress`: Whether to compress output files (`"True"` or `"False"`)
+  - Should be set to `"True"` to save out compressed files from stitch-crop pipelines
 
 #### 2. Computing Resource Configuration (Lambda config_dict)
 
@@ -572,6 +591,7 @@ This section provides detailed instructions for setting up and running a new Poo
 
 Create a metadata.json file based on `configs/metadatatemplate.json`:
 
+For a single-round experiment:
 ```json
 {
   "painting_rows": "38",
@@ -588,15 +608,41 @@ Create a metadata.json file based on `configs/metadatatemplate.json`:
   "round_or_square": "round",
   "quarter_if_round": "True",
   "tileperside": "10",
-  "final_tile_size": "5500"
+  "final_tile_size": "5500",
+  "stitchorder": "Filename defined position",
+  "compress": "True"
+}
+```
+
+For a multi-round (SABER) experiment:
+```json
+{
+  "painting_rows": "0",
+  "painting_columns": "0",
+  "painting_imperwell": "1364",
+  "Channeldict": "{'20X_c0-SABER-0':{'DAPI':['DNA_round0',0], 'GFP':['Phalloidin',1]}, '20X_c1-SABER-1':{'DAPI':['DNA_round1',0],'GFP':['GM130',1], 'A594':['Tubulin',2], 'Cy5':['Calnexin', 3]}, '20X_c2-SABER-2':{'DAPI':['DNA_round2',0],'GFP':['COX-IV',1], 'A594':['TDP-43',2], 'Cy5':['G3BP1',3], '750':['LAMP1',4]}}",
+  "barcoding_rows": "0",
+  "barcoding_columns": "0",
+  "barcoding_imperwell": "320",
+  "barcoding_cycles": "12",
+  "overlap_pct": "10",
+  "fast_or_slow_mode": "slow",
+  "one_or_many_files": "many",
+  "round_or_square": "round",
+  "quarter_if_round": "True",
+  "tileperside": "10",
+  "final_tile_size": "5500",
+  "stitchorder": "Filename defined position",
+  "compress": "True"
 }
 ```
 
 Adjust parameters for your specific experiment:
-- Adjust grid parameters based on your acquisition setup
-- Configure the channel dictionary to match your microscope configuration
-- Set the appropriate mode based on your file organization
-- Adjust stitching parameters based on your imaging setup
+- For square acquisitions: Set appropriate `painting_rows`/`painting_columns` and use "Grid: snake by rows" or "Grid: row-by-row" for `stitchorder`
+- For circular acquisitions: Set appropriate `painting_imperwell` and use "Filename defined position" for `stitchorder`
+- Configure the channel dictionary based on microscope channel to stain mapping and round configuration
+- For production runs, keep `fast_or_slow_mode` as "slow" and `one_or_many_files` as "many"
+- Set `compress` to "True" to save storage space with compressed output files
 
 ### Step 3: Configure Lambda Functions
 
