@@ -62,7 +62,6 @@ The `pipelines/12cycles/` directory contains the CellProfiler analysis pipelines
 The system employs a three-tiered configuration architecture that separates concerns and enables flexibility:
 
 #### Configuration Layer Relationships
-![Configuration Layers](configuration_layers_diagram.png)
 
 The three configuration layers work together to provide a complete system definition:
 
