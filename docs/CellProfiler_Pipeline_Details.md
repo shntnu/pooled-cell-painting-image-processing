@@ -36,15 +36,93 @@ When configuring a new experiment, these parameters need to be set in each Lambd
 
 The Lambda functions are designed to be triggered sequentially, with each function triggered by the output of the previous step.
 
-## Pipeline Configuration via CSV Files
+## Multi-Layered Configuration System
 
-All pipelines are driven by CSV files generated programmatically by Lambda functions. These CSVs conform to CellProfiler's LoadData module requirements:
+The pooled cell painting workflow employs a three-tiered configuration approach where each layer controls different aspects of the pipeline execution. Understanding this configuration hierarchy is essential for setting up and troubleshooting the workflow.
+
+### Experiment Configuration: metadata.json
+
+The `metadata.json` file (based on `configs/metadatatemplate.json`) controls the experimental parameters and image processing logic:
+
+1. **Image Grid Configuration**:
+   - `painting_rows`, `painting_columns`, `painting_imperwell`: Define cell painting image layout
+   - `barcoding_rows`, `barcoding_columns`, `barcoding_imperwell`: Define barcoding image layout
+   - These determine how many images should be expected per well
+
+2. **Channel Dictionary Configuration**:
+   ```json
+   "Channeldict":"{'round0':{'DAPI':['DNA_round0',0], 'GFP':['Phalloidin',1]}, 'round1':{'DAPI':['DNA_round1',0],'GFP':['GM130',1], ...}}"
+   ```
+   - Maps microscope channel names to biological stains
+   - Supports both single-round and multi-round (SABER) experiments
+   - First value is the stain name, second is the frame index
+   - Influences which images are processed and how they're organized
+
+3. **Processing Configuration**:
+   - `one_or_many_files`: Controls if each well is stored as a single file or multiple files
+   - `fast_or_slow_mode`: Determines CSV generation strategy and processing path
+   - `barcoding_cycles`: Sets the number of barcoding cycles to process
+
+4. **Stitching Configuration**:
+   - `overlap_pct`: Controls image overlap percentage
+   - `stitchorder`: Specifies tile arrangement (e.g., "Grid: snake by rows")
+   - `tileperside` and `final_tile_size`: Define output tile dimensions
+
+### Computing Resource Configuration: Lambda config_dict
+
+Each Lambda function contains a `config_dict` Python dictionary that controls AWS resource allocation and job execution parameters:
+
+```python
+config_dict = {
+    "APP_NAME": "2018_11_20_Periscope_X_IllumPainting",
+    "DOCKERHUB_TAG": "cellprofiler/distributed-cellprofiler:2.0.0_4.2.1",
+    "TASKS_PER_MACHINE": "1",
+    "MACHINE_TYPE": ["c5.xlarge"],
+    "MEMORY": "7500",
+    "DOCKER_CORES": "4",
+    "CHECK_IF_DONE_BOOL": "True",
+    "EXPECTED_NUMBER_FILES": "5",
+    # Additional parameters...
+}
+```
+
+These settings must be configured for each Lambda function and control:
+- The AWS resource allocation (machine type, memory, cores)
+- Job execution parameters (tasks per machine, timeout)
+- Quality control thresholds (expected file count, minimum size)
+- Docker container selection and configuration
+
+### Infrastructure Configuration: AWS Config Files
+
+The system uses two additional configuration files for AWS infrastructure:
+
+1. **configFleet.json**: Controls the AWS Spot Fleet configuration:
+   - EC2 instance types and AMIs
+   - Network configuration (subnets, security groups)
+   - IAM roles and policies
+   - EBS volume configurations
+
+2. **configAWS.py**: Contains general AWS settings:
+   - AWS region and profile
+   - S3 bucket names
+   - ECS cluster names
+   - SQS queue identifiers
+
+### Pipeline Configuration via CSV Files
+
+The three configuration layers work together to drive pipeline execution through CSV files:
+
+1. **metadata.json** → Determines WHAT data gets processed and HOW
+2. **Lambda config_dict** → Controls HOW MUCH computing resources are allocated
+3. **AWS config files** → Define WHERE in AWS the processing happens
+
+The CSV generation logic in `lambda/lambda_functions/create_CSVs.py` contains specialized functions for each pipeline stage that translate metadata parameters into CellProfiler-compatible configurations:
 
 - **FileName_X** and **PathName_X** columns for each channel
 - **Metadata_X** columns for grouping and organization
 - **Frame_X** and **Series_X** columns for multi-channel files
 
-The CSV generation logic in `lambda/lambda_functions/create_CSVs.py` contains specialized functions for each pipeline stage. These functions dynamically generate the appropriate CSV structure based on experiment metadata, using consistent naming conventions that map directly to CellProfiler's expectations.
+This configuration hierarchy enables the system to adapt to different experimental designs, resource requirements, and infrastructure environments independently.
 
 ## Cell Painting Processing Pipelines
 
@@ -260,50 +338,146 @@ In addition to the main pipeline sequence, there are specialized pipelines for t
 - Prevents debris from interfering with alignment
 - Used for samples with high debris content
 
-## How the CSV Files Drive the Pipelines
+## How the Configuration Layers Drive the Pipeline Workflow
 
-The CSV files serve as the critical link between the Lambda orchestration and CellProfiler execution:
+The pipeline workflow integrates all three configuration layers to orchestrate image processing:
 
 1. **Lambda initializes**: Triggered by upload of prior stage results (see trigger events in the table above)
-2. **Metadata parsing**: Reads experiment config from metadata.json
-3. **Image identification**: Lists all images in the appropriate S3 buckets
-4. **CSV generation**: Creates LoadData CSV with all file paths and grouping
-5. **AWS Batch job**: Launches CellProfiler Docker container with appropriate pipeline
-6. **Pipeline execution**: CellProfiler reads the CSV and processes images accordingly
-7. **Result upload**: Processed files saved back to S3
+2. **Configuration loading**:
+   - Reads experiment parameters from metadata.json
+   - Uses internal config_dict for AWS resource configuration
+   - Downloads infrastructure configuration files (configFleet.json) when needed
+3. **Pipeline configuration decisions**:
+   - **From metadata.json**: Determines pipeline variant and processing parameters
+     ```python
+     if len(Channeldict.keys()) == 1:  # Standard experiment
+         pipeline_name = "1_CP_Illum.cppipe"
+     if len(Channeldict.keys()) > 1:   # SABER experiment
+         pipeline_name = "1_SABER_CP_Illum.cppipe"
+     ```
+   - **From config_dict**: Determines computing resources and validation thresholds
+     ```python
+     "MACHINE_TYPE": ["c5.xlarge"],
+     "MEMORY": "7500",
+     "EXPECTED_NUMBER_FILES": "5",
+     ```
+   - **From AWS config files**: Determines where processing will happen in AWS
+4. **CSV generation**: Creates LoadData CSV that implements the combined configuration:
+   - File paths and processing logic from metadata.json
+   - Image organization based on metadata parameters (one_or_many_files, fast_or_slow_mode)
+   - Job structure influenced by config_dict resource allocation
+5. **AWS Batch job creation**: Uses run_DCP.py and create_batch_jobs.py to:
+   - Configure Docker container parameters from config_dict
+   - Set up EC2 fleet using configFleet.json
+   - Configure timeout and visibility based on config_dict
+6. **Pipeline execution**: CellProfiler processes images according to all configuration layers
+7. **Result validation**: Uses config_dict parameters (EXPECTED_NUMBER_FILES, CHECK_IF_DONE_BOOL) to verify completion
 8. **Next stage triggering**: Completion triggers the next Lambda function
 
-The dynamic generation of these CSVs allows the system to handle different experimental designs without modifying the CellProfiler pipelines themselves. Pipeline behavior is controlled through:
+This multi-layered configuration approach enables several advantages:
 
-1. **Image grouping** (how CellProfiler treats images together)
-2. **Metadata values** (how images are categorized)
-3. **File paths** (what images are processed)
-4. **QC metrics** (carried between pipeline stages)
+1. **Separation of concerns**:
+   - Experiment design parameters (metadata.json)
+   - Computing resource allocation (config_dict)
+   - Infrastructure configuration (AWS config files)
+   
+2. **Adaptability at multiple levels**:
+   - Process different experimental designs by modifying metadata.json
+   - Adjust resource allocation for specific pipeline stages via each Lambda's config_dict
+   - Change AWS infrastructure without affecting pipeline logic
+
+3. **Flexible optimization**:
+   - Tune computing resources for cost/performance without changing experiment parameters
+   - Adjust experiment parameters without reconfiguring AWS resources
+
+The image processing behavior is tailored through the combined influence of all configuration layers, with specific aspects controlled by each layer:
+
+1. **Metadata.json controls**:
+   - Image organization (one_or_many_files, fast_or_slow_mode)
+   - Channel selection (Channeldict mapping)
+   - Grid configuration (rows, columns, imperwell parameters)
+   - Stitching behavior (overlap_pct, stitchorder, quarter_if_round)
+
+2. **Lambda config_dict controls**:
+   - Processing performance (machine type, memory, cores)
+   - Job timeout and visibility settings
+   - Quality control thresholds (expected files, minimum size)
+
+3. **AWS config files control**:
+   - Infrastructure location and configuration
+   - Network settings and IAM roles
+   - EC2 fleet parameters
 
 ## Setting Up a New Experiment
 
-To set up a new experiment with this workflow:
+To set up a new experiment with this workflow, you need to configure all three layers:
 
-1. **Prepare metadata.json**: Configure experiment-specific parameters including:
-   - Cell painting acquisition grid (rows/columns or imperwell for circular)
-   - Barcoding acquisition grid
-   - Channel dictionary mapping microscope channels to stains
-   - Number of barcoding cycles
-   - Overlap percentage
-   - Fast/slow acquisition mode
-   - One/many files per well
+### 1. Experiment Configuration (metadata.json)
 
-2. **Configure AWS resources**:
-   - Upload configFleet.json and configAWS.py to S3
-   - Upload appropriate CellProfiler pipelines based on number of barcoding cycles
+Create a metadata.json file based on the template with experiment-specific parameters:
 
-3. **Modify Lambda functions**:
-   - Update the config_dict APP_NAME with project-specific identifier
-   - Set EXPECTED_NUMBER_FILES per the table above
-   - Deploy the changes
+- **Image Grid Configuration**:
+  - Cell painting acquisition grid (`painting_rows`, `painting_columns`, `painting_imperwell`)
+  - Barcoding acquisition grid (`barcoding_rows`, `barcoding_columns`, `barcoding_imperwell`)
+  
+- **Channel Dictionary**:
+  - Map microscope channels to stains across imaging rounds
+  - For single-round: `{'20X_CP':{'DAPI':['DNA', 0], 'GFP':['Phalloidin',1]}}`
+  - For multi-round SABER: `{'round0':{'DAPI':['DNA_round0',0], ...}, 'round1':{...}}`
+  
+- **Acquisition Parameters**:
+  - Number of barcoding cycles (`barcoding_cycles`)
+  - Fast/slow acquisition mode (`fast_or_slow_mode`)
+  - One/many files per well (`one_or_many_files`)
+  
+- **Stitching Configuration**:
+  - Overlap percentage (`overlap_pct`)
+  - Stitching order (`stitchorder`)
+  - Well shape (`round_or_square`, `quarter_if_round`)
+  - Output tile dimensions (`tileperside`, `final_tile_size`)
 
-4. **Trigger the workflow**:
-   - Either upload trigger files to S3 (1_CP_Illum.cppipe)
-   - Or manually trigger the first Lambda function with a test event
+### 2. Computing Resource Configuration (Lambda config_dict)
 
-This architecture enables a robust, flexible workflow that can adapt to different experimental designs while maintaining consistent processing across all images.
+Modify each Lambda function's `config_dict` to set appropriate resource allocation:
+
+- **Update APP_NAME**: Set a project-specific identifier (e.g., "MyProject_IllumPainting")
+- **Adjust compute resources**:
+  - Set appropriate `MACHINE_TYPE` for each pipeline step's requirements
+  - Configure `MEMORY` and `DOCKER_CORES` based on pipeline needs
+  - Set `EBS_VOL_SIZE` according to expected data volume
+- **Set validation parameters**:
+  - Configure `EXPECTED_NUMBER_FILES` per the table above for each Lambda
+  - Set appropriate `CHECK_IF_DONE_BOOL` and `NECESSARY_STRING`
+- **Configure timeout settings**:
+  - Set `SECONDS_TO_START` and `SQS_MESSAGE_VISIBILITY` for job monitoring
+
+### 3. Infrastructure Configuration (AWS config files)
+
+Prepare and upload AWS configuration files:
+
+- **configFleet.json**:
+  - Update EC2 instance settings (`ImageId`, network configurations)
+  - Configure IAM roles and security groups
+  - Set EBS volume parameters
+  
+- **configAWS.py**:
+  - Update AWS region and profile
+  - Configure S3 bucket names
+  - Set ECS cluster names and SQS queue identifiers
+
+### 4. Deploy and Trigger
+
+After configuring all three layers:
+
+1. Upload all configuration files to the appropriate S3 locations
+2. Upload CellProfiler pipelines for your specific barcoding cycle count
+3. Deploy the Lambda functions with their updated config_dict parameters
+4. Trigger the workflow by uploading the appropriate file to S3 (typically 1_CP_Illum.cppipe)
+
+This three-layered configuration approach provides flexibility at multiple levels:
+
+- **Experiment flexibility**: Change experimental parameters without modifying code
+- **Resource optimization**: Tune compute resources for each pipeline stage independently
+- **Infrastructure portability**: Move the workflow between AWS environments by updating only the infrastructure configuration
+
+By properly configuring all three layers, you can ensure the workflow runs efficiently while maintaining consistent processing across different experimental designs.

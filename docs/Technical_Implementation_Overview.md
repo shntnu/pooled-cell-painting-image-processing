@@ -55,12 +55,28 @@ The `pipelines/12cycles/` directory contains the CellProfiler analysis pipelines
 - Feature extraction
 - Quality control
 
-### 4. Configuration
+### 4. Multi-Layered Configuration
 
-Two primary configuration systems control the workflow:
+The system employs a three-tiered configuration approach where each layer controls a different aspect of the workflow:
 
-- **metadata.json**: Experiment-specific settings including plate layouts, channels, cycle counts, and acquisition parameters
-- **configFleet.json**: AWS resource configuration controlling instance types, memory allocation, and job execution parameters
+#### Experiment Configuration Layer
+- **metadata.json**: Controls experimental parameters and image processing logic:
+  - **Image Grid Parameters**: `painting_rows/columns/imperwell` and `barcoding_rows/columns/imperwell` define the physical layout of images
+  - **Channel-to-Stain Mapping**: The complex `Channeldict` object maps microscope channels to biological stains across imaging rounds
+  - **Pipeline Flow Control**: `one_or_many_files`, `fast_or_slow_mode`, and `barcoding_cycles` control how pipelines process data
+  - **Stitching Parameters**: `overlap_pct`, `stitchorder`, `tileperside`, and others control image stitching behavior
+  - **Troubleshooting Parameters**: Offset parameters allow manual adjustment of stitching alignment
+
+#### Computing Resource Configuration Layer
+- **Lambda `config_dict`**: Each Lambda function contains a Python dictionary that controls:
+  - **AWS Resource Allocation**: Machine type, memory, EBS volume size, cores
+  - **Job Configuration**: Tasks per machine, timeout settings, visibility
+  - **Quality Control**: Expected file counts, minimum file sizes
+  - **Application Identity**: APP_NAME that identifies the experiment in logs and AWS resources
+
+#### Infrastructure Configuration Layer
+- **configFleet.json**: AWS Spot Fleet configuration controlling instance types, networking, and IAM roles
+- **configAWS.py**: General AWS settings such as region, bucket names, and SQS queue identifiers
 
 ### 5. QC and Analysis 
 
@@ -69,15 +85,33 @@ Two primary configuration systems control the workflow:
 
 ## Workflow Implementation
 
-Each Lambda function follows a similar pattern:
+Each Lambda function follows a similar pattern that integrates the three configuration layers:
 
-1. **Parse Metadata**: Read experiment configuration from S3
-2. **Identify Images**: List S3 objects matching specific patterns and filter for completeness
-3. **Generate CSVs**: Create input files describing image paths and metadata for CellProfiler
-4. **Configure Jobs**: Set up AWS Batch jobs with appropriate resource allocations
-5. **Run Cluster**: Launch EC2 instances to execute CellProfiler pipelines
-6. **Monitor Execution**: Track job completion and handle failures
-7. **Trigger Next Step**: When all jobs complete, initiate the next pipeline stage
+1. **Parse Event**: Extract bucket and key information from the S3 trigger event
+2. **Load Configuration**:
+   - Read experiment configuration from S3's metadata.json file
+   - Use the internal Lambda `config_dict` for AWS resource settings
+   - Download AWS infrastructure configuration files when needed
+3. **Configure Pipeline Behavior**: Use metadata parameters to determine:
+   - Which pipeline file to run (e.g., standard vs. SABER for multi-round experiments)
+   - How many images to expect per well
+   - Which channels to process
+   - How to organize the data (one file vs. many files)
+4. **Identify Images**: List S3 objects matching specific patterns and filter for completeness
+5. **Generate CSVs**: Create CellProfiler LoadData CSV files containing:
+   - File paths derived from metadata parameters
+   - Channel-to-stain mapping from the `Channeldict`
+   - Metadata columns for grouping and organization
+   - Frame indices based on acquisition configuration
+6. **Configure Jobs**: Set up AWS Batch jobs using settings from all three configuration layers:
+   - Pipeline selection from metadata.json
+   - AWS resource allocation from Lambda `config_dict`
+   - Instance fleet configuration from configFleet.json
+7. **Run Cluster**: Launch EC2 instances to execute CellProfiler pipelines
+8. **Monitor Execution**: Track job completion and handle failures using SQS queues and monitoring thresholds from `config_dict`
+9. **Trigger Next Step**: When all jobs complete, initiate the next pipeline stage
+
+This multi-layered configuration approach allows the system to adapt to different experimental designs (via metadata.json), resource requirements (via Lambda `config_dict`), and infrastructure changes (via AWS config files) independently.
 
 ## Data Flow
 
