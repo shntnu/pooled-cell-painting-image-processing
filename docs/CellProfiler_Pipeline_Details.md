@@ -18,6 +18,28 @@ Each pipeline is launched by a corresponding AWS Lambda function that configures
 
 The diagram above illustrates the complete workflow with both Cell Painting (top row) and Barcoding (middle row) image processing tracks, followed by the combined analysis step. The pipeline numbers correspond to the CellProfiler pipelines described in this document.
 
+
+## Lambda Function Configuration
+
+Each Lambda function in the workflow requires specific configuration to function properly. These settings are defined in the `config_dict` section of each Lambda function:
+
+| Lambda Function       | Trigger Event                              | APP_NAME Configuration            | Expected Files                                                  | Output Location                                                                       | Output Structure              |
+| --------------------- | ------------------------------------------ | --------------------------------- | --------------------------------------------------------------- | ------------------------------------------------------------------------------------- | ----------------------------- |
+| PCP-1-CP-IllumCorr    | 1_CP_Illum.cppipe upload                   | PROJECT_IllumPainting             | # of cell painting channels (5)                                 | illum/PLATE/                                                                          | Per-plate                     |
+| PCP-2-CP-ApplyIllum   | IllumMito.npy file upload                  | PROJECT_ApplyIllumPainting        | (# CP Channels * # sites) + 5 for CSVs                          | images_corrected/painting/                                                            | Per-plate, per-well           |
+| PCP-3-CP-SegmentCheck | PaintingIllumApplication_Image.csv upload  | PROJECT_PaintingSegmentationCheck | CHECK_IF_DONE_BOOL set to False                                 | images_segmentation/PLATE/                                                            | Per-plate, per-well, per-site |
+| PCP-4-CP-Stitching    | SegmentationCheck_Experiment.csv upload    | PROJECT_PaintingStitching         | N/A                                                             | images_corrected_cropped/, images_corrected_stitched/, images_corrected_stitched_10X/ | Per-plate, per-well           |
+| PCP-5-BC-IllumCorr    | 5_BC_Illum.cppipe upload                   | PROJECT_IllumBarcoding            | # Barcoding channels (5) * # plates (1) * # cycles(8)           | illum/PLATE/                                                                          | Per-plate                     |
+| PCP-6-BC-ApplyIllum   | Cycle1_IllumA.npy upload                   | PROJECT_ApplyIllumBarcoding       | CHECK_IF_DONE_BOOL set to False                                 | images_aligned/barcoding/                                                             | Per-plate, per-well, per-site |
+| PCP-7-BC-Preprocess   | BarcodingApplication_Experiment.csv upload | PROJECT_PreprocessBarcoding       | # CSVs (8) + 1 (overlay) + cycles(8) * (#bases + DAPI (5)) = 49 | images_corrected/barcoding                                                            | Per-plate, per-well, per-site |
+| PCP-8-BC-Stitching    | BarcodePreprocessing_Experiment.csv upload | PROJECT_BarcodingStitching        | Calculated in the lambda function                               | images_corrected_cropped/, images_corrected_stitched/, images_corrected_stitched_10X/ | Per-plate, per-well           |
+| PCP-9-Analysis        | Manual trigger with empty event            | PROJECT_Analysis                  | N/A                                                             | workspace/analysis/                                                                   | Various                       |
+
+When configuring a new experiment, these parameters need to be set in each Lambda function's configuration. The `APP_NAME` should be changed to include the specific project identifier (e.g., "MyProject_IllumPainting").
+
+The Lambda functions are designed to be triggered sequentially, with each function triggered by the output of the previous step.
+
+
 ## Lambda Function Implementation
 
 Each Lambda function in the workflow follows a common implementation pattern:
@@ -46,27 +68,6 @@ Each Lambda function in the workflow follows a common implementation pattern:
    - All Lambda functions converge on the same monitoring approach
 
 For a more detailed analysis of Lambda function implementation, including dependency diagrams and utility function descriptions, see [lambda_pipeline_overview.md](./lambda_pipeline_overview.md).
-
-## Lambda Function Configuration
-
-Each Lambda function in the workflow requires specific configuration to function properly. These settings are defined in the `config_dict` section of each Lambda function:
-
-| Lambda Function | Trigger Event | APP_NAME Configuration | Expected Files | Output Location | Output Structure |
-|-----------------|---------------|------------------------|----------------|-----------------|------------------|
-| PCP-1-CP-IllumCorr | 1_CP_Illum.cppipe upload | PROJECT_IllumPainting | # of cell painting channels (5) | illum/PLATE/ | Per-plate |
-| PCP-2-CP-ApplyIllum | IllumMito.npy file upload | PROJECT_ApplyIllumPainting | (# CP Channels * # sites) + 5 for CSVs | images_corrected/painting/ | Per-plate, per-well |
-| PCP-3-CP-SegmentCheck | PaintingIllumApplication_Image.csv upload | PROJECT_PaintingSegmentationCheck | CHECK_IF_DONE_BOOL set to False | images_segmentation/PLATE/ | Per-plate, per-well, per-site |
-| PCP-4-CP-Stitching | SegmentationCheck_Experiment.csv upload | PROJECT_PaintingStitching | N/A | images_corrected_cropped/, images_corrected_stitched/, images_corrected_stitched_10X/ | Per-plate, per-well |
-| PCP-5-BC-IllumCorr | 5_BC_Illum.cppipe upload | PROJECT_IllumBarcoding | # Barcoding channels (5) * # plates (1) * # cycles(8) | illum/PLATE/ | Per-plate |
-| PCP-6-BC-ApplyIllum | Cycle1_IllumA.npy upload | PROJECT_ApplyIllumBarcoding | CHECK_IF_DONE_BOOL set to False | images_aligned/barcoding/ | Per-plate, per-well, per-site |
-| PCP-7-BC-Preprocess | BarcodingApplication_Experiment.csv upload | PROJECT_PreprocessBarcoding | # CSVs (8) + 1 (overlay) + cycles(8) * (#bases + DAPI (5)) = 49 | images_corrected/barcoding | Per-plate, per-well, per-site |
-| PCP-8-BC-Stitching | BarcodePreprocessing_Experiment.csv upload | PROJECT_BarcodingStitching | Calculated in the lambda function | images_corrected_cropped/, images_corrected_stitched/, images_corrected_stitched_10X/ | Per-plate, per-well |
-| PCP-9-Analysis | Manual trigger with empty event | PROJECT_Analysis | N/A | workspace/analysis/ | Various |
-
-When configuring a new experiment, these parameters need to be set in each Lambda function's configuration. The `APP_NAME` should be changed to include the specific project identifier (e.g., "MyProject_IllumPainting").
-
-The Lambda functions are designed to be triggered sequentially, with each function triggered by the output of the previous step.
-
 ## Pipeline Configuration System
 
 This section details the configuration parameters and settings needed to set up the CellProfiler pipelines for Pooled Cell Painting experiments.
@@ -131,19 +132,19 @@ The key parameters that need configuration for each pipeline are:
 
 Each pipeline is driven by a CSV file with a specific structure generated by functions in `create_CSVs.py`:
 
-| Pipeline | CSV Generator Function | Key Columns | Special Considerations |
-|----------|------------------------|-------------|------------------------|
-| 1: CP-Illum | `create_CSV_pipeline1()` | FileName_Orig*, PathName_Orig*, Frame_Orig* | Generates two CSVs (for pipelines 1 & 2) |
-| 2: CP-ApplyIllum | (generated by pipeline1) | PathName_Illum*, FileName_Illum* | Reuses pipeline1 CSV with illumination paths |
-| 3: SegmentCheck | `create_CSV_pipeline3()` | PathName_DNA, FileName_DNA, Metadata_Well | Uses range_skip parameter for subset processing |
-| 4: CP-Stitching | (external FIJI script) | (uses file system patterns) | Not CSV-driven |
-| 5: BC-Illum | `create_CSV_pipeline5()` | Metadata_SBSCycle, PathName_Orig*, Series_Orig* | Mode-dependent structure (fast/slow) |
-| 6: BC-ApplyIllum | `create_CSV_pipeline6()` | Cycle*_Orig*, Cycle*_Illum* | Complex multi-cycle column structure |
-| 7: BC-Preprocess | `create_CSV_pipeline7()` | PathName_Cycle*, FileName_Cycle* | Cycle-indexed structure with DAPI from Cycle01 |
-| 7A: BC-PreprocessTroubleshoot | (uses pipeline7 CSV) | (same as pipeline7) | Uses same CSV structure as pipeline7 |
-| 8: BC-Stitching | (external FIJI script) | (uses file system patterns) | Not CSV-driven |
-| 8Y: BC-CheckAlignment | `create_CSV_pipeline8Y()` | PathName_Cycle01_DAPI, PathName_CorrDNA | Cross-references painting and barcoding |
-| 9: Analysis | `create_CSV_pipeline9()` | CP_Corr* and Cycle*_* columns | Most complex CSV - integrates all data types |
+| Pipeline                      | CSV Generator Function    | Key Columns                                     | Special Considerations                          |
+| ----------------------------- | ------------------------- | ----------------------------------------------- | ----------------------------------------------- |
+| 1: CP-Illum                   | `create_CSV_pipeline1()`  | FileName_Orig*, PathName_Orig*, Frame_Orig*     | Generates two CSVs (for pipelines 1 & 2)        |
+| 2: CP-ApplyIllum              | (generated by pipeline1)  | PathName_Illum*, FileName_Illum*                | Reuses pipeline1 CSV with illumination paths    |
+| 3: SegmentCheck               | `create_CSV_pipeline3()`  | PathName_DNA, FileName_DNA, Metadata_Well       | Uses range_skip parameter for subset processing |
+| 4: CP-Stitching               | (external FIJI script)    | (uses file system patterns)                     | Not CSV-driven                                  |
+| 5: BC-Illum                   | `create_CSV_pipeline5()`  | Metadata_SBSCycle, PathName_Orig*, Series_Orig* | Mode-dependent structure (fast/slow)            |
+| 6: BC-ApplyIllum              | `create_CSV_pipeline6()`  | Cycle*_Orig*, Cycle*_Illum*                     | Complex multi-cycle column structure            |
+| 7: BC-Preprocess              | `create_CSV_pipeline7()`  | PathName_Cycle*, FileName_Cycle*                | Cycle-indexed structure with DAPI from Cycle01  |
+| 7A: BC-PreprocessTroubleshoot | (uses pipeline7 CSV)      | (same as pipeline7)                             | Uses same CSV structure as pipeline7            |
+| 8: BC-Stitching               | (external FIJI script)    | (uses file system patterns)                     | Not CSV-driven                                  |
+| 8Y: BC-CheckAlignment         | `create_CSV_pipeline8Y()` | PathName_Cycle01_DAPI, PathName_CorrDNA         | Cross-references painting and barcoding         |
+| 9: Analysis                   | `create_CSV_pipeline9()`  | CP_Corr* and Cycle*_* columns                   | Most complex CSV - integrates all data types    |
 
 The CSV files translate configuration parameters into CellProfiler-compatible format using:
 - **FileName_X** and **PathName_X** columns for each channel
@@ -568,9 +569,9 @@ s3://your-bucket/project_name/batch_name/pipelines/
 
 ### Common Issues and Solutions
 
-| Issue | Possible Cause | Solution |
-|-------|---------------|----------|
-| Missing files | Incomplete upload | Verify all raw images are uploaded |
-| Lambda timeout | Large image set | Increase Lambda timeout or optimize the code |
-| Missing metadata | Incorrect S3 path | Check metadata.json path in S3 |
-| Pipeline error | Mismatched channels | Verify Channeldict matches actual images |
+| Issue            | Possible Cause      | Solution                                     |
+| ---------------- | ------------------- | -------------------------------------------- |
+| Missing files    | Incomplete upload   | Verify all raw images are uploaded           |
+| Lambda timeout   | Large image set     | Increase Lambda timeout or optimize the code |
+| Missing metadata | Incorrect S3 path   | Check metadata.json path in S3               |
+| Pipeline error   | Mismatched channels | Verify Channeldict matches actual images     |
