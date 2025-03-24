@@ -1,6 +1,6 @@
-# CellProfiler Pipeline Details for Pooled Cell Painting
+# CellProfiler Pipelines and AWS Lambda Orchestration for Pooled Cell Painting
 
-This document provides a comprehensive explanation of the CellProfiler pipelines used in the Pooled Cell Painting image processing workflow, including detailed configuration parameters, pipeline implementations, Lambda function orchestration, and experiment setup instructions.
+This document provides a comprehensive explanation of both the CellProfiler pipelines and the AWS Lambda functions that orchestrate them in the Pooled Cell Painting image processing workflow. It includes detailed information on pipeline implementations, Lambda function patterns, configuration parameters, and complete experiment setup instructions.
 
 > **Note:** For a high-level overview of the system architecture and component relationships, see the companion document [Technical_Implementation_Overview.md](./Technical_Implementation_Overview.md).
 
