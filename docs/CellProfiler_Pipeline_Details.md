@@ -124,22 +124,42 @@ The system employs a three-tiered configuration approach that separates experime
 flowchart TD
     %% Color-coded configuration sources by layer
     subgraph "Configuration Sources" 
-        metadata[metadata.json<br>WHAT data to process<br>HOW to process it<br><font color='blue'>painting_rows, barcoding_cycles, Channeldict</font>]:::experimentConfig
-        config_dict["Lambda config_dict<br>HOW MUCH compute power<br>WHEN jobs complete<br><font color='green'>MACHINE_TYPE, MEMORY, EXPECTED_NUMBER_FILES</font>"]:::computeConfig
-        aws_config["AWS config files<br>WHERE in AWS to run<br><font color='orange'>AWS_REGION, ECS_CLUSTER, IamFleetRole</font>"]:::infraConfig
+        metadata["metadata.json
+        WHAT data to process
+        HOW to process it
+        (painting_rows, barcoding_cycles, Channeldict)"]:::experimentConfig
+        config_dict["Lambda config_dict
+        HOW MUCH compute power
+        WHEN jobs complete
+        (MACHINE_TYPE, MEMORY, EXPECTED_NUMBER_FILES)"]:::computeConfig
+        aws_config["AWS config files
+        WHERE in AWS to run
+        (AWS_REGION, ECS_CLUSTER, IamFleetRole)"]:::infraConfig
     end
     
     subgraph "Configuration Processing" 
-        download_metadata[download_and_read_metadata_file<br><font size=1>(in every Lambda function)</font>]
-        grab_config[grab_batch_config<br><font size=1>(loads from S3)</font>]
-        loadConfig[loadConfig<br><font size=1>(processes infrastructure settings)</font>]
+        download_metadata["download_and_read_metadata_file
+        (in every Lambda function)"]
+        grab_config["grab_batch_config
+        (loads from S3)"]
+        loadConfig["loadConfig
+        (processes infrastructure settings)"]
     end
     
     subgraph "Configuration Consumers"
-        csv_gen["CSV Generation<br><font color='blue'>Uses image grid, channels,<br>acquisition mode, cycles</font>"]
-        batch_creation["Batch Job Creation<br><font color='blue'>Experiment parameters</font> +<br><font color='green'>Resource allocation</font> +<br><font color='orange'>Infrastructure location</font>"]
-        pipeline_selection["Pipeline Selection<br><font color='blue'>Based on cycle count, channels,<br>experiment type</font>"]
-        ec2_config["EC2 Configuration<br><font color='orange'>Subnet, security groups,<br>AMI, instance profile</font>"]
+        csv_gen["CSV Generation
+        Uses image grid, channels,
+        acquisition mode, cycles"]
+        batch_creation["Batch Job Creation
+        Experiment parameters +
+        Resource allocation +
+        Infrastructure location"]
+        pipeline_selection["Pipeline Selection
+        Based on cycle count, channels,
+        experiment type"]
+        ec2_config["EC2 Configuration
+        Subnet, security groups,
+        AMI, instance profile"]
     end
     
     %% Configuration flow with numbered sequence
