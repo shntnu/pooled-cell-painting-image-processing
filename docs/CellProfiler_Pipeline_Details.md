@@ -59,11 +59,15 @@ All Lambda functions in the workflow follow a common implementation pattern:
 1. **Trigger Processing**: Responds to S3 event or manual invocation
    - Lambda's `lambda_handler` function is the entry point
    - For S3 triggers: `event["Records"][0]["s3"]["object"]["key"]` extracts the triggering file path
-   - For manual triggers: Empty event object is passed
+   - For manual triggers (like PCP-9-Analysis): Empty event object is passed with hardcoded parameters
 
-2. **Configuration and Pipeline Selection**: 
-   - Loads experiment configuration from metadata.json
-   - Selects appropriate pipeline variant based on experiment type
+2. **Configuration Loading**: 
+   - Loads experiment configuration from metadata.json using `download_and_read_metadata_file()`
+   - Contains pipeline-specific AWS resource requirements in `config_dict`
+   - May check if previous step's completion using `check_if_run_done()`
+
+3. **Pipeline Selection and Plate Filtering**:
+   - Selects appropriate pipeline variant based on experiment configuration
    ```python
    # Example from PCP-1-CP-IllumCorr
    if len(Channeldict.keys()) == 1:  # Standard experiment
@@ -71,17 +75,19 @@ All Lambda functions in the workflow follow a common implementation pattern:
    if len(Channeldict.keys()) > 1:   # SABER experiment
        pipeline_name = "1_SABER_CP_Illum.cppipe"
    ```
+   - Applies optional plate inclusion/exclusion filters
 
-3. **Input Processing and CSV Generation**:
-   - Lists input images from S3 using pagination
-   - Parses image names to extract metadata (wells, sites, channels)
-   - Creates pipeline-specific CSV file that tells CellProfiler what to process
-   - Different CSV generator functions exist for each pipeline stage
+4. **Input Discovery and CSV Generation**:
+   - Uses `paginate_a_folder()` to list all input files efficiently
+   - Parses image names using `parse_image_names()` to extract metadata (wells, sites, channels)
+   - Creates pipeline-specific CSV file using the appropriate `create_CSV_pipeline*()` function
+   - Uploads the generated CSV to S3 for the CellProfiler pipeline to consume
 
-4. **AWS Batch Job Configuration and Execution**:
-   - Sets up AWS resources using configuration parameters
-   - Launches EC2 instances with appropriate Docker containers
-   - Monitors job completion via SQS messages
+5. **AWS Batch Job Configuration and Execution**:
+   - Sets up AWS environment with `run_setup()`
+   - Configures batch jobs with the pipeline-specific `create_batch_jobs_*()` function
+   - Launches EC2 instances with Docker containers via `run_cluster()`
+   - Sets up job completion monitoring with `run_monitor()`
 
 ### Key Utility Functions
 
