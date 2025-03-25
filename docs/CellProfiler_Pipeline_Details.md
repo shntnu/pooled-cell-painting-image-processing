@@ -36,11 +36,12 @@ flowchart TD
         PCP5[PCP-5-BC-IllumCorr] --> PCP6[PCP-6-BC-ApplyIllum]
         PCP6 --> PCP7[PCP-7-BC-Preprocess]
         PCP7 --> PCP8[PCP-8-BC-Stitching]
-        PCP8 --> PCP8Y[PCP-8Y-BC-CheckAlignmentPostStitch]
-        PCP8Y --> PCP8Z[PCP-8Z-StitchAlignedBarcoding]
     end
     
-    PCP4 & PCP8Z --> PCP9[PCP-9-Analysis]
+    PCP4 & PCP8 --> PCP9[PCP-9-Analysis]
+
+    PCP8Y[PCP-8Y-BC-CheckAlignmentPostStitch] -.-> PCP8
+    PCP8Z[PCP-8Z-StitchAlignedBarcoding] -.-> PCP8
     
     PCP7A[PCP-7A-BC-PreprocessTroubleshoot] -.-> PCP7
 ```
@@ -83,7 +84,7 @@ All Lambda functions in the workflow follow a common implementation pattern:
    - Creates pipeline-specific CSV file using the appropriate `create_CSV_pipeline*()` function
    - Uploads the generated CSV to S3 for the CellProfiler pipeline to consume
 
-5. **AWS Batch Job Configuration and Execution**:
+5. **AWS EC2 Job Configuration and Execution**:
    - Sets up AWS environment with `run_setup()`
    - Configures batch jobs with the pipeline-specific `create_batch_jobs_*()` function
    - Launches EC2 instances with Docker containers via `run_cluster()`
@@ -106,7 +107,7 @@ Each Lambda function relies on a common set of utility modules:
 - Handles different acquisition modes (fast/slow, one/many files)
 
 #### From run_DCP.py and create_batch_jobs.py:
-- Functions for creating and monitoring AWS Batch jobs
+- Functions for creating and monitoring AWS EC2 jobs
 - Configures EC2 instances based on pipeline requirements
 - Handles container setup and execution
 
@@ -460,7 +461,7 @@ The CSV files translate configuration parameters into CellProfiler-compatible fo
 4. Locate barcode foci in aligned images
 5. Measure cell painting features across all compartments
 6. Call barcodes and annotate quality metrics
-7. Filter objects into quality categories (Perfect, Great, Empty, etc.)
+7. Filter objects into quality categories (Perfect, Great, Empty, etc.) FIXME: Does this happen? Beth says maybe no longer
 8. Export segmentation masks and merged, annotated images for visualization
 
 ## Special-Purpose Pipelines
@@ -564,166 +565,3 @@ CellProfiler pipelines are parameterized through CSV columns that control their 
    ```
 
 This parameterization approach enables the same pipeline code to process different experimental designs based on the configuration-derived CSV input.
-
-## Experiment Setup Guide
-
-This section provides detailed instructions for setting up and running a new Pooled Cell Painting experiment using this workflow.
-
-### Step 1: Prepare Your Image Data
-
-1. **Organize Raw Images** in S3 following the expected structure:
-   ```
-   s3://your-bucket/
-   └── project_name/
-       └── batch_name/
-           └── images/
-               └── plate_name/
-                   ├── 20X_CP/  (for cell painting)
-                   └── 20X_BC_Cycle1/  (for barcoding)
-   ```
-
-2. **Verify Image Naming**:
-   - Cell painting: `{well}_T{field}.tif` or similar pattern
-   - Barcoding: `{well}_T{field}_Z{z}.tif` per cycle
-   - Ensure names match expected patterns in the code
-
-### Step 2: Configure Experiment Parameters (metadata.json)
-
-Create a metadata.json file based on `configs/metadatatemplate.json`:
-
-For a single-round experiment:
-```json
-{
-  "painting_rows": "38",
-  "painting_columns": "38",
-  "painting_imperwell": "1364",
-  "Channeldict": "{'20X_CP':{'DAPI':['DNA', 0], 'GFP':['Phalloidin',1], 'A594':['Mito',2], 'Cy5':['ER',3], '750':['WGA',4]}}",
-  "barcoding_rows": "19",
-  "barcoding_columns": "19",
-  "barcoding_imperwell": "320",
-  "barcoding_cycles": "12",
-  "overlap_pct": "10",
-  "fast_or_slow_mode": "slow",
-  "one_or_many_files": "many",
-  "round_or_square": "round",
-  "quarter_if_round": "True",
-  "tileperside": "10",
-  "final_tile_size": "5500",
-  "stitchorder": "Filename defined position",
-  "compress": "True"
-}
-```
-
-For a multi-round (SABER) experiment:
-```json
-{
-  "painting_rows": "0",
-  "painting_columns": "0",
-  "painting_imperwell": "1364",
-  "Channeldict": "{'20X_c0-SABER-0':{'DAPI':['DNA_round0',0], 'GFP':['Phalloidin',1]}, '20X_c1-SABER-1':{'DAPI':['DNA_round1',0],'GFP':['GM130',1], 'A594':['Tubulin',2], 'Cy5':['Calnexin', 3]}, '20X_c2-SABER-2':{'DAPI':['DNA_round2',0],'GFP':['COX-IV',1], 'A594':['TDP-43',2], 'Cy5':['G3BP1',3], '750':['LAMP1',4]}}",
-  "barcoding_rows": "0",
-  "barcoding_columns": "0",
-  "barcoding_imperwell": "320",
-  "barcoding_cycles": "12",
-  "overlap_pct": "10",
-  "fast_or_slow_mode": "slow",
-  "one_or_many_files": "many",
-  "round_or_square": "round",
-  "quarter_if_round": "True",
-  "tileperside": "10",
-  "final_tile_size": "5500",
-  "stitchorder": "Filename defined position",
-  "compress": "True"
-}
-```
-
-Adjust parameters for your specific experiment:
-- For square acquisitions: Set appropriate `painting_rows`/`painting_columns` and use "Grid: snake by rows" or "Grid: row-by-row" for `stitchorder`
-- For circular acquisitions: Set appropriate `painting_imperwell` and use "Filename defined position" for `stitchorder`
-- Configure the channel dictionary based on microscope channel to stain mapping and round configuration
-- For production runs, keep `fast_or_slow_mode` as "slow" and `one_or_many_files` as "many"
-- Set `compress` to "True" to save storage space with compressed output files
-
-### Step 3: Configure Lambda Functions
-
-For each Lambda function (PCP-1 through PCP-9):
-
-1. **Update the config_dict**:
-   ```python
-   config_dict = {
-       "APP_NAME": "MyProject_IllumPainting",  # Change to your project name
-       "MACHINE_TYPE": ["c5.xlarge"],  # Adjust based on computational needs
-       "MEMORY": "7500",              # Adjust based on image size
-       "EXPECTED_NUMBER_FILES": "5",  # Set based on pipeline requirements
-   }
-   ```
-
-2. **Deploy Lambda code** to AWS Lambda with proper execution role and permissions
-   - Update APP_NAME to include your project identifier
-   - Adjust machine type based on computational requirements
-   - Set appropriate expected file counts for each pipeline
-
-### Step 4: Configure AWS Infrastructure
-
-1. **Update configFleet.json**:
-   ```json
-   {
-     "IamFleetRole": "arn:aws:iam::YOUR_ACCOUNT:role/your-fleet-role",
-     "LaunchSpecifications": [
-       {
-         "ImageId": "ami-YOUR_AMI_ID",
-         "NetworkInterfaces": [
-           {
-             "SubnetId": "subnet-YOUR_SUBNET",
-             "Groups": ["sg-YOUR_SECURITY_GROUP"]
-           }
-         ]
-       }
-     ]
-   }
-   ```
-
-2. **Update configAWS.py**:
-   ```python
-   AWS_REGION = "us-east-1"  # Your preferred region
-   AWS_BUCKET = "your-bucket"
-   ECS_CLUSTER = "your-cluster"
-   ```
-
-3. **Upload Configuration Files** to S3:
-   ```
-   s3://your-bucket/project_name/batch_name/
-   ├── metadata/
-   │   └── batch_name/
-   │       └── metadata.json
-   └── lambda/
-       └── batch_name/
-           ├── configAWS.py
-           └── configFleet.json
-   ```
-
-### Step 5: Upload CellProfiler Pipelines
-
-Upload the appropriate pipeline files to trigger the workflow:
-
-```
-s3://your-bucket/project_name/batch_name/pipelines/
-└── batch_name/
-    └── 1_CP_Illum.cppipe  # Triggers the workflow
-```
-
-### Step 6: Monitor and Troubleshoot
-
-1. **Monitor AWS CloudWatch Logs** for Lambda function execution
-2. **Check S3 output folders** for results from each pipeline step
-3. **Look for SQS messages** in case of failures
-4. **Check Expected Output** in each step's S3 location before proceeding to the next step
-
-### Common Issues and Solutions
-
-| Issue            | Possible Cause      | Solution                                     |
-| ---------------- | ------------------- | -------------------------------------------- |
-| Missing files    | Incomplete upload   | Verify all raw images are uploaded           |
-| Lambda timeout   | Large image set     | Increase Lambda timeout or optimize the code |
-| Missing metadata | Incorrect S3 path   | Check metadata.json path in S3               |
-| Pipeline error   | Mismatched channels | Verify Channeldict matches actual images     |
