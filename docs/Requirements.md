@@ -179,6 +179,8 @@ Note: This section has been intentionally over-specified to capture everything b
 
 Unlike the previous sections which define WHAT the system must do (requirements), this section provides guidance on HOW these requirements might be implemented. These recommendations are not mandatory specifications but suggested approaches based on best practices and domain expertise.
 
+<details>
+  
 ### 4.1 System Components
 
 - **Workflow Engine**: Orchestrates pipeline steps, manages dependencies, and tracks state.
@@ -206,22 +208,15 @@ Unlike the previous sections which define WHAT the system must do (requirements)
 - **Notebook Integration**: 
   - Include example notebooks for common inspection tasks
 
-## 5. Migration Path
+</details>
 
-To facilitate transition from the current AWS-based implementation:
-
-- **Phase 1**: Implement core processing capabilities with equivalent functionality.
-- **Phase 2**: Add manual intervention capabilities and enhanced user interfaces.
-- **Phase 3**: Extend to non-CellProfiler tools and additional compute environments.
-- **Phase 4**: Optimize performance and add advanced features.
-
-The system should maintain backward compatibility with existing data formats and configuration parameters where possible, while providing clear migration paths for legacy experiments.
-
-## 6. Additional Information Needed for Implementation
+## 5. Additional Information Needed for Implementation
 
 The following information would greatly enhance implementation efforts and should be provided by domain experts:
 
-### 6.1 Prioritization and Constraints
+<details>
+
+### 5.1 Prioritization and Constraints
 
 - **Feature Prioritization**: Which requirements are absolutely critical vs. nice-to-have?
 - **Performance Requirements**: 
@@ -230,14 +225,14 @@ The following information would greatly enhance implementation efforts and shoul
   - Are there specific memory constraints for typical workstations?
 - **Scalability Targets**: Maximum number of images, wells, or plates to process in a single experiment
 
-### 6.2 User Workflows and Context
+### 5.2 User Workflows and Context
 
 - **Typical Workflows**: Step-by-step examples of how scientists currently execute experiments
 - **Decision Points**: When and why do researchers need to evaluate intermediate results?
 - **Common Bottlenecks**: Current pain points and processing areas that require most attention
 - **Error Handling Preferences**: How should the system manage and communicate different error types?
 
-### 6.3 Validation and Testing
+### 5.3 Validation and Testing
 
 - **Representative Test Data**: Sample datasets of varying complexity for development and testing
 - **Quality Assurance**: 
@@ -246,7 +241,7 @@ The following information would greatly enhance implementation efforts and shoul
   - Tolerance limits for various processing artifacts
 - **Backward Compatibility**: Test cases that must pass for compatibility with existing data
 
-### 6.4 Integration Requirements
+### 5.4 Integration Requirements
 
 - **Third-Party Tools**: Complete list of external tools that must be supported
 - **API Requirements**: Specifications for APIs to interact with other research systems if any
@@ -254,3 +249,6 @@ The following information would greatly enhance implementation efforts and shoul
 - **Security Considerations**: Requirements for data protection, user authentication, and access control
 
 Providing this information will help ensure the system not only meets the technical requirements but also delivers maximum value to researchers in their specific scientific contexts.
+
+</details>
+
