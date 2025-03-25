@@ -491,6 +491,50 @@ In addition to the main pipeline sequence, there are specialized pipelines for t
 - Prevents debris from interfering with alignment
 - Used for samples with high debris content
 
+### 8Y_CheckAlignmentPostStitching
+
+**Purpose**: Validate alignment between stitched Cell Painting and Barcoding images
+
+**Lambda Function**: `PCP-8Y-BC-CheckAlignmentPostStitch`
+- **Trigger**: Manual trigger or after completion of Pipelines 4 and 8
+- **CSV Generator**: `create_CSV_pipeline8Y()`
+- **Implementation**: Uses CellProfiler pipeline for alignment validation
+- **Output**: Alignment validation images and metrics
+
+**Key Operations**:
+1. Takes the stitched Cell Painting DNA images and Cycle01 DAPI images from Barcoding
+2. Cross-references these images to validate their alignment
+3. Produces diagnostic images showing alignment quality
+4. Identifies any systematic misalignments that may need adjustment in the metadata
+
+**Configuration Details**:
+- Uses the `Cycle01_DAPI` channel from barcoding as the reference
+- Compares with `CorrDNA` from Cell Painting track
+- Creates a CSV that links corresponding tiles from both imaging modalities
+- Runs on a site-by-site basis for detailed validation
+
+### 8Z_StitchAlignedBarcoding
+
+**Purpose**: Stitch and crop barcoding images from the aligned images directory instead of the corrected images directory
+
+**Lambda Function**: `PCP-8Z-StitchAlignedBarcoding`
+- **Trigger**: Manual trigger, typically after alignment issues are discovered
+- **Implementation**: Uses the same FIJI script as Pipeline 8 but on different inputs
+- **Output**: Stitched and cropped barcoding images from aligned sources
+
+**Key Operations**:
+1. Similar to Pipeline 8, but takes input from the `images_aligned` directory instead of `images_corrected`
+2. Uses the FIJI stitching script to create stitched whole-well images
+3. Also creates a smaller (10x) version for preview and visualization
+4. Crops stitched images into standardized tiles for downstream analysis
+5. Handles both square and round wells using the same configurable parameters as Pipeline 8
+
+**Configuration Details**:
+- Uses identical configuration parameters to Pipeline 8
+- Allows separate adjustment of x/y offset tiles through metadata
+- Supports compression of output images when configured
+- Can divide round wells into quarters for more manageable processing
+
 ## Pipeline-Specific Implementation Details
 
 This section explains how CellProfiler pipelines interact with the configuration system and detailed implementation considerations for each pipeline step.
