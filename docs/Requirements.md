@@ -66,6 +66,7 @@ Note: This section has been intentionally over-specified to capture everything b
   - Inspect intermediate results before proceeding
   - Modify parameters between stages
   - Re-run specific stages with adjusted settings
+  - Launch inspection notebooks
 
 - 🟡 ⭐⭐: **Must track processing state** across all pipeline stages to enable resuming from interruptions.
 
@@ -114,6 +115,10 @@ Note: This section has been intentionally over-specified to capture everything b
   - Integrated quality control metrics with contextual interpretations
   - Interactive exploration of cell segmentation, barcode calling, and feature data
   - Visual comparative analysis of processing stages (before/after views)
+
+- 🔵 ⭐⭐⭐: **Must provide interactive inspection tools**:
+  - Support for Jupyter notebooks (or similar) as a first-class inspection interface
+  - Widgets for visualizing image 
 
 ## 3. Technical Requirements
 
@@ -197,6 +202,8 @@ Unlike the previous sections which define WHAT the system must do (requirements)
 - **Result Browsing**: Enable navigation and inspection of intermediate and final results.
 - **Error Handling**: Present clear error messages with actionable remediation steps.
 - **Parameter Exploration**: Support interactive adjustment of processing parameters.
+- **Notebook Integration**: 
+  - Include example notebooks for common inspection tasks
 
 ## 5. Migration Path
 
