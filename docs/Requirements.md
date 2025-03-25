@@ -84,6 +84,11 @@ This document outlines requirements for a next-generation system for processing,
 
 - **Must handle large data volumes** (terabytes) efficiently with appropriate streaming and caching strategies.
 
+- **Must implement flexible path parsing and data organization**:
+  - Standardized but configurable system for extracting metadata from file paths
+  - Support for mapping from various microscope vendor file organizations to internal structure
+  - Ability to adapt to different naming conventions without code changes
+
 ### 2.6 User Interaction
 
 - **Must provide multiple interaction mechanisms**:
@@ -92,6 +97,12 @@ This document outlines requirements for a next-generation system for processing,
   - Programmatic API for integration with other systems
 
 - **Must support both expert and non-expert users** with appropriate levels of abstraction and guidance.
+
+- **Must integrate result visualization and quality control**:
+  - Built-in visualization tools for reviewing processing results
+  - Integrated quality control metrics with contextual interpretations
+  - Interactive exploration of cell segmentation, barcode calling, and feature data
+  - Visual comparative analysis of processing stages (before/after views)
 
 ## 3. Technical Requirements
 
@@ -183,3 +194,46 @@ To facilitate transition from the current AWS-based implementation:
 - **Phase 4**: Optimize performance and add advanced features.
 
 The system should maintain backward compatibility with existing data formats and configuration parameters where possible, while providing clear migration paths for legacy experiments.
+
+## 6. Additional Information Needed for Implementation
+
+The following information would greatly enhance implementation efforts and should be provided by domain experts:
+
+### 6.1 Prioritization and Constraints
+
+- **Feature Prioritization**: Which requirements are absolutely critical vs. nice-to-have?
+- **Performance Requirements**: 
+  - What are acceptable processing times for each pipeline step?
+  - What dataset sizes must be supported initially vs. eventually?
+  - Are there specific memory constraints for typical workstations?
+- **Scalability Targets**: Maximum number of images, wells, or plates to process in a single experiment
+
+### 6.2 User Workflows and Context
+
+- **Typical Workflows**: Step-by-step examples of how scientists currently execute experiments
+- **Decision Points**: When and why do researchers need to evaluate intermediate results?
+- **Common Bottlenecks**: Current pain points and processing areas that require most attention
+- **Error Handling Preferences**: How should the system manage and communicate different error types?
+
+### 6.3 Validation and Testing
+
+- **Representative Test Data**: Sample datasets of varying complexity for development and testing
+- **Quality Assurance**: 
+  - Examples of successful vs. problematic outputs at each stage
+  - Specific metrics for evaluating processing quality
+  - Tolerance limits for various processing artifacts
+- **Backward Compatibility**: Test cases that must pass for compatibility with existing data
+
+### 6.4 Domain-Specific Knowledge
+
+- **Scientific Principles**: Biological concepts that must be understood and preserved
+- **Image Analysis Expertise**: Common pitfalls in microscopy image processing
+
+### 6.5 Integration Requirements
+
+- **Third-Party Tools**: Complete list of external tools that must be supported
+- **API Requirements**: Specifications for APIs to interact with other research systems if any
+- **Data Exchange**: Standards or formats required for interoperability with other software
+- **Security Considerations**: Requirements for data protection, user authentication, and access control
+
+Providing this information will help ensure the system not only meets the technical requirements but also delivers maximum value to researchers in their specific scientific contexts.
