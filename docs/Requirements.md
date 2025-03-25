@@ -22,6 +22,8 @@ This document outlines requirements for a next-generation system for processing,
 
 ### 2.2 Experimental Configuration
 
+Note: This section has been intentionally over-specified to capture everything but should be pruned as needed
+
 - **Must support all image grid configuration parameters**:
   - `painting_rows`, `painting_columns`: For square acquisition patterns
   - `painting_imperwell`: For circular acquisition patterns (overrides rows/columns)
@@ -30,7 +32,7 @@ This document outlines requirements for a next-generation system for processing,
 
 - **Must support complex channel dictionary configuration**:
   - Mapping microscope channel names to biological stains and frame indices
-  - Multi-round experiment support (SABER) with round identifiers
+  - Multi-round experiment support (e.g., SABER) with round identifiers
   - Single-round experiment support with simpler configuration
 
 - **Must support processing configuration settings**:
