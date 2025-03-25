@@ -2,7 +2,7 @@
 
 ## 1. System Overview
 
-This document outlines requirements for a next-generation system for processing, analyzing, and managing high-throughput microscopy data from cell painting and barcoding experiments. The system will orchestrate complex image processing workflows, manage computational resources efficiently, and provide mechanisms for both automated and manual intervention during the processing pipeline.
+This document outlines requirements for a next-generation system for processing, analyzing, and managing high-throughput microscopy data from image-based profiling experiments, in particular, pooled optical screens. The system will orchestrate complex image processing workflows, manage computational resources efficiently, and provide mechanisms for both automated and manual intervention during the processing pipeline.
 
 ## 2. Core Requirements
 
@@ -53,7 +53,10 @@ Note: This section has been intentionally over-specified to capture everything b
 
 ### 2.3 Workflow Control
 
-- **Must support fully automated end-to-end processing** with configurable pipeline sequences.
+- **Must support fully automated end-to-end processing** with configurable pipeline sequences:
+  - While current optical pooled screening experiments require significant human judgment at multiple stages, the system should be designed to enable full automation as a long-term goal
+  - Must support both fully automated workflows for mature processing paths and semi-automated workflows requiring human intervention
+  - Must allow gradual transition from manual to automated processing as confidence in automated methods increases
 
 - **Must enable manual intervention at any stage** with the ability to:
   - Pause/resume pipeline execution
@@ -77,7 +80,10 @@ Note: This section has been intentionally over-specified to capture everything b
 
 ### 2.5 Data Management
 
-- **Must organize input and output data** in a consistent, browsable structure.
+- **Must organize input and output data** in a consistent, browsable structure:
+  - Must maintain compatibility with existing input data structures
+  - Must produce outputs that match current output structures (unless explicitly modified by design)
+  - Must provide clear documentation for any structural changes
 
 - **Must track data provenance** including:
   - Processing history for each image
@@ -162,6 +168,8 @@ Note: This section has been intentionally over-specified to capture everything b
 
 ## 4. Implementation Recommendations
 
+Unlike the previous sections which define WHAT the system must do (requirements), this section provides guidance on HOW these requirements might be implemented. These recommendations are not mandatory specifications but suggested approaches based on best practices and domain expertise.
+
 ### 4.1 System Components
 
 - **Workflow Engine**: Orchestrates pipeline steps, manages dependencies, and tracks state.
@@ -178,6 +186,7 @@ Note: This section has been intentionally over-specified to capture everything b
 - **Event-Driven Architecture**: Use events to coordinate pipeline progression and notifications.
 - **Distributed Computing**: Implement task distribution for parallel processing.
 - **Pluggable Storage**: Support multiple storage backends (local, network, cloud).
+- **Leverage Existing Tools**: Prefer established, maintained tools over custom solutions whenever possible, even if they have limitations, to minimize maintenance burden.
 
 ### 4.3 User Experience Considerations
 
