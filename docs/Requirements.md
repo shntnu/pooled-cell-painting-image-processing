@@ -235,12 +235,7 @@ The following information would greatly enhance implementation efforts and shoul
   - Tolerance limits for various processing artifacts
 - **Backward Compatibility**: Test cases that must pass for compatibility with existing data
 
-### 6.4 Domain-Specific Knowledge
-
-- **Scientific Principles**: Biological concepts that must be understood and preserved
-- **Image Analysis Expertise**: Common pitfalls in microscopy image processing
-
-### 6.5 Integration Requirements
+### 6.4 Integration Requirements
 
 - **Third-Party Tools**: Complete list of external tools that must be supported
 - **API Requirements**: Specifications for APIs to interact with other research systems if any
