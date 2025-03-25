@@ -1,8 +1,8 @@
 # Pooled Cell Painting Image Processing System Requirements
 
-starrynight (per Shantanu): 🔵 planned 🟡 in progress 🔴 not planned
-
-priority (per Shantanu): ⭐ low ⭐⭐ medium ⭐⭐⭐ high
+Key: 
+- starrynight roadmap (per Shantanu): 🔵 planned 🟡 in progress 🔴 not planned
+- priority (per Shantanu): ⭐ low ⭐⭐ medium ⭐⭐⭐ high
 
 ## 1. System Overview
 
