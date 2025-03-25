@@ -1,5 +1,8 @@
 # Pooled Cell Painting Image Processing System Requirements
 
+starrynight (per Shantanu): 🔵 planned 🟡 in progress 🔴 not planned
+priority (per Shantanu): ⭐ low ⭐⭐ medium ⭐⭐⭐ high
+
 ## 1. System Overview
 
 This document outlines requirements for a next-generation system for processing, analyzing, and managing high-throughput microscopy data from image-based profiling experiments, in particular, pooled optical screens. The system will orchestrate complex image processing workflows, manage computational resources efficiently, and provide mechanisms for both automated and manual intervention during the processing pipeline.
@@ -8,7 +11,7 @@ This document outlines requirements for a next-generation system for processing,
 
 ### 2.1 Image Processing Capabilities
 
-- **Must support automated execution of CellProfiler pipelines** for all stages of image processing:
+- 🟡 ⭐⭐⭐: **Must support automated execution of CellProfiler pipelines** for all stages of image processing:
   - Illumination correction calculation and application
   - Cell segmentation and validation
   - Image stitching and cropping
@@ -16,32 +19,32 @@ This document outlines requirements for a next-generation system for processing,
   - Barcode identification and calling
   - Feature extraction and analysis
 
-- **Must process both Cell Painting (CP) and Barcoding (BC) image tracks** in parallel, with integration points for combined analysis.
+- 🟡 ⭐⭐⭐: **Must process both Cell Painting (CP) and Barcoding (BC) image tracks** in parallel, with integration points for combined analysis.
 
-- **Must allow integration of non-CellProfiler image processing tools** such as FIJI/ImageJ and custom analysis scripts.
+- 🟡 ⭐⭐⭐: **Must allow integration of non-CellProfiler image processing tools** such as FIJI/ImageJ and custom analysis scripts.
 
 ### 2.2 Experimental Configuration
 
 Note: This section has been intentionally over-specified to capture everything but should be pruned as needed
 
-- **Must support all image grid configuration parameters**:
+- 🔵 ⭐⭐⭐: **Must support all image grid configuration parameters**:
   - `painting_rows`, `painting_columns`: For square acquisition patterns
   - `painting_imperwell`: For circular acquisition patterns (overrides rows/columns)
   - `barcoding_rows`, `barcoding_columns`: For square acquisition patterns
   - `barcoding_imperwell`: For circular acquisition patterns (overrides rows/columns)
 
-- **Must support complex channel dictionary configuration**:
+- 🔵 ⭐⭐⭐: **Must support complex channel dictionary configuration**:
   - Mapping microscope channel names to biological stains and frame indices
   - Multi-round experiment support (e.g., SABER) with round identifiers
   - Single-round experiment support with simpler configuration
 
-- **Must support processing configuration settings**:
+- 🔵 ⭐⭐⭐: **Must support processing configuration settings**:
   - `one_or_many_files`: File organization strategy per well
   - `fast_or_slow_mode`: CSV generation and processing strategy
   - `barcoding_cycles`: Number of barcoding cycles to process
   - `range_skip`: Sampling frequency for quality control
 
-- **Must support detailed stitching configuration**:
+- 🔵 ⭐⭐⭐: **Must support detailed stitching configuration**:
   - `overlap_pct`: Image overlap percentage between fields
   - `stitchorder`: Tile arrangement strategy based on acquisition pattern
   - `tileperside`: Number of tiles along each side of the stitched grid
@@ -53,60 +56,60 @@ Note: This section has been intentionally over-specified to capture everything b
 
 ### 2.3 Workflow Control
 
-- **Must support fully automated end-to-end processing** with configurable pipeline sequences:
+- 🟡 ⭐⭐: **Must support fully automated end-to-end processing** with configurable pipeline sequences:
   - While current optical pooled screening experiments require significant human judgment at multiple stages, the system should be designed to enable full automation as a long-term goal
   - Must support both fully automated workflows for mature processing paths and semi-automated workflows requiring human intervention
   - Must allow gradual transition from manual to automated processing as confidence in automated methods increases
 
-- **Must enable manual intervention at any stage** with the ability to:
+- 🟡 ⭐⭐⭐: **Must enable manual intervention at any stage** with the ability to:
   - Pause/resume pipeline execution
   - Inspect intermediate results before proceeding
   - Modify parameters between stages
   - Re-run specific stages with adjusted settings
 
-- **Must track processing state** across all pipeline stages to enable resuming from interruptions.
+- 🟡 ⭐⭐: **Must track processing state** across all pipeline stages to enable resuming from interruptions.
 
 ### 2.4 Compute Resource Management
 
-- **Must efficiently manage computational resources** appropriate to each processing stage:
+- 🔵 ⭐⭐: **Must efficiently manage computational resources** appropriate to each processing stage:
   - Scale resources based on workload
   - Optimize resource allocation for memory-intensive vs. CPU-intensive tasks
   - Support parallel processing of independent tasks
 
-- **Must work across diverse compute environments**:
-  - Cloud platforms (AWS, Azure, GCP)
-  - On-premises high-performance computing clusters
-  - Local workstations (with appropriate scaling)
+- 🔵 ⭐⭐: **Must work across diverse compute environments**:
+  - Cloud platforms (⭐⭐⭐: AWS, ⭐: Azure, ⭐⭐: GCP)
+  - ⭐⭐⭐: On-premises high-performance computing clusters
+  - ⭐⭐⭐: Local workstations (with appropriate scaling)
 
 ### 2.5 Data Management
 
-- **Must organize input and output data** in a consistent, browsable structure:
+- 🟡 ⭐⭐⭐: **Must organize input and output data** in a consistent, browsable structure:
   - Must maintain compatibility with existing input data structures
   - Must produce outputs that match current output structures (unless explicitly modified by design)
   - Must provide clear documentation for any structural changes
 
-- **Must track data provenance** including:
+- 🔵 ⭐⭐: **Must track data provenance** including:
   - Processing history for each image
   - Parameters used at each stage
   - Software versions and dependencies
 
-- **Must handle large data volumes** (terabytes) efficiently with appropriate streaming and caching strategies.
+- 🔵 ⭐⭐⭐: **Must handle large data volumes** (terabytes) efficiently with appropriate streaming and caching strategies.
 
-- **Must implement flexible path parsing and data organization**:
+- 🟡 ⭐⭐⭐: **Must implement flexible path parsing and data organization**:
   - Standardized but configurable system for extracting metadata from file paths
   - Support for mapping from various microscope vendor file organizations to internal structure
   - Ability to adapt to different naming conventions without code changes
 
 ### 2.6 User Interaction
 
-- **Must provide multiple interaction mechanisms**:
+- 🟡 ⭐⭐⭐: **Must provide multiple interaction mechanisms**:
   - Command-line interface for scripting and automation
   - Web-based or desktop GUI for visualization and control
   - Programmatic API for integration with other systems
 
-- **Must support both expert and non-expert users** with appropriate levels of abstraction and guidance.
+- 🔵 ⭐⭐⭐: **Must support both expert and non-expert users** with appropriate levels of abstraction and guidance.
 
-- **Must integrate result visualization and quality control**:
+- 🔵 ⭐⭐⭐: **Must integrate result visualization and quality control**:
   - Built-in visualization tools for reviewing processing results
   - Integrated quality control metrics with contextual interpretations
   - Interactive exploration of cell segmentation, barcode calling, and feature data
@@ -116,51 +119,51 @@ Note: This section has been intentionally over-specified to capture everything b
 
 ### 3.1 System Architecture
 
-- **Must implement a modular architecture** with:
-  - Clear separation between workflow orchestration, execution, and configuration
-  - Well-defined interfaces between components
-  - Plugin system for extensibility
+- 🔵 ⭐⭐: **Must implement a modular architecture** with:
+  - ⭐⭐⭐: Clear separation between workflow orchestration, execution, and configuration
+  - ⭐⭐⭐: Well-defined interfaces between components
+  - ⭐: Plugin system for extensibility
 
-- **Must support distributed processing** across multiple compute nodes.
+- 🔵 ⭐⭐⭐: **Must support distributed processing** across multiple compute nodes.
 
-- **Must be resilient to failures** with appropriate error handling and recovery mechanisms.
+- 🔵 ⭐⭐⭐: **Must be resilient to failures** with appropriate error handling and recovery mechanisms.
 
 ### 3.2 Configuration System
 
-- **Must implement a multi-layered configuration approach** separating:
+- 🔵 ⭐⭐⭐: **Must implement a multi-layered configuration approach** separating:
   - Experimental parameters (what data to process and how)
   - Computational resource parameters (how much compute power to allocate)
   - Infrastructure parameters (where the processing will occur)
 
-- **Must validate configuration** against schema to catch errors early.
+- 🔵 ⭐⭐: **Must validate configuration** against schema to catch errors early.
 
-- **Must allow configuration overrides** at different levels (system, experiment, batch, plate).
+- 🔴 ⭐: **Must allow configuration overrides** at different levels (system, experiment, batch, plate).
 
 ### 3.3 Cross-Platform Support
 
-- **Must run on Linux, MacOS, and Windows** operating systems.
+- 🔵 ⭐⭐: **Must run on Linux, MacOS, and Windows** operating systems.
 
-- **Must provide consistent interfaces** across platforms.
+- 🔵 ⭐⭐: **Must provide consistent interfaces** across platforms.
 
-- **Must accommodate platform-specific resources** (GPU acceleration, memory limits).
+- 🔵 ⭐⭐: **Must accommodate platform-specific resources** (GPU acceleration, memory limits).
 
 ### 3.4 Extensibility
 
-- **Must allow addition of new processing tools** beyond CellProfiler.
+- 🔵 ⭐⭐⭐: **Must allow addition of new processing tools** beyond CellProfiler.
 
-- **Must support custom analysis modules** for specialized experiments.
+- 🔵 ⭐: **Must support custom analysis modules** for specialized experiments.
 
-- **Must enable integration with external systems** via APIs and data exchange formats.
+- 🔴 ⭐: **Must enable integration with external systems** via APIs and data exchange formats.
 
 ### 3.5 Documentation and Support
 
-- **Must provide comprehensive user documentation** including:
+- 🟡 ⭐⭐⭐: **Must provide comprehensive user documentation** including:
   - Installation and setup guides
   - Configuration reference
   - Workflow tutorials
   - Troubleshooting information
 
-- **Must include developer documentation** covering:
+- 🟡 ⭐⭐⭐: **Must include developer documentation** covering:
   - Architecture overview
   - API references
   - Extension guides
