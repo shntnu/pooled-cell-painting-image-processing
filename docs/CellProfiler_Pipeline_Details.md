@@ -404,7 +404,7 @@ The CSV files translate configuration parameters into CellProfiler-compatible fo
 
 **Key Operations**:
 1. Apply illumination correction by channel, cycle, and plate
-2. Note: No longer supports "fast mode" alignment of A, C, G, T channels to DAPI within each cycle as it did not work well enough
+2. No alignment of A, C, G, T channels to DAPI within each cycle (fast mode is no longer supported)
 3. Align all cycle DAPI images to Cycle 1 DAPI
 4. Shift A, C, G, T channels by same amount as their DAPI image
 5. Save corrected and aligned images
@@ -420,14 +420,21 @@ The CSV files translate configuration parameters into CellProfiler-compatible fo
 
 **Key Operations**:
 1. Perform per-image illumination correction grouped by cycle
-2. Identify nuclei using the DAPI channel (cells are not identified)
-3. Identify potential barcode foci in each channel
-4. The CompensateColors module includes many configurable parameters including:
-   - Histogram matching (optional)
-   - Channel compensation to correct for spectral bleed-through
-   - Rescaling foci intensities (optional)
-5. Analyze foci intensities and call barcodes
-6. Create composite images for QC visualization
+2. Calculate average and standard deviation images across cycles for quality control
+3. Identify nuclei using the DAPI channel (cells are not identified)
+4. Identify potential barcode foci in each channel
+5. The CompensateColors module includes many configurable parameters including:
+   - Histogram matching options (pre/post-masking, template selection)
+   - Channel compensation to correct for spectral bleed-through 
+   - Filter-based processing (Laplacian of Gaussian, Tophat, Difference of Gaussians)
+   - Channel-specific background subtraction
+   - Processing sequence controls (pre/post masking rescaling)
+   - Within-object vs. whole-image processing options
+   - Percentile-based intensity normalization
+   - Spot size and intensity thresholding
+6. Analyze foci intensities and call barcodes
+7. Relate barcode foci to cell objects for spatial organization
+8. Create composite images for QC visualization
 
 ### Pipeline 8: Barcoding Stitching and Cropping
 
@@ -461,8 +468,7 @@ The CSV files translate configuration parameters into CellProfiler-compatible fo
 4. Locate barcode foci in aligned images
 5. Measure cell painting features across all compartments
 6. Call barcodes and annotate quality metrics
-7. Filter objects into quality categories (Perfect, Great, Empty, etc.) FIXME: Does this happen? Beth says maybe no longer
-8. Export segmentation masks and merged, annotated images for visualization
+7. Export segmentation masks and merged, annotated images for visualization
 
 ## Special-Purpose Pipelines
 
