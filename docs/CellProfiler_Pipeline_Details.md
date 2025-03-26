@@ -421,7 +421,11 @@ The CSV files translate configuration parameters into CellProfiler-compatible fo
 **Key Operations**:
 1. Perform per-image illumination correction grouped by cycle
 2. Calculate average and standard deviation images across cycles for quality control
-3. Identify nuclei using the DAPI channel (cells are not identified)
+3. Identify nuclei using the DAPI channel and cells using propagation from nuclei. Note: `IdentifySecondaryObjects` module remains in the pipeline but cell segmentations are not used for meaningful analysis because:
+   - Cells identified without phenotypic stains are unreliable and have poor boundaries
+   - Getting accurate cell segmentations would require significant per-experiment tuning
+   - Barcode-only QC metrics provide sufficient data quality indicators that correlate well with downstream cell-based metrics
+   - Proper cell segmentation is performed in Pipeline 9 with full phenotypic stains
 4. Identify potential barcode foci in each channel
 5. The CompensateColors module includes many configurable parameters including:
    - Histogram matching options (pre/post-masking, template selection)
