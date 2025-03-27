@@ -16,7 +16,6 @@ Pooled Cell Painting combines genetic perturbations with high-content imaging to
 
 ## Documentation
 
-- **[Technical Implementation Overview](docs/Technical_Implementation_Overview.md)** - System architecture
 - **[CellProfiler Pipeline Details](docs/CellProfiler_Pipeline_Details.md)** - Pipeline and Lambda implementation
 - **[System Requirements](docs/Requirements.md)** - Requirements for next-generation implementation
 

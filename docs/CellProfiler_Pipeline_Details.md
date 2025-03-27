@@ -2,8 +2,6 @@
 
 This document provides a comprehensive explanation of both the CellProfiler pipelines and the AWS Lambda functions that orchestrate them in the Pooled Cell Painting image processing workflow. It includes detailed information on pipeline implementations, Lambda function patterns, configuration parameters, and complete experiment setup instructions.
 
-> **Note:** For a high-level overview of the system architecture and component relationships, see the companion document [Technical_Implementation_Overview.md](./Technical_Implementation_Overview.md).
-
 ## Overview
 
 The image processing workflow consists of two parallel tracks followed by a combined analysis:
@@ -114,8 +112,6 @@ Each Lambda function relies on a common set of utility modules:
 ## Pipeline Configuration System
 
 This section details the configuration parameters and settings needed to set up the CellProfiler pipelines for Pooled Cell Painting experiments.
-
-> **Note:** For the architectural overview of the configuration system and its role in the overall workflow, see the [Multi-Layered Configuration Architecture section in the Technical Implementation Overview](./Technical_Implementation_Overview.md#4-multi-layered-configuration-architecture).
 
 ### Multi-layered Configuration Architecture
 
@@ -548,8 +544,6 @@ In addition to the main pipeline sequence, there are specialized pipelines for t
 ## Pipeline-Specific Implementation Details
 
 This section explains how CellProfiler pipelines interact with the configuration system and detailed implementation considerations for each pipeline step.
-
-> **Note:** For the architectural view of how configuration layers interact within the overall system, see the [Workflow Architecture section in the Technical Implementation Overview](./Technical_Implementation_Overview.md#workflow-architecture).
 
 ### Pipeline Variant Selection
 
