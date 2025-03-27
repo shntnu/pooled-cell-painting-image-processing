@@ -1,5 +1,6 @@
 # CellProfiler Pipelines and AWS Lambda Orchestration for Pooled Cell Painting
 
+
 This document provides a comprehensive explanation of both the CellProfiler pipelines and the AWS Lambda functions that orchestrate them in the Pooled Cell Painting image processing workflow. It includes detailed information on pipeline implementations, Lambda function patterns, configuration parameters, and complete experiment setup instructions.
 
 ## Overview
@@ -24,24 +25,66 @@ The workflow is orchestrated by AWS Lambda functions, with each function respons
 
 ```mermaid
 flowchart TD
+    %% Main pipelines with detailed descriptions
     subgraph "Cell Painting Track"
-        PCP1[PCP-1-CP-IllumCorr] --> PCP2[PCP-2-CP-ApplyIllum]
-        PCP2 --> PCP3[PCP-3-CP-SegmentCheck]
-        PCP3 --> PCP4[PCP-4-CP-Stitching]
+        PCP1["PCP-1-CP-IllumCorr
+        Calculate illum functions"] -->
+        PCP2["PCP-2-CP-ApplyIllum
+        Apply correction
+        Segment cells
+        Get thresholds"] -->
+        PCP3["PCP-3-CP-SegmentCheck
+        Verify segmentation quality
+        on subset of images"]
+        PCP3 --> PCP4["PCP-4-CP-Stitching
+        Stitch FOVs into whole-well
+        Crop into tiles"]
     end
     
     subgraph "Barcoding Track"
-        PCP5[PCP-5-BC-IllumCorr] --> PCP6[PCP-6-BC-ApplyIllum]
-        PCP6 --> PCP7[PCP-7-BC-Preprocess]
-        PCP7 --> PCP8[PCP-8-BC-Stitching]
+        PCP5["PCP-5-BC-IllumCorr
+        Calculate illum functions"] -->
+        PCP6["PCP-6-BC-ApplyIllum
+        Apply correction
+        Align cycles"] -->
+        PCP7["PCP-7-BC-Preprocess
+        Compensate channels
+        Identify & call barcodes"] -->
+        PCP8["PCP-8-BC-Stitching
+        Stitch FOVs into whole-well
+        Crop into tiles
+        (ensure match to CP crops)"]
     end
     
-    PCP4 & PCP8 --> PCP9[PCP-9-Analysis]
+    PCP4 & PCP8 --> PCP9["PCP-9-Analysis
+        Align CP & BC images
+        Segment cells
+        Measure features
+        Call barcodes
+        Measure QC"]
 
-    PCP8Y[PCP-8Y-BC-CheckAlignmentPostStitch] -.-> PCP8
-    PCP8Z[PCP-8Z-StitchAlignedBarcoding] -.-> PCP8
+    %% Troubleshooting/specialized pipelines
+    PCP8Y["PCP-8Y-BC-CheckAlignmentPostStitch
+    Validate alignment b/w
+    stitched CP & BC images"] -.-> PCP8
+    PCP8Z["PCP-8Z-StitchAlignedBarcoding
+    Stitch aligned images
+    (not corrected images)"] -.-> PCP8
     
-    PCP7A[PCP-7A-BC-PreprocessTroubleshoot] -.-> PCP7
+    PCP7A["PCP-7A-BC-PreprocessTroubleshoot
+    Specialized version with
+    additional diagnostics"] -.-> PCP7
+    
+    PCP6A["PCP-6A-BC-ApplyIllum-DebrisMask
+    Alternative version that
+    identifies & masks debris"] -.-> PCP6
+    
+    %% Processing platforms
+    classDef cellprofiler fill:#e6f3ff,stroke:#0066cc
+    classDef fiji fill:#e6ffe6,stroke:#009900
+    
+    class PCP1,PCP2,PCP3,PCP5,PCP6,PCP7,PCP7A,PCP8Y,PCP9,PCP6A cellprofiler
+    class PCP4,PCP8,PCP8Z fiji
 ```
 
 Each pipeline in the workflow is orchestrated by a corresponding AWS Lambda function (PCP-1 through PCP-9). These Lambda functions automate the pipeline execution and handle the transition of data between stages in a sequential workflow:
