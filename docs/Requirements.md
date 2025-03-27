@@ -69,7 +69,7 @@ Note: This section has been intentionally over-specified to capture everything b
   - Re-run specific stages with adjusted settings
   - Launch inspection notebooks
 
-- 🟡 ⭐⭐: **Must track processing state** across all pipeline stages to enable resuming from interruptions.
+- 🟡 ⭐⭐: **Must enable resuming from interruptions**.
 
 ### 2.4 Compute Resource Management
 
@@ -79,8 +79,8 @@ Note: This section has been intentionally over-specified to capture everything b
   - Support parallel processing of independent tasks
 
 - 🔵 ⭐⭐: **Must work across diverse compute environments**:
-  - Cloud platforms (⭐⭐⭐: AWS, ⭐: Azure, ⭐⭐: GCP)
-  - ⭐⭐⭐: On-premises high-performance computing clusters
+  - Cloud platforms (⭐⭐⭐: AWS, ⭐: Azure, ⭐: GCP)
+  - ⭐: On-premises high-performance computing clusters
   - ⭐⭐⭐: Local workstations (with appropriate scaling)
 
 ### 2.5 Data Management
@@ -112,10 +112,8 @@ Note: This section has been intentionally over-specified to capture everything b
 - 🔵 ⭐⭐⭐: **Must support both expert and non-expert users** with appropriate levels of abstraction and guidance.
 
 - 🔵 ⭐⭐⭐: **Must integrate result visualization and quality control**:
-  - Built-in visualization tools for reviewing processing results
+  - Built-in visualization tools for reviewing processing results, including cell segmentation, barcode calling, and feature data
   - Integrated quality control metrics with contextual interpretations
-  - Interactive exploration of cell segmentation, barcode calling, and feature data
-  - Visual comparative analysis of processing stages (before/after views)
 
 - 🔵 ⭐⭐⭐: **Must provide interactive inspection tools**:
   - Support for Jupyter notebooks (or similar) as a first-class inspection interface
@@ -147,11 +145,11 @@ Note: This section has been intentionally over-specified to capture everything b
 
 ### 3.3 Cross-Platform Support
 
-- 🔵 ⭐⭐: **Must run on Linux, MacOS, and Windows** operating systems.
+- 🔵 ⭐: **Must run on ⭐⭐⭐Linux, ⭐⭐MacOS, and ⭐Windows** operating systems.
 
-- 🔵 ⭐⭐: **Must provide consistent interfaces** across platforms.
+- 🔵 ⭐: **Must provide consistent interfaces** across platforms.
 
-- 🔵 ⭐⭐: **Must accommodate platform-specific resources** (GPU acceleration, memory limits).
+- 🔵 ⭐: **Must accommodate platform-specific resources** (GPU acceleration, memory limits).
 
 ### 3.4 Extensibility
 
