@@ -656,3 +656,100 @@ CellProfiler pipelines are parameterized through CSV columns that control their 
    ```
 
 This parameterization approach enables the same pipeline code to process different experimental designs based on the configuration-derived CSV input.
+
+## Quality Control Steps and Scripts
+
+Each pipeline stage includes specific quality control measures to ensure data quality and processing accuracy. The following scripts provide visualization and analysis tools for QC:
+
+### QC Scripts and Their Applications
+
+1. **`illum_montage.py`** (Not currently implemented)
+   - Purpose: Visualizes illumination correction functions across plates
+   - Functionality:
+     - Creates montages of illumination correction functions (.npy files)
+     - Shows correction patterns for each channel
+     - Compares correction functions across plates
+     - Highlights potential issues in illumination correction
+   - Used in:
+     - Pipeline 1 (Cell Painting Illumination Correction): Validates illumination correction functions for cell painting channels
+     - Pipeline 5 (Barcoding Illumination Correction): Validates illumination correction functions for barcoding channels
+   - QC Focus: Ensures consistent and appropriate illumination correction
+   - QC Metrics:
+     - Check for uniform illumination patterns
+     - Verify no extreme variations in correction functions
+     - Identify potential plate-specific issues
+     - Compare correction patterns across channels
+
+2. **`make_fiji_montages_std.py`**
+   - Purpose: Creates visual montages of segmentation check results
+   - Functionality:
+     - Organizes PNG images by plate
+     - Creates a grid montage (10x6 for 96-well plates)
+     - Uses FIJI's montage tool with 0.75x scaling and 1px borders
+     - Saves output as TIFF files named after each plate
+   - Used in:
+     - Pipeline 3 (Segmentation Check): Visual assessment of segmentation quality across wells
+   - QC Focus: Visual assessment of segmentation quality across wells
+   - QC Metrics:
+     - Visual inspection of segmentation across wells
+     - Check for consistent segmentation patterns
+     - Verify no systematic failures
+
+3. **`Visualize_stitched_images.py`**
+   - Purpose: Validates stitching quality for both cell painting and barcoding images
+   - Functionality:
+     - Creates 2x2 grid visualization of stitched quadrants
+     - Shows TopLeft, TopRight, BottomLeft, BottomRight sections
+     - Uses square root transformation for better contrast
+     - Works with 10X downsampled images for efficient QC
+     - Removes axis ticks for cleaner visualization
+   - Used in:
+     - Pipeline 4 (Cell Painting Stitching): Validates stitching quality for cell painting images
+     - Pipeline 8 (Barcoding Stitching): Validates stitching quality for barcoding images
+   - QC Focus: Verifies proper stitching and alignment of image quadrants
+   - QC Metrics:
+     - Verify quadrant alignment
+     - Check for stitching artifacts
+     - Validate image continuity
+
+4. **`6_Barcode_Align.py`**
+   - Purpose: Validates alignment between barcoding cycles
+   - Functionality:
+     - Analyzes pixel shifts between cycles
+     - Calculates correlation scores between cycles
+     - Creates visualizations of:
+       - Pixel shifts (with -200 to 200 pixel limits)
+       - Correlation scores (with 0.9 threshold line)
+     - Provides statistical analysis:
+       - Counts of sites with large shifts (>50 pixels)
+       - Sites with poor correlations (<0.9, <0.8)
+       - Spatial distribution of alignment issues
+   - Used in:
+     - Pipeline 6 (Barcoding Alignment): Ensures proper alignment between barcoding cycles
+   - QC Focus: Ensures proper alignment between barcoding cycles
+   - QC Metrics:
+     - Pixel shifts should be within ±200 pixels
+     - Correlation scores should be >0.9
+     - Monitor spatial distribution of alignment issues
+
+5. **`7_BarcodePreprocessing.py`**
+   - Purpose: Analyzes barcode preprocessing quality
+   - Functionality:
+     - Analyzes barcode library composition:
+       - Nucleotide frequency by cycle
+       - Repeat sequence analysis (5-7 nucleotide repeats)
+     - Evaluates barcode calling quality:
+       - Perfect match percentages
+       - Score distributions
+       - Per-well performance visualization
+     - Creates spatial visualizations:
+       - Per-plate heatmaps of barcode quality
+       - Nucleotide frequency plots across cycles
+   - Used in:
+     - Pipeline 7 (Barcoding Preprocessing): Validates barcode detection and calling accuracy
+   - QC Focus: Validates barcode detection and calling accuracy
+   - QC Metrics:
+     - Perfect match percentage
+     - Nucleotide distribution across cycles
+     - Spatial distribution of barcode quality
+     - Repeat sequence analysis
