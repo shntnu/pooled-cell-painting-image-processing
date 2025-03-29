@@ -293,7 +293,8 @@
             "size": "{size}",
             "round_or_square": "{round_or_square}",
             "tileperside": "{tileperside}",
-            "final_tile_size": "{final_tile_size}"
+            "final_tile_size": "{final_tile_size}",
+            "scalingstring": "1"
         },
         "inputs": {
             "corrected_images": {
