@@ -190,12 +190,7 @@ def generate_all_outputs(
     # 5. Process each module and calculate its outputs
     for module_name in schema.keys():
         # Skip non-module sections
-        if module_name in [
-            "metadata_schema",
-            "channels",
-            "channels_schema",
-            "transformation_config",
-        ]:
+        if module_name in ["metadata_schema"]:
             continue
 
         module = schema[module_name]
