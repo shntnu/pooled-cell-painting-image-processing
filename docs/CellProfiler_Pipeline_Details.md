@@ -745,11 +745,13 @@ Note:
   - **Output Directories**: 
     - `{Batch}/images_corrected_stitched/cellpainting/{Plate}/{Plate}_{Well}/`: Stitched whole-well images
     - `{Batch}/images_corrected_cropped/cellpainting/{Plate}/{Plate}_{Well}/{Channel}/`: Cropped tile images
-    - `{Batch}/images_corrected_stitched_10X/cellpainting/{Plate}/{Plate}_{Well}/`: Downsampled previews
+    - `{Batch}/images_corrected_stitched_10X/cellpainting/{Plate}/{Plate}_{Well}/Corr_{Channel}/`: Downsampled previews
   - **Image Naming Pattern**:    
     - `Stitched{Channel}.tiff`: Stitched whole-well image (for square wells)
     - `Stitched[TopLeft|TopRight|BottomLeft|BottomRight]{Channel}.tiff`: Stitched quadrant images (for round wells)
-    - `{Channel}_Site_{TileNumber}.tiff`: Cropped tile image
+    - `Corr_{Channel}_Site_{TileNumber}.tiff`: Cropped tile image
+
+    {cp_channel}/Corr_{cp_channel}/Corr_{cp_channel}_Site_{tile_number}.tiff"
 
 ### Barcoding
 
@@ -819,7 +821,7 @@ Note:
   - **Output Directories**: 
     - `{Batch}/images_corrected_stitched/barcoding/{Plate}/{Plate}_{Well}/`: Stitched whole-well images
     - `{Batch}/images_corrected_cropped/barcoding/{Plate}/{Plate}_{Well}/{Channel}/`: Cropped tile images
-    - `{Batch}/images_corrected_stitched_10X/barcoding/{Plate}/{Plate}_{Well}/`: Downsampled previews
+    - `{Batch}/images_corrected_stitched_10X/barcoding/{Plate}/{Plate}_{Well}/Cycle{Cycle}_{bc_channel}/`: Downsampled previews
   - **Image Naming Pattern**:    
     - `Stitched_Cycle{K}_{Channel}.tiff`: Stitched whole-well image (for square wells)
     - `StitchedTopLeft_Cycle{K}_{Channel}.tiff`, etc.: Stitched quadrant images (for round wells)
@@ -859,8 +861,9 @@ Note:
       - `RelateObjects.csv`
       - `Resize_Foci.csv`
     - **Image Naming Pattern**: 
-      - `{Plate}_{Well}_Site_{Site}_{ObjectType}_Objects.tiff`: Segmentation mask
-      - `CorrCh{ChannelNumber}_Site_{Site}_Overlay.png`: Overlay image
+      - `Plate_{Plate}_Well_{Well}_Site_{Site}_{ObjectType}_Objects.tiff`: Segmentation mask
+      - `Plate_{Plate}_Well_{Well}_Site_{Site}_CorrCh{ChannelNumber}_Overlay.png`: Overlay image
+      - `Plate_{Plate}_Well_{Well}_Site_{Site}_CorrCh{ChannelNumber}_SpotOverlay.png`: Overlay image
 
 ### Special-Purpose Pipeline Outputs
 

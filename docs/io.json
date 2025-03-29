@@ -314,7 +314,7 @@
             },
             "cropped_tiles": {
                 "patterns": [
-                    "{batch}/images_corrected_cropped/cellpainting/{plate}/{plate}_{well}/{cp_channel}/Corr_{cp_channel}/Corr_{cp_channel}_Site_{tile_number}.tiff"
+                    "{batch}/images_corrected_cropped/cellpainting/{plate}/{plate}_{well}/Corr_{cp_channel}/Corr_{cp_channel}_Site_{tile_number}.tiff"
                 ]
             },
             "previews": {
