@@ -22,12 +22,12 @@
         },
         "cp_channel": {
             "type": "string",
-            "enum_ref": "channels.cp.standard_names",
+            "enum_ref": "channels.cp.microscope_mapping.values",
             "description": "Standardized Cell Painting channel name (e.g., DNA, Phalloidin)"
         },
         "bc_channel": {
             "type": "string",
-            "enum_ref": "channels.bc.standard_names",
+            "enum_ref": "channels.bc.microscope_mapping.values",
             "description": "Standardized Barcoding channel name (e.g., DAPI, A, C, G, T)"
         },
         "cp_microscope_channel": {
@@ -59,15 +59,30 @@
             ]
         }
     },
+    "channels_schema": {
+        "cp_channel": {
+            "type": "string",
+            "enum_ref": "channels.cp.standard_names",
+            "description": "Standardized Cell Painting channel name (e.g., DNA, Phalloidin)"
+        },
+        "bc_channel": {
+            "type": "string",
+            "enum_ref": "channels.bc.standard_names",
+            "description": "Standardized Barcoding channel name (e.g., DAPI, A, C, G, T)"
+        },
+        "cp_microscope_channel": {
+            "type": "string",
+            "enum_ref": "channels.cp.microscope_mapping.keys",
+            "description": "Raw microscope channel name for Cell Painting images (e.g., w1, w2)"
+        },
+        "bc_microscope_channel": {
+            "type": "string",
+            "enum_ref": "channels.bc.microscope_mapping.keys",
+            "description": "Raw microscope channel name for Barcoding images (e.g., w1, w2)"
+        }
+    },
     "channels": {
         "cp": {
-            "standard_names": [
-                "DNA",
-                "Phalloidin",
-                "Mito",
-                "ER",
-                "WGA"
-            ],
             "microscope_mapping": {
                 "w1": "DNA",
                 "w2": "Phalloidin",
@@ -77,13 +92,6 @@
             }
         },
         "bc": {
-            "standard_names": [
-                "DAPI",
-                "A",
-                "C",
-                "G",
-                "T"
-            ],
             "microscope_mapping": {
                 "w1": "DAPI",
                 "w2": "A",
