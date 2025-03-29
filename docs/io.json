@@ -318,7 +318,7 @@
             },
             "previews": {
                 "patterns": [
-                    "{batch}/images_corrected_stitched_10X/cellpainting/{plate}/{plate}_{well}/"
+                    "{batch}/images_corrected_stitched_10X/cellpainting/{plate}/{plate}_{well}/Stitched{cp_channel}.tiff"
                 ]
             }
         }
@@ -504,7 +504,7 @@
             },
             "previews": {
                 "patterns": [
-                    "{batch}/images_corrected_stitched_10X/barcoding/{plate}/{plate}_{well}/"
+                    "{batch}/images_corrected_stitched_10X/barcoding/{plate}/{plate}_{well}/Stitched_Cycle{cycle}_{bc_channel}.tiff"
                 ]
             }
         }
