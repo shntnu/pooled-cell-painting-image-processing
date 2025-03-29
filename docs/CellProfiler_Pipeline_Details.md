@@ -693,7 +693,7 @@ Note: In the jsons, `{1_CP_Illum|2_CP_Apply_Illum|5_BC_Illum|6_BC_Apply_Illum}.i
                 "pattern": "{batch}/illum/{plate}/{plate}_Illum{channel}.npy"
             }
         },
-        "csv_fields": [
+        "load_data_csv_fields": [
             {
                 "name": "FileName_Orig{channel}",
                 "source": "inputs.images.filename"
@@ -766,7 +766,7 @@ Note: In the jsons, `{1_CP_Illum|2_CP_Apply_Illum|5_BC_Illum|6_BC_Apply_Illum}.i
                 ]
             }
         },
-        "csv_fields": [
+        "load_data_csv_fields": [
             {
                 "name": "FileName_Orig{channel}",
                 "source": "inputs.images.filename"
@@ -843,7 +843,7 @@ Note: In the jsons, `{1_CP_Illum|2_CP_Apply_Illum|5_BC_Illum|6_BC_Apply_Illum}.i
                 ]
             }
         },
-        "csv_fields": [
+        "load_data_csv_fields": [
             {
                 "name": "FileName_{channel}",
                 "source": "inputs.corrected_images.filename"
@@ -970,7 +970,7 @@ Note: In the jsons, `{1_CP_Illum|2_CP_Apply_Illum|5_BC_Illum|6_BC_Apply_Illum}.i
                 "pattern": "{batch}/illum/{plate}/{plate}_Cycle{cycle}_Illum{channel}.npy"
             }
         },
-        "csv_fields": [
+        "load_data_csv_fields": [
             {
                 "name": "FileName_Orig{channel}",
                 "source": "inputs.images.filename"
@@ -1043,7 +1043,7 @@ Note: In the jsons, `{1_CP_Illum|2_CP_Apply_Illum|5_BC_Illum|6_BC_Apply_Illum}.i
                 ]
             }
         },
-        "csv_fields": [
+        "load_data_csv_fields": [
             {
                 "name": "FileName_Cycle{cycle}_{channel}",
                 "source": "inputs.images.filename"
@@ -1119,7 +1119,7 @@ Note: In the jsons, `{1_CP_Illum|2_CP_Apply_Illum|5_BC_Illum|6_BC_Apply_Illum}.i
                 ]
             }
         },
-        "csv_fields": [
+        "load_data_csv_fields": [
             {
                 "name": "FileName_Cycle{cycle}_{channel}",
                 "source": "inputs.aligned_images.filename"
@@ -1286,7 +1286,7 @@ Note: In the jsons, `{1_CP_Illum|2_CP_Apply_Illum|5_BC_Illum|6_BC_Apply_Illum}.i
                 ]
             }
         },
-        "csv_fields": [
+        "load_data_csv_fields": [
             {
                 "name": "FileName_{channel}",
                 "source": "inputs.cp_tiles.filename"
