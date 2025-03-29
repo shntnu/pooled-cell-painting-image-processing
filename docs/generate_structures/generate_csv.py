@@ -24,9 +24,7 @@ def main():
         "--cycle", type=int, default=0, help="Cycle number (if required)"
     )
     parser.add_argument("--output", default="output.csv", help="Output CSV file")
-    parser.add_argument(
-        "--config", default="docs/io.json", help="IO configuration file"
-    )
+    parser.add_argument("--config", default="../io.json", help="IO configuration file")
     parser.add_argument(
         "--raw_image_template", default="IMAGE", help="Raw image template name"
     )

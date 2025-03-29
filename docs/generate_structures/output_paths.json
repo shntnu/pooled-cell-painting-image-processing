@@ -1,18 +1,18 @@
 {
   "0_Microscope": {
     "cp_images": [
-      "Batch1/images/Plate1/20x_CP_Plate1/image_A01_1_w1.tiff",
-      "Batch1/images/Plate1/20x_CP_Plate1/image_A01_1_w2.tiff",
-      "Batch1/images/Plate1/20x_CP_Plate1/image_A01_1_w3.tiff",
-      "Batch1/images/Plate1/20x_CP_Plate1/image_A01_1_w4.tiff",
-      "Batch1/images/Plate1/20x_CP_Plate1/image_A01_1_w5.tiff"
+      "Batch1/images/Plate1/20x_CP_Plate1/IMAGE_A01_1_w1.tiff",
+      "Batch1/images/Plate1/20x_CP_Plate1/IMAGE_A01_1_w2.tiff",
+      "Batch1/images/Plate1/20x_CP_Plate1/IMAGE_A01_1_w3.tiff",
+      "Batch1/images/Plate1/20x_CP_Plate1/IMAGE_A01_1_w4.tiff",
+      "Batch1/images/Plate1/20x_CP_Plate1/IMAGE_A01_1_w5.tiff"
     ],
     "bc_images": [
-      "Batch1/images/Plate1/20x_SBS_1/image_A01_1_w1.tiff",
-      "Batch1/images/Plate1/20x_SBS_1/image_A01_1_w2.tiff",
-      "Batch1/images/Plate1/20x_SBS_1/image_A01_1_w3.tiff",
-      "Batch1/images/Plate1/20x_SBS_1/image_A01_1_w4.tiff",
-      "Batch1/images/Plate1/20x_SBS_1/image_A01_1_w5.tiff"
+      "Batch1/images/Plate1/20x_SBS_1/IMAGE_A01_1_w1.tiff",
+      "Batch1/images/Plate1/20x_SBS_1/IMAGE_A01_1_w2.tiff",
+      "Batch1/images/Plate1/20x_SBS_1/IMAGE_A01_1_w3.tiff",
+      "Batch1/images/Plate1/20x_SBS_1/IMAGE_A01_1_w4.tiff",
+      "Batch1/images/Plate1/20x_SBS_1/IMAGE_A01_1_w5.tiff"
     ]
   },
   "1_CP_Illum": {
@@ -184,36 +184,36 @@
   },
   "9_Analysis": {
     "segmentation_masks": [
-      "Batch1/workspace/analysis/Plate1-A01-1/segmentation_masks/Plate_Plate1_Well_A01_Site_1_Nuclei_Objects.tiff",
-      "Batch1/workspace/analysis/Plate1-A01-1/segmentation_masks/Plate_Plate1_Well_A01_Site_1_Cells_Objects.tiff",
-      "Batch1/workspace/analysis/Plate1-A01-1/segmentation_masks/Plate_Plate1_Well_A01_Site_1_Cytoplasm_Objects.tiff"
+      "workspace/analysis/Plate1-A01-1/segmentation_masks/Plate_Plate1_Well_A01_Site_1_Nuclei_Objects.tiff",
+      "workspace/analysis/Plate1-A01-1/segmentation_masks/Plate_Plate1_Well_A01_Site_1_Cells_Objects.tiff",
+      "workspace/analysis/Plate1-A01-1/segmentation_masks/Plate_Plate1_Well_A01_Site_1_Cytoplasm_Objects.tiff"
     ],
     "overlay_images": [
-      "Batch1/workspace/analysis/Plate1-A01-1/Plate_Plate1_Well_A01_Site_1_CorrDNA_Overlay.png",
-      "Batch1/workspace/analysis/Plate1-A01-1/Plate_Plate1_Well_A01_Site_1_CorrPhalloidin_Overlay.png",
-      "Batch1/workspace/analysis/Plate1-A01-1/Plate_Plate1_Well_A01_Site_1_CorrMito_Overlay.png",
-      "Batch1/workspace/analysis/Plate1-A01-1/Plate_Plate1_Well_A01_Site_1_CorrER_Overlay.png",
-      "Batch1/workspace/analysis/Plate1-A01-1/Plate_Plate1_Well_A01_Site_1_CorrWGA_Overlay.png",
-      "Batch1/workspace/analysis/Plate1-A01-1/Plate_Plate1_Well_A01_Site_1_CorrDNA_SpotOverlay.png",
-      "Batch1/workspace/analysis/Plate1-A01-1/Plate_Plate1_Well_A01_Site_1_CorrPhalloidin_SpotOverlay.png",
-      "Batch1/workspace/analysis/Plate1-A01-1/Plate_Plate1_Well_A01_Site_1_CorrMito_SpotOverlay.png",
-      "Batch1/workspace/analysis/Plate1-A01-1/Plate_Plate1_Well_A01_Site_1_CorrER_SpotOverlay.png",
-      "Batch1/workspace/analysis/Plate1-A01-1/Plate_Plate1_Well_A01_Site_1_CorrWGA_SpotOverlay.png"
+      "workspace/analysis/Plate1-A01-1/Plate_Plate1_Well_A01_Site_1_CorrDNA_Overlay.png",
+      "workspace/analysis/Plate1-A01-1/Plate_Plate1_Well_A01_Site_1_CorrPhalloidin_Overlay.png",
+      "workspace/analysis/Plate1-A01-1/Plate_Plate1_Well_A01_Site_1_CorrMito_Overlay.png",
+      "workspace/analysis/Plate1-A01-1/Plate_Plate1_Well_A01_Site_1_CorrER_Overlay.png",
+      "workspace/analysis/Plate1-A01-1/Plate_Plate1_Well_A01_Site_1_CorrWGA_Overlay.png",
+      "workspace/analysis/Plate1-A01-1/Plate_Plate1_Well_A01_Site_1_CorrDNA_SpotOverlay.png",
+      "workspace/analysis/Plate1-A01-1/Plate_Plate1_Well_A01_Site_1_CorrPhalloidin_SpotOverlay.png",
+      "workspace/analysis/Plate1-A01-1/Plate_Plate1_Well_A01_Site_1_CorrMito_SpotOverlay.png",
+      "workspace/analysis/Plate1-A01-1/Plate_Plate1_Well_A01_Site_1_CorrER_SpotOverlay.png",
+      "workspace/analysis/Plate1-A01-1/Plate_Plate1_Well_A01_Site_1_CorrWGA_SpotOverlay.png"
     ],
     "csvs": [
-      "Batch1/workspace/analysis/Plate1-A01-1/BarcodeFoci.csv",
-      "Batch1/workspace/analysis/Plate1-A01-1/Cells.csv",
-      "Batch1/workspace/analysis/Plate1-A01-1/ConfluentRegions.csv",
-      "Batch1/workspace/analysis/Plate1-A01-1/Cytoplasm.csv",
-      "Batch1/workspace/analysis/Plate1-A01-1/Experiment.csv",
-      "Batch1/workspace/analysis/Plate1-A01-1/Foci.csv",
-      "Batch1/workspace/analysis/Plate1-A01-1/Foci_NonCellEdge.csv",
-      "Batch1/workspace/analysis/Plate1-A01-1/Foci_PreMask.csv",
-      "Batch1/workspace/analysis/Plate1-A01-1/Image.csv",
-      "Batch1/workspace/analysis/Plate1-A01-1/Nuclei.csv",
-      "Batch1/workspace/analysis/Plate1-A01-1/PreCells.csv",
-      "Batch1/workspace/analysis/Plate1-A01-1/RelateObjects.csv",
-      "Batch1/workspace/analysis/Plate1-A01-1/Resize_Foci.csv"
+      "workspace/analysis/Plate1-A01-1/BarcodeFoci.csv",
+      "workspace/analysis/Plate1-A01-1/Cells.csv",
+      "workspace/analysis/Plate1-A01-1/ConfluentRegions.csv",
+      "workspace/analysis/Plate1-A01-1/Cytoplasm.csv",
+      "workspace/analysis/Plate1-A01-1/Experiment.csv",
+      "workspace/analysis/Plate1-A01-1/Foci.csv",
+      "workspace/analysis/Plate1-A01-1/Foci_NonCellEdge.csv",
+      "workspace/analysis/Plate1-A01-1/Foci_PreMask.csv",
+      "workspace/analysis/Plate1-A01-1/Image.csv",
+      "workspace/analysis/Plate1-A01-1/Nuclei.csv",
+      "workspace/analysis/Plate1-A01-1/PreCells.csv",
+      "workspace/analysis/Plate1-A01-1/RelateObjects.csv",
+      "workspace/analysis/Plate1-A01-1/Resize_Foci.csv"
     ]
   }
 }

@@ -4,6 +4,8 @@ import argparse
 import json
 import re
 import itertools
+import os
+from pathlib import Path
 from typing import List, Dict, Any, Optional, Set
 
 
@@ -129,6 +131,23 @@ def expand_pattern(
     return paths
 
 
+def create_dummy_file(filepath: str, base_path: Optional[str] = None) -> None:
+    """Create a dummy file with its filename as content."""
+    # Apply base path if specified
+    if base_path:
+        filepath = os.path.join(base_path, filepath)
+
+    # Ensure directory exists
+    directory = os.path.dirname(filepath)
+    if directory:
+        os.makedirs(directory, exist_ok=True)
+
+    # Create a simple text file for all file types
+    with open(filepath, "w") as f:
+        f.write(f"This is a dummy placeholder file: {filepath}\n")
+        f.write("Generated for simulation purposes only.\n")
+
+
 def generate_all_outputs(
     io_json_path: str,
     batch_id: str,
@@ -155,6 +174,9 @@ def generate_all_outputs(
     painting_columns: Optional[int] = None,
     barcoding_rows: Optional[int] = None,
     barcoding_columns: Optional[int] = None,
+    create_files: bool = False,
+    max_files_per_type: Optional[int] = None,
+    base_path: Optional[str] = None,
 ) -> Dict[str, Dict[str, List[str]]]:
     """Generate all output paths for the entire pipeline."""
     outputs = {}
@@ -242,7 +264,35 @@ def generate_all_outputs(
                     painting_imperwell=painting_imperwell,
                     barcoding_imperwell=barcoding_imperwell,
                 )
+
+                # Limit files if requested
+                if (
+                    max_files_per_type is not None
+                    and len(expanded_paths) > max_files_per_type
+                ):
+                    print(
+                        f"Limiting {module_name}.{output_type} from {len(expanded_paths)} to {max_files_per_type} files"
+                    )
+                    expanded_paths = expanded_paths[:max_files_per_type]
+
                 outputs[module_name][output_type].extend(expanded_paths)
+
+                # Create files if requested
+                if create_files:
+                    file_count = 0
+                    for path in expanded_paths:
+                        create_dummy_file(path, base_path)
+                        file_count += 1
+                        # Log progress for large file sets
+                        if file_count % 100 == 0:
+                            print(
+                                f"Created {file_count}/{len(expanded_paths)} files for {module_name}.{output_type}"
+                            )
+
+                    if file_count > 0:
+                        print(
+                            f"Created {file_count} dummy files for {module_name}.{output_type}"
+                        )
 
     return outputs
 
@@ -274,7 +324,7 @@ def output_summary(outputs: Dict[str, Dict[str, List[str]]]) -> None:
 def main():
     """Main function."""
     parser = argparse.ArgumentParser(
-        description="Generate all pipeline output paths from minimal parameters"
+        description="Generate all pipeline output paths and optionally create dummy files"
     )
 
     # Required parameters
@@ -369,13 +419,27 @@ def main():
         "--metadata-dir", default="metadata", help="Directory containing metadata files"
     )
     parser.add_argument(
-        "--raw-image-template", default="image", help="Template for raw image filenames"
+        "--raw-image-template", default="IMAGE", help="Template for raw image filenames"
     )
     parser.add_argument(
         "--channel-number",
         type=int,
         default=1,
         help="Channel number for overlay images",
+    )
+
+    # File creation options
+    parser.add_argument(
+        "--create-files", action="store_true", help="Create dummy files for all paths"
+    )
+    parser.add_argument(
+        "--max-files-per-type",
+        type=int,
+        help="Limit number of files per output type (to avoid creating too many files)",
+    )
+    parser.add_argument(
+        "--base-path",
+        help="Base directory where files will be created (default: current directory)",
     )
 
     # Output control
@@ -415,6 +479,9 @@ def main():
         channel_number=args.channel_number,
         size=args.size,
         final_tile_size=args.final_tile_size,
+        create_files=args.create_files,
+        max_files_per_type=args.max_files_per_type,
+        base_path=args.base_path,
     )
 
     # Output results

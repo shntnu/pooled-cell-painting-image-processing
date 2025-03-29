@@ -549,30 +549,30 @@
         "outputs": {
             "segmentation_masks": {
                 "patterns": [
-                    "{batch}/workspace/analysis/{plate}-{well}-{site}/segmentation_masks/Plate_{plate}_Well_{well}_Site_{site}_{object_type}_Objects.tiff"
+                    "workspace/analysis/{plate}-{well}-{site}/segmentation_masks/Plate_{plate}_Well_{well}_Site_{site}_{object_type}_Objects.tiff"
                 ]
             },
             "overlay_images": {
                 "patterns": [
-                    "{batch}/workspace/analysis/{plate}-{well}-{site}/Plate_{plate}_Well_{well}_Site_{site}_Corr{cp_channel}_Overlay.png",
-                    "{batch}/workspace/analysis/{plate}-{well}-{site}/Plate_{plate}_Well_{well}_Site_{site}_Corr{cp_channel}_SpotOverlay.png"
+                    "workspace/analysis/{plate}-{well}-{site}/Plate_{plate}_Well_{well}_Site_{site}_Corr{cp_channel}_Overlay.png",
+                    "workspace/analysis/{plate}-{well}-{site}/Plate_{plate}_Well_{well}_Site_{site}_Corr{cp_channel}_SpotOverlay.png"
                 ]
             },
             "csvs": {
                 "patterns": [
-                    "{batch}/workspace/analysis/{plate}-{well}-{site}/BarcodeFoci.csv",
-                    "{batch}/workspace/analysis/{plate}-{well}-{site}/Cells.csv",
-                    "{batch}/workspace/analysis/{plate}-{well}-{site}/ConfluentRegions.csv",
-                    "{batch}/workspace/analysis/{plate}-{well}-{site}/Cytoplasm.csv",
-                    "{batch}/workspace/analysis/{plate}-{well}-{site}/Experiment.csv",
-                    "{batch}/workspace/analysis/{plate}-{well}-{site}/Foci.csv",
-                    "{batch}/workspace/analysis/{plate}-{well}-{site}/Foci_NonCellEdge.csv",
-                    "{batch}/workspace/analysis/{plate}-{well}-{site}/Foci_PreMask.csv",
-                    "{batch}/workspace/analysis/{plate}-{well}-{site}/Image.csv",
-                    "{batch}/workspace/analysis/{plate}-{well}-{site}/Nuclei.csv",
-                    "{batch}/workspace/analysis/{plate}-{well}-{site}/PreCells.csv",
-                    "{batch}/workspace/analysis/{plate}-{well}-{site}/RelateObjects.csv",
-                    "{batch}/workspace/analysis/{plate}-{well}-{site}/Resize_Foci.csv"
+                    "workspace/analysis/{plate}-{well}-{site}/BarcodeFoci.csv",
+                    "workspace/analysis/{plate}-{well}-{site}/Cells.csv",
+                    "workspace/analysis/{plate}-{well}-{site}/ConfluentRegions.csv",
+                    "workspace/analysis/{plate}-{well}-{site}/Cytoplasm.csv",
+                    "workspace/analysis/{plate}-{well}-{site}/Experiment.csv",
+                    "workspace/analysis/{plate}-{well}-{site}/Foci.csv",
+                    "workspace/analysis/{plate}-{well}-{site}/Foci_NonCellEdge.csv",
+                    "workspace/analysis/{plate}-{well}-{site}/Foci_PreMask.csv",
+                    "workspace/analysis/{plate}-{well}-{site}/Image.csv",
+                    "workspace/analysis/{plate}-{well}-{site}/Nuclei.csv",
+                    "workspace/analysis/{plate}-{well}-{site}/PreCells.csv",
+                    "workspace/analysis/{plate}-{well}-{site}/RelateObjects.csv",
+                    "workspace/analysis/{plate}-{well}-{site}/Resize_Foci.csv"
                 ]
             }
         },
