@@ -3,26 +3,22 @@
         "batch": {
             "type": "string",
             "description": "Batch identifier",
-            "example": "Batch1",
-            "required": true
+            "example": "Batch1"
         },
         "plate": {
             "type": "string",
             "description": "Plate identifier",
-            "example": "Plate1",
-            "required": true
+            "example": "Plate1"
         },
         "well": {
             "type": "string",
             "pattern": "[A-H]\\d{2}",
-            "example": "A01",
-            "required": true
+            "example": "A01"
         },
         "site": {
             "type": "integer",
             "min": 1,
-            "example": 1,
-            "required": true
+            "example": 1
         },
         "channel": {
             "type": "string",
@@ -37,20 +33,17 @@
                 "C",
                 "G",
                 "T"
-            ],
-            "required": true
+            ]
         },
         "cycle": {
             "type": "integer",
             "min": 1,
-            "example": 1,
-            "required": true
+            "example": 1
         },
         "tile_number": {
             "type": "integer",
             "min": 1,
-            "example": 1,
-            "required": true
+            "example": 1
         },
         "object_type": {
             "type": "string",
