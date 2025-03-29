@@ -117,7 +117,7 @@
                 {
                     "pipeline": "7_BC_Preprocess",
                     "input_output_mapping": {
-                        "inputs.images_corrected": "outputs.processed_images"
+                        "inputs.images_corrected": "outputs.images_corrected"
                     }
                 }
             ]
@@ -127,13 +127,13 @@
                 {
                     "pipeline": "4_CP_Stitching",
                     "input_output_mapping": {
-                        "inputs.cp_tiles": "outputs.cropped_tiles"
+                        "inputs.cp_cropped_tiles": "outputs.cropped_tiles"
                     }
                 },
                 {
                     "pipeline": "8_BC_Stitching",
                     "input_output_mapping": {
-                        "inputs.bc_tiles": "outputs.cropped_tiles"
+                        "inputs.bc_cropped_tiles": "outputs.cropped_tiles"
                     }
                 }
             ]
@@ -446,7 +446,7 @@
             }
         },
         "outputs": {
-            "processed_images": {
+            "images_corrected": {
                 "patterns": [
                     "{batch}/images_corrected/barcoding/{plate}-{well}-{site}/Plate_{plate}_Well_{well}_Site_{site}_Cycle{cycle}_{channel}.tiff"
                 ]
@@ -536,12 +536,12 @@
     },
     "9_Analysis": {
         "inputs": {
-            "cp_tiles": {
+            "cp_cropped_tiles": {
                 "patterns": [
                     "{batch}/images_corrected_cropped/cellpainting/{plate}/{plate}_{well}/{channel}/{channel}_Site_{tile_number}.tiff"
                 ]
             },
-            "bc_tiles": {
+            "bc_cropped_tiles": {
                 "patterns": [
                     "{batch}/images_corrected_cropped/barcoding/{plate}/{plate}_{well}/{channel}/Cycle{cycle}_{channel}_Site_{tile_number}.tiff"
                 ]
@@ -584,20 +584,20 @@
         "load_data_csv_fields": [
             {
                 "name": "FileName_{channel}",
-                "source": "inputs.cp_tiles.filename"
+                "source": "inputs.cp_cropped_tiles.filename"
             },
             {
                 "name": "PathName_{channel}",
-                "source": "inputs.cp_tiles.path"
+                "source": "inputs.cp_cropped_tiles.path"
             },
             {
                 "name": "FileName_Cycle{cycle}_{channel}",
-                "source": "inputs.bc_tiles.filename",
+                "source": "inputs.bc_cropped_tiles.filename",
                 "condition": "cycle>0"
             },
             {
                 "name": "PathName_Cycle{cycle}_{channel}",
-                "source": "inputs.bc_tiles.path",
+                "source": "inputs.bc_cropped_tiles.path",
                 "condition": "cycle>0"
             },
             {
