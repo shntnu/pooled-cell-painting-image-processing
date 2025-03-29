@@ -148,7 +148,9 @@
         },
         "load_data_csv_config": {
             "grouping_keys": [
-                "plate"
+                "plate",
+                "well",
+                "site"
             ],
             "fields": [
                 {
@@ -201,7 +203,9 @@
         },
         "load_data_csv_config": {
             "grouping_keys": [
-                "plate"
+                "plate",
+                "well",
+                "site"
             ],
             "fields": [
                 {
@@ -260,7 +264,9 @@
         },
         "load_data_csv_config": {
             "grouping_keys": [
-                "plate"
+                "plate",
+                "well",
+                "site"
             ],
             "fields": [
                 {
@@ -353,7 +359,10 @@
         },
         "load_data_csv_config": {
             "grouping_keys": [
-                "plate"
+                "plate",
+                "well",
+                "site",
+                "cycle"
             ],
             "fields": [
                 {
@@ -407,7 +416,9 @@
         },
         "load_data_csv_config": {
             "grouping_keys": [
-                "plate"
+                "plate",
+                "well",
+                "site"
             ],
             "fields": [
                 {
@@ -468,7 +479,9 @@
         },
         "load_data_csv_config": {
             "grouping_keys": [
-                "plate"
+                "plate",
+                "well",
+                "site"
             ],
             "fields": [
                 {
@@ -585,7 +598,9 @@
         },
         "load_data_csv_config": {
             "grouping_keys": [
-                "plate"
+                "plate",
+                "well",
+                "site"
             ],
             "fields": [
                 {
