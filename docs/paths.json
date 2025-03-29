@@ -86,11 +86,11 @@
       "Batch1/images_corrected_stitched/cellpainting/Plate1/Plate1_A01/StitchedBottomRightWGA.tiff"
     ],
     "cropped_tiles": [
-      "Batch1/images_corrected_cropped/cellpainting/Plate1/Plate1_A01/DNA/Corr_DNA/Corr_DNA_Site_1.tiff",
-      "Batch1/images_corrected_cropped/cellpainting/Plate1/Plate1_A01/Phalloidin/Corr_Phalloidin/Corr_Phalloidin_Site_1.tiff",
-      "Batch1/images_corrected_cropped/cellpainting/Plate1/Plate1_A01/Mito/Corr_Mito/Corr_Mito_Site_1.tiff",
-      "Batch1/images_corrected_cropped/cellpainting/Plate1/Plate1_A01/ER/Corr_ER/Corr_ER_Site_1.tiff",
-      "Batch1/images_corrected_cropped/cellpainting/Plate1/Plate1_A01/WGA/Corr_WGA/Corr_WGA_Site_1.tiff"
+      "Batch1/images_corrected_cropped/cellpainting/Plate1/Plate1_A01/Corr_DNA/Corr_DNA_Site_1.tiff",
+      "Batch1/images_corrected_cropped/cellpainting/Plate1/Plate1_A01/Corr_Phalloidin/Corr_Phalloidin_Site_1.tiff",
+      "Batch1/images_corrected_cropped/cellpainting/Plate1/Plate1_A01/Corr_Mito/Corr_Mito_Site_1.tiff",
+      "Batch1/images_corrected_cropped/cellpainting/Plate1/Plate1_A01/Corr_ER/Corr_ER_Site_1.tiff",
+      "Batch1/images_corrected_cropped/cellpainting/Plate1/Plate1_A01/Corr_WGA/Corr_WGA_Site_1.tiff"
     ],
     "previews": [
       "Batch1/images_corrected_stitched_10X/cellpainting/Plate1/Plate1_A01/StitchedDNA.tiff",
