@@ -254,7 +254,7 @@
             },
             "cropped_tiles": {
                 "patterns": [
-                    "{batch}/images_corrected_cropped/cellpainting/{plate}/{plate}_{well}/{channel}/{channel}_Site_{tile_number}.tiff"
+                    "{batch}/images_corrected_cropped/cellpainting/{plate}/{plate}_{well}/{channel}/Corr_{channel}/Corr_{channel}_Site_{tile_number}.tiff"
                 ]
             },
             "previews": {
@@ -440,7 +440,7 @@
             },
             "cropped_tiles": {
                 "patterns": [
-                    "{batch}/images_corrected_cropped/barcoding/{plate}/{plate}_{well}/{channel}/Cycle{cycle}_{channel}_Site_{tile_number}.tiff"
+                    "{batch}/images_corrected_cropped/barcoding/{plate}/{plate}_{well}/Cycle{cycle}_{channel}/Cycle{cycle}_{channel}_Site_{tile_number}.tiff"
                 ]
             },
             "previews": {
@@ -467,12 +467,13 @@
         "outputs": {
             "segmentation_masks": {
                 "patterns": [
-                    "{batch}/workspace/analysis/{plate}-{well}-{site}/segmentation_masks/{plate}_{well}_Site_{site}_{object_type}_Objects.tiff"
+                    "{batch}/workspace/analysis/{plate}-{well}-{site}/segmentation_masks/Plate_{plate}_Well_{well}_Site_{site}_{object_type}_Objects.tiff"
                 ]
             },
             "overlay_images": {
                 "patterns": [
-                    "{batch}/workspace/analysis/{plate}-{well}-{site}/CorrCh{channel_number}_Site_{site}_Overlay.png"
+                    "{batch}/workspace/analysis/{plate}-{well}-{site}/Plate_{plate}_Well_{well}_Site_{site}_Corr{channel}_Overlay.png",
+                    "{batch}/workspace/analysis/{plate}-{well}-{site}/Plate_{plate}_Well_{well}_Site_{site}_Corr{channel}_SpotOverlay.png"
                 ]
             },
             "csvs": {
