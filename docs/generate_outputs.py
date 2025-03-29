@@ -2,10 +2,9 @@
 
 import argparse
 import json
-import os
 import re
 import itertools
-from typing import List, Dict, Any, Optional, Union, Set
+from typing import List, Dict, Any, Optional, Set
 
 
 def load_json(json_path: str) -> Dict:
