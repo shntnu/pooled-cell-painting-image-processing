@@ -28,6 +28,11 @@ This document outlines requirements for a next-generation system for processing,
 
 Note: This section has been intentionally over-specified to capture everything but should be pruned as needed
 
+TODO: 
+- Beth and Erin should clarify which of these should ALWAYS be manually specified or should some be guessed
+- For example `barcoding_imperwell` can be guessed but say `painting_rows`, `painting_columns` cannot be guessed and in the current system there's an if/then block that specifies the values of `painting_rows`, `painting_columns` based on `barcoding_imperwell`
+- Which should be guessed, which should be specified? 
+
 - 🔵 ⭐⭐⭐: **Must support all image grid configuration parameters**:
   - `painting_rows`, `painting_columns`: For square acquisition patterns
   - `painting_imperwell`: For circular acquisition patterns (overrides rows/columns)
@@ -63,13 +68,11 @@ Note: This section has been intentionally over-specified to capture everything b
   - Must allow gradual transition from manual to automated processing as confidence in automated methods increases
 
 - 🟡 ⭐⭐⭐: **Must enable manual intervention at any stage** with the ability to:
-  - Pause/resume pipeline execution
+  - Restart pipeline from checkpoint
   - Inspect intermediate results before proceeding
   - Modify parameters between stages
   - Re-run specific stages with adjusted settings
   - Launch inspection notebooks
-
-- 🟡 ⭐⭐: **Must enable resuming from interruptions**.
 
 ### 2.4 Compute Resource Management
 
