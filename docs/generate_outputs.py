@@ -179,10 +179,22 @@ def generate_all_outputs(
     )
 
     # 3. Extract channel information from schema
-    cp_channels = list(schema["channels"]["cp"]["microscope_mapping"].values())
-    bc_channels = list(schema["channels"]["bc"]["microscope_mapping"].values())
-    cp_microscope_channels = list(schema["channels"]["cp"]["microscope_mapping"].keys())
-    bc_microscope_channels = list(schema["channels"]["bc"]["microscope_mapping"].keys())
+    cp_channels = list(
+        schema["metadata_schema"]["channel_mapping"]["cp"][
+            "microscope_mapping"
+        ].values()
+    )
+    bc_channels = list(
+        schema["metadata_schema"]["channel_mapping"]["bc"][
+            "microscope_mapping"
+        ].values()
+    )
+    cp_microscope_channels = list(
+        schema["metadata_schema"]["channel_mapping"]["cp"]["microscope_mapping"].keys()
+    )
+    bc_microscope_channels = list(
+        schema["metadata_schema"]["channel_mapping"]["bc"]["microscope_mapping"].keys()
+    )
 
     # 4. Generate tiles list
     tiles_list = get_tiles(tileperside)

@@ -22,23 +22,63 @@
         },
         "cp_channel": {
             "type": "string",
-            "enum_ref": "channels.cp.microscope_mapping.values",
-            "description": "Standardized Cell Painting channel name (e.g., DNA, Phalloidin)"
+            "enum": [
+                "DNA",
+                "Phalloidin",
+                "Mito",
+                "ER",
+                "WGA"
+            ]
         },
         "bc_channel": {
             "type": "string",
-            "enum_ref": "channels.bc.microscope_mapping.values",
-            "description": "Standardized Barcoding channel name (e.g., DAPI, A, C, G, T)"
+            "enum": [
+                "DAPI",
+                "A",
+                "C",
+                "G",
+                "T"
+            ]
         },
         "cp_microscope_channel": {
             "type": "string",
-            "enum_ref": "channels.cp.microscope_mapping.keys",
-            "description": "Raw microscope channel name for Cell Painting images (e.g., w1, w2)"
+            "enum": [
+                "w1",
+                "w2",
+                "w3",
+                "w4",
+                "w5"
+            ]
         },
         "bc_microscope_channel": {
             "type": "string",
-            "enum_ref": "channels.bc.microscope_mapping.keys",
-            "description": "Raw microscope channel name for Barcoding images (e.g., w1, w2)"
+            "enum": [
+                "w1",
+                "w2",
+                "w3",
+                "w4",
+                "w5"
+            ]
+        },
+        "channel_mapping": {
+            "cp": {
+                "microscope_mapping": {
+                    "w1": "DNA",
+                    "w2": "Phalloidin",
+                    "w3": "Mito",
+                    "w4": "ER",
+                    "w5": "WGA"
+                }
+            },
+            "bc": {
+                "microscope_mapping": {
+                    "w1": "DAPI",
+                    "w2": "A",
+                    "w3": "C",
+                    "w4": "G",
+                    "w5": "T"
+                }
+            }
         },
         "cycle": {
             "type": "integer",
@@ -57,66 +97,6 @@
                 "Cells",
                 "Cytoplasm"
             ]
-        }
-    },
-    "channels_schema": {
-        "cp_channel": {
-            "type": "string",
-            "enum_ref": "channels.cp.standard_names",
-            "description": "Standardized Cell Painting channel name (e.g., DNA, Phalloidin)"
-        },
-        "bc_channel": {
-            "type": "string",
-            "enum_ref": "channels.bc.standard_names",
-            "description": "Standardized Barcoding channel name (e.g., DAPI, A, C, G, T)"
-        },
-        "cp_microscope_channel": {
-            "type": "string",
-            "enum_ref": "channels.cp.microscope_mapping.keys",
-            "description": "Raw microscope channel name for Cell Painting images (e.g., w1, w2)"
-        },
-        "bc_microscope_channel": {
-            "type": "string",
-            "enum_ref": "channels.bc.microscope_mapping.keys",
-            "description": "Raw microscope channel name for Barcoding images (e.g., w1, w2)"
-        }
-    },
-    "channels": {
-        "cp": {
-            "microscope_mapping": {
-                "w1": "DNA",
-                "w2": "Phalloidin",
-                "w3": "Mito",
-                "w4": "ER",
-                "w5": "WGA"
-            }
-        },
-        "bc": {
-            "microscope_mapping": {
-                "w1": "DAPI",
-                "w2": "A",
-                "w3": "C",
-                "w4": "G",
-                "w5": "T"
-            }
-        }
-    },
-    "transformation_config": {
-        "description": "Configuration for channel name transformations between microscope and pipeline representations",
-        "application_stage": "file_reading",
-        "automatic_transformations": {
-            "input_sources": {
-                "0_Microscope.outputs.cp_images": {
-                    "type": "map_names",
-                    "mapping": "channels.cp.microscope_mapping",
-                    "direction": "microscope_to_standard"
-                },
-                "0_Microscope.outputs.bc_images": {
-                    "type": "map_names",
-                    "mapping": "channels.bc.microscope_mapping",
-                    "direction": "microscope_to_standard"
-                }
-            }
         }
     },
     "0_Microscope": {
