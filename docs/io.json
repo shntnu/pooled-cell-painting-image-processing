@@ -1,13 +1,103 @@
 {
+    "metadata_schema": {
+        "batch": {
+            "type": "string",
+            "description": "Batch identifier",
+            "example": "Batch1",
+            "required": true
+        },
+        "plate": {
+            "type": "string",
+            "description": "Plate identifier",
+            "example": "Plate1",
+            "required": true
+        },
+        "well": {
+            "type": "string",
+            "pattern": "[A-H]\\d{2}",
+            "example": "A01",
+            "required": true
+        },
+        "site": {
+            "type": "integer",
+            "min": 1,
+            "example": 1,
+            "required": true
+        },
+        "channel": {
+            "type": "string",
+            "enum": [
+                "DNA",
+                "DAPI",
+                "Phalloidin",
+                "Mito",
+                "ER",
+                "WGA",
+                "A",
+                "C",
+                "G",
+                "T"
+            ],
+            "required": true
+        },
+        "cycle": {
+            "type": "integer",
+            "min": 1,
+            "example": 1,
+            "required": true
+        },
+        "tile_number": {
+            "type": "integer",
+            "min": 1,
+            "example": 1,
+            "required": true
+        },
+        "object_type": {
+            "type": "string",
+            "enum": [
+                "Nuclei",
+                "Cells",
+                "Cytoplasm"
+            ]
+        }
+    },
+    "pipeline_dependencies": {
+        "2_CP_Apply_Illum": [
+            "1_CP_Illum"
+        ],
+        "3_CP_SegmentCheck": [
+            "2_CP_Apply_Illum"
+        ],
+        "4_CP_Stitching": [
+            "2_CP_Apply_Illum"
+        ],
+        "6_BC_Apply_Illum": [
+            "5_BC_Illum"
+        ],
+        "7_BC_Preprocess": [
+            "6_BC_Apply_Illum"
+        ],
+        "8_BC_Stitching": [
+            "7_BC_Preprocess"
+        ],
+        "9_Analysis": [
+            "4_CP_Stitching",
+            "8_BC_Stitching"
+        ]
+    },
     "1_CP_Illum": {
         "inputs": {
             "images": {
-                "pattern": "{batch}/images/{plate}/20x_CP_{plate}/{raw_image_template}_{well}_{site}_{channel}.tiff"
+                "patterns": [
+                    "{batch}/images/{plate}/20x_CP_{plate}/{raw_image_template}_{well}_{site}_{channel}.tiff"
+                ]
             }
         },
         "outputs": {
             "illum_functions": {
-                "pattern": "{batch}/illum/{plate}/{plate}_Illum{channel}.npy"
+                "patterns": [
+                    "{batch}/illum/{plate}/{plate}_Illum{channel}.npy"
+                ]
             }
         },
         "load_data_csv_fields": [
@@ -36,15 +126,21 @@
     "2_CP_Apply_Illum": {
         "inputs": {
             "images": {
-                "pattern": "{batch}/images/{plate}/20x_CP_{plate}/{raw_image_template}_{well}_{site}_{channel}.tiff"
+                "patterns": [
+                    "{batch}/images/{plate}/20x_CP_{plate}/{raw_image_template}_{well}_{site}_{channel}.tiff"
+                ]
             },
             "illum_functions": {
-                "pattern": "{batch}/illum/{plate}/{plate}_Illum{channel}.npy"
+                "patterns": [
+                    "{batch}/illum/{plate}/{plate}_Illum{channel}.npy"
+                ]
             }
         },
         "outputs": {
             "corrected_images": {
-                "pattern": "{batch}/images_corrected/painting/{plate}-{well}/Plate_{plate}_Well_{well}_Site_{site}_Corr{channel}.tiff"
+                "patterns": [
+                    "{batch}/images_corrected/painting/{plate}-{well}/Plate_{plate}_Well_{well}_Site_{site}_Corr{channel}.tiff"
+                ]
             },
             "csvs": {
                 "patterns": [
@@ -90,12 +186,16 @@
     "3_CP_SegmentCheck": {
         "inputs": {
             "corrected_images": {
-                "pattern": "{batch}/images_corrected/painting/{plate}-{well}/Plate_{plate}_Well_{well}_Site_{site}_Corr{channel}.tiff"
+                "patterns": [
+                    "{batch}/images_corrected/painting/{plate}-{well}/Plate_{plate}_Well_{well}_Site_{site}_Corr{channel}.tiff"
+                ]
             }
         },
         "outputs": {
             "overlay_images": {
-                "pattern": "{batch}/images_segmentation/{plate}/Plate_{plate}_Well_{well}_Site_{site}_Corr{channel}_SegmentCheck.png"
+                "patterns": [
+                    "{batch}/images_segmentation/{plate}/Plate_{plate}_Well_{well}_Site_{site}_Corr{channel}_SegmentCheck.png"
+                ]
             },
             "csvs": {
                 "patterns": [
@@ -131,7 +231,11 @@
             }
         ],
         "special_params": {
-            "range_skip": "Skip factor for selecting subset of images"
+            "range_skip": {
+                "description": "Skip factor for selecting subset of images",
+                "type": "integer",
+                "default": 10
+            }
         }
     },
     "4_CP_Stitching": {
@@ -153,7 +257,9 @@
         },
         "inputs": {
             "corrected_images": {
-                "pattern": "{batch}/images_corrected/painting/{plate}-{well}/Plate_{plate}_Well_{well}_Site_{site}_Corr{channel}.tiff"
+                "patterns": [
+                    "{batch}/images_corrected/painting/{plate}-{well}/Plate_{plate}_Well_{well}_Site_{site}_Corr{channel}.tiff"
+                ]
             }
         },
         "outputs": {
@@ -167,22 +273,30 @@
                 ]
             },
             "cropped_tiles": {
-                "pattern": "{batch}/images_corrected_cropped/cellpainting/{plate}/{plate}_{well}/{channel}/{channel}_Site_{tile_number}.tiff"
+                "patterns": [
+                    "{batch}/images_corrected_cropped/cellpainting/{plate}/{plate}_{well}/{channel}/{channel}_Site_{tile_number}.tiff"
+                ]
             },
             "previews": {
-                "pattern": "{batch}/images_corrected_stitched_10X/cellpainting/{plate}/{plate}_{well}/"
+                "patterns": [
+                    "{batch}/images_corrected_stitched_10X/cellpainting/{plate}/{plate}_{well}/"
+                ]
             }
         }
     },
     "5_BC_Illum": {
         "inputs": {
             "images": {
-                "pattern": "{batch}/images/{plate}/20x_SBS_{cycle}/{raw_image_template}_{well}_{site}_{channel}.tiff"
+                "patterns": [
+                    "{batch}/images/{plate}/20x_SBS_{cycle}/{raw_image_template}_{well}_{site}_{channel}.tiff"
+                ]
             }
         },
         "outputs": {
             "illum_functions": {
-                "pattern": "{batch}/illum/{plate}/{plate}_Cycle{cycle}_Illum{channel}.npy"
+                "patterns": [
+                    "{batch}/illum/{plate}/{plate}_Cycle{cycle}_Illum{channel}.npy"
+                ]
             }
         },
         "load_data_csv_fields": [
@@ -215,15 +329,21 @@
     "6_BC_Apply_Illum": {
         "inputs": {
             "images": {
-                "pattern": "{batch}/images/{plate}/20x_SBS_{cycle}/{raw_image_template}_{well}_{site}_{channel}.tiff"
+                "patterns": [
+                    "{batch}/images/{plate}/20x_SBS_{cycle}/{raw_image_template}_{well}_{site}_{channel}.tiff"
+                ]
             },
             "illum_functions": {
-                "pattern": "{batch}/illum/{plate}/{plate}_Cycle{cycle}_Illum{channel}.npy"
+                "patterns": [
+                    "{batch}/illum/{plate}/{plate}_Cycle{cycle}_Illum{channel}.npy"
+                ]
             }
         },
         "outputs": {
             "aligned_images": {
-                "pattern": "{batch}/images_aligned/barcoding/{plate}-{well}-{site}/Plate_{plate}_Well_{well}_Site_{site}_Cycle{cycle}_{channel}.tiff"
+                "patterns": [
+                    "{batch}/images_aligned/barcoding/{plate}-{well}-{site}/Plate_{plate}_Well_{well}_Site_{site}_Cycle{cycle}_{channel}.tiff"
+                ]
             },
             "csvs": {
                 "patterns": [
@@ -266,15 +386,21 @@
     "7_BC_Preprocess": {
         "inputs": {
             "aligned_images": {
-                "pattern": "{batch}/images_aligned/barcoding/{plate}-{well}-{site}/Plate_{plate}_Well_{well}_Site_{site}_Cycle{cycle}_{channel}.tiff"
+                "patterns": [
+                    "{batch}/images_aligned/barcoding/{plate}-{well}-{site}/Plate_{plate}_Well_{well}_Site_{site}_Cycle{cycle}_{channel}.tiff"
+                ]
             }
         },
         "outputs": {
             "processed_images": {
-                "pattern": "{batch}/images_corrected/barcoding/{plate}-{well}-{site}/Plate_{plate}_Well_{well}_Site_{site}_Cycle{cycle}_{channel}.tiff"
+                "patterns": [
+                    "{batch}/images_corrected/barcoding/{plate}-{well}-{site}/Plate_{plate}_Well_{well}_Site_{site}_Cycle{cycle}_{channel}.tiff"
+                ]
             },
             "overlay_images": {
-                "pattern": "{batch}/images_corrected/barcoding/{plate}-{well}-{site}/Plate_{plate}_Well_{well}_Site_{site}_Max_Overlay.png"
+                "patterns": [
+                    "{batch}/images_corrected/barcoding/{plate}-{well}-{site}/Plate_{plate}_Well_{well}_Site_{site}_Max_Overlay.png"
+                ]
             },
             "csvs": {
                 "patterns": [
@@ -326,8 +452,10 @@
             "scalingstring": "1.99"
         },
         "inputs": {
-            "aligned_images": {
-                "pattern": "{batch}/images_aligned/barcoding/{plate}-{well}-{site}/Plate_{plate}_Well_{well}_Site_{site}_Cycle{cycle}_{channel}.tiff"
+            "images_corrected": {
+                "patterns": [
+                    "{batch}/images_corrected/barcoding/{plate}-{well}-{site}/Plate_{plate}_Well_{well}_Site_{site}_Cycle{cycle}_{channel}.tiff"
+                ]
             }
         },
         "outputs": {
@@ -341,31 +469,45 @@
                 ]
             },
             "cropped_tiles": {
-                "pattern": "{batch}/images_corrected_cropped/barcoding/{plate}/{plate}_{well}/{channel}/Cycle{cycle}_{channel}_Site_{tile_number}.tiff"
+                "patterns": [
+                    "{batch}/images_corrected_cropped/barcoding/{plate}/{plate}_{well}/{channel}/Cycle{cycle}_{channel}_Site_{tile_number}.tiff"
+                ]
             },
             "previews": {
-                "pattern": "{batch}/images_corrected_stitched_10X/barcoding/{plate}/{plate}_{well}/"
+                "patterns": [
+                    "{batch}/images_corrected_stitched_10X/barcoding/{plate}/{plate}_{well}/"
+                ]
             }
         }
     },
     "9_Analysis": {
         "inputs": {
             "cp_tiles": {
-                "pattern": "{batch}/images_corrected_cropped/cellpainting/{plate}/{plate}_{well}/{channel}/{channel}_Site_{tile_number}.tiff"
+                "patterns": [
+                    "{batch}/images_corrected_cropped/cellpainting/{plate}/{plate}_{well}/{channel}/{channel}_Site_{tile_number}.tiff"
+                ]
             },
             "bc_tiles": {
-                "pattern": "{batch}/images_corrected_cropped/barcoding/{plate}/{plate}_{well}/{channel}/Cycle{cycle}_{channel}_Site_{tile_number}.tiff"
+                "patterns": [
+                    "{batch}/images_corrected_cropped/barcoding/{plate}/{plate}_{well}/{channel}/Cycle{cycle}_{channel}_Site_{tile_number}.tiff"
+                ]
             },
             "barcodes_file": {
-                "pattern": "{metadata_dir}/Barcodes.csv"
+                "patterns": [
+                    "{metadata_dir}/Barcodes.csv"
+                ]
             }
         },
         "outputs": {
             "segmentation_masks": {
-                "pattern": "{batch}/workspace/analysis/{plate}-{well}-{site}/segmentation_masks/{plate}_{well}_Site_{site}_{object_type}_Objects.tiff"
+                "patterns": [
+                    "{batch}/workspace/analysis/{plate}-{well}-{site}/segmentation_masks/{plate}_{well}_Site_{site}_{object_type}_Objects.tiff"
+                ]
             },
             "overlay_images": {
-                "pattern": "{batch}/workspace/analysis/{plate}-{well}-{site}/CorrCh{channel_number}_Site_{site}_Overlay.png"
+                "patterns": [
+                    "{batch}/workspace/analysis/{plate}-{well}-{site}/CorrCh{channel_number}_Site_{site}_Overlay.png"
+                ]
             },
             "csvs": {
                 "patterns": [
