@@ -188,9 +188,7 @@
     "1_CP_Illum": {
         "inputs": {
             "images": {
-                "patterns": [
-                    "{batch}/images/{plate}/20x_CP_{plate}/{raw_image_template}_{well}_{site}_{channel}.tiff"
-                ]
+                "source": "0_Microscope.outputs.cp_images"
             }
         },
         "outputs": {
@@ -226,14 +224,10 @@
     "2_CP_Apply_Illum": {
         "inputs": {
             "images": {
-                "patterns": [
-                    "{batch}/images/{plate}/20x_CP_{plate}/{raw_image_template}_{well}_{site}_{channel}.tiff"
-                ]
+                "source": "0_Microscope.outputs.cp_images"
             },
             "illum_functions": {
-                "patterns": [
-                    "{batch}/illum/{plate}/{plate}_Illum{channel}.npy"
-                ]
+                "source": "1_CP_Illum.outputs.illum_functions"
             }
         },
         "outputs": {
@@ -286,9 +280,7 @@
     "3_CP_SegmentCheck": {
         "inputs": {
             "corrected_images": {
-                "patterns": [
-                    "{batch}/images_corrected/painting/{plate}-{well}/Plate_{plate}_Well_{well}_Site_{site}_Corr{channel}.tiff"
-                ]
+                "source": "2_CP_Apply_Illum.outputs.corrected_images"
             }
         },
         "outputs": {
@@ -357,9 +349,7 @@
         },
         "inputs": {
             "corrected_images": {
-                "patterns": [
-                    "{batch}/images_corrected/painting/{plate}-{well}/Plate_{plate}_Well_{well}_Site_{site}_Corr{channel}.tiff"
-                ]
+                "source": "2_CP_Apply_Illum.outputs.corrected_images"
             }
         },
         "outputs": {
@@ -387,9 +377,7 @@
     "5_BC_Illum": {
         "inputs": {
             "images": {
-                "patterns": [
-                    "{batch}/images/{plate}/20x_SBS_{cycle}/{raw_image_template}_{well}_{site}_{channel}.tiff"
-                ]
+                "source": "0_Microscope.outputs.bc_images"
             }
         },
         "outputs": {
@@ -429,14 +417,10 @@
     "6_BC_Apply_Illum": {
         "inputs": {
             "images": {
-                "patterns": [
-                    "{batch}/images/{plate}/20x_SBS_{cycle}/{raw_image_template}_{well}_{site}_{channel}.tiff"
-                ]
+                "source": "0_Microscope.outputs.bc_images"
             },
             "illum_functions": {
-                "patterns": [
-                    "{batch}/illum/{plate}/{plate}_Cycle{cycle}_Illum{channel}.npy"
-                ]
+                "source": "5_BC_Illum.outputs.illum_functions"
             }
         },
         "outputs": {
@@ -486,9 +470,7 @@
     "7_BC_Preprocess": {
         "inputs": {
             "aligned_images": {
-                "patterns": [
-                    "{batch}/images_aligned/barcoding/{plate}-{well}-{site}/Plate_{plate}_Well_{well}_Site_{site}_Cycle{cycle}_{channel}.tiff"
-                ]
+                "source": "6_BC_Apply_Illum.outputs.aligned_images"
             }
         },
         "outputs": {
@@ -553,9 +535,7 @@
         },
         "inputs": {
             "images_corrected": {
-                "patterns": [
-                    "{batch}/images_corrected/barcoding/{plate}-{well}-{site}/Plate_{plate}_Well_{well}_Site_{site}_Cycle{cycle}_{channel}.tiff"
-                ]
+                "source": "7_BC_Preprocess.outputs.images_corrected"
             }
         },
         "outputs": {
@@ -583,14 +563,10 @@
     "9_Analysis": {
         "inputs": {
             "cp_cropped_tiles": {
-                "patterns": [
-                    "{batch}/images_corrected_cropped/cellpainting/{plate}/{plate}_{well}/{channel}/{channel}_Site_{tile_number}.tiff"
-                ]
+                "source": "4_CP_Stitching.outputs.cropped_tiles"
             },
             "bc_cropped_tiles": {
-                "patterns": [
-                    "{batch}/images_corrected_cropped/barcoding/{plate}/{plate}_{well}/{channel}/Cycle{cycle}_{channel}_Site_{tile_number}.tiff"
-                ]
+                "source": "8_BC_Stitching.outputs.cropped_tiles"
             },
             "barcodes_file": {
                 "patterns": [
