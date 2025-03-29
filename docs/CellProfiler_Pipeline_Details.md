@@ -340,9 +340,14 @@ The CSV files translate configuration parameters into CellProfiler-compatible fo
 - **_Orig** suffix for raw images and **_Illum** suffix for illumination files
 - **_Corr** suffix for corrected images that have had illumination applied
 
-## Cell Painting Processing Pipelines
 
-### Pipeline 1: Cell Painting Illumination Correction (1_CP_Illum.cppipe)
+## Pipeline Specifications 
+
+This section provides detailed specifications for all nine primary CellProfiler and Fiji pipelines and their specialized variants, including their purposes, Lambda function triggers, key operations, inputs/outputs, and configuration requirements for implementing the complete Pooled Cell Painting workflow.
+
+### Cell Painting
+
+#### Pipeline 1: Cell Painting Illumination Correction (1_CP_Illum.cppipe)
 
 **Purpose**: Calculate per-plate illumination correction functions for each cell painting channel
 
@@ -359,7 +364,7 @@ The CSV files translate configuration parameters into CellProfiler-compatible fo
    - Upsample correction back to original size
 3. Save correction functions as .npy files with naming convention: `{Plate}_Illum{Channel}.npy`
 
-### Pipeline 2: Cell Painting Illumination Application (2_CP_Apply_Illum.cppipe)
+#### Pipeline 2: Cell Painting Illumination Application (2_CP_Apply_Illum.cppipe)
 
 **Purpose**: Apply illumination correction and segment cells for quality control
 
@@ -379,7 +384,7 @@ The CSV files translate configuration parameters into CellProfiler-compatible fo
 **Configuration Details**:
 - Segmentation thresholds are automatically calculated and stored for Pipeline 3
 
-### Pipeline 3: Cell Painting Segmentation Check (3_CP_SegmentationCheck.cppipe)
+#### Pipeline 3: Cell Painting Segmentation Check (3_CP_SegmentationCheck.cppipe)
 
 **Purpose**: Verify segmentation quality on a subset of images
 
@@ -398,7 +403,7 @@ The CSV files translate configuration parameters into CellProfiler-compatible fo
 - Uses `range_skip` parameter to process only a subset of images
 - Lambda reads segmentation thresholds from Pipeline 2 output
 
-### Pipeline 4: Cell Painting Stitching and Cropping
+#### Pipeline 4: Cell Painting Stitching and Cropping
 
 **Purpose**: Stitch field-of-view images into whole-well montages and create manageable tiles
 
@@ -413,9 +418,9 @@ The CSV files translate configuration parameters into CellProfiler-compatible fo
 3. Crop stitched image into standardized tiles
 4. Save output in tiered directory structure by batch and well
 
-## Barcoding Processing Pipelines
+### Barcoding
 
-### Pipeline 5: Barcoding Illumination Correction (5_BC_Illum.cppipe)
+#### Pipeline 5: Barcoding Illumination Correction (5_BC_Illum.cppipe)
 
 **Purpose**: Calculate illumination correction for barcoding images in each cycle
 
@@ -432,7 +437,7 @@ The CSV files translate configuration parameters into CellProfiler-compatible fo
    - Upsample back to original size
 3. Save per-cycle, per-channel, per-plate correction functions
 
-### Pipeline 6: Barcoding Illumination Application (6_BC_Apply_Illum.cppipe)
+#### Pipeline 6: Barcoding Illumination Application (6_BC_Apply_Illum.cppipe)
 
 **Purpose**: Apply illumination correction and align images across channels and cycles
 
@@ -448,7 +453,7 @@ The CSV files translate configuration parameters into CellProfiler-compatible fo
 4. Shift A, C, G, T channels by same amount as their DAPI image
 5. Save corrected and aligned images
 
-### Pipeline 7: Barcoding Preprocessing (7_BC_Preprocess.cppipe)
+#### Pipeline 7: Barcoding Preprocessing (7_BC_Preprocess.cppipe)
 
 **Purpose**: Process aligned barcoding images to identify and characterize barcode foci
 
@@ -479,7 +484,7 @@ The CSV files translate configuration parameters into CellProfiler-compatible fo
 7. Relate barcode foci to cell objects for spatial organization
 8. Create composite images for QC visualization
 
-### Pipeline 8: Barcoding Stitching and Cropping
+#### Pipeline 8: Barcoding Stitching and Cropping
 
 **Purpose**: Stitch and crop barcoding images similar to cell painting images
 
@@ -493,9 +498,9 @@ The CSV files translate configuration parameters into CellProfiler-compatible fo
 2. Stitches according to same grid layout as cell painting
 3. Produces consistent tile naming for alignment with cell painting tiles
 
-## Final Analysis Pipeline
+### Final Analysis Pipeline
 
-### Pipeline 9: Analysis (9_Analysis.cppipe)
+#### Pipeline 9: Analysis (9_Analysis.cppipe)
 
 **Purpose**: Integrate cell painting and barcoding data for downstream analysis
 
@@ -513,11 +518,11 @@ The CSV files translate configuration parameters into CellProfiler-compatible fo
 6. Call barcodes and annotate quality metrics
 7. Export segmentation masks and merged, annotated images for visualization
 
-## Special-Purpose Pipelines
+### Special-Purpose Pipelines
 
 In addition to the main pipeline sequence, there are specialized pipelines for troubleshooting:
 
-### 7A_BC_Preprocess_Troubleshooting.cppipe
+#### 7A_BC_Preprocess_Troubleshooting.cppipe
 
 **Purpose**: Specialized version of Pipeline 7 with additional diagnostics
 
@@ -531,7 +536,7 @@ In addition to the main pipeline sequence, there are specialized pipelines for t
 - May use alternative image processing parameters
 - Used when standard pipeline produces unexpected results
 
-### 6_BC_Apply_Illum_DebrisMask.cppipe
+#### 6_BC_Apply_Illum_DebrisMask.cppipe
 
 **Purpose**: Alternative version of Pipeline 6 that identifies and masks debris
 
@@ -540,7 +545,7 @@ In addition to the main pipeline sequence, there are specialized pipelines for t
 - Prevents debris from interfering with alignment
 - Used for samples with high debris content
 
-### 8Y_CheckAlignmentPostStitching
+#### 8Y_CheckAlignmentPostStitching
 
 **Purpose**: Validate alignment between stitched Cell Painting and Barcoding images
 
@@ -562,7 +567,7 @@ In addition to the main pipeline sequence, there are specialized pipelines for t
 - Creates a CSV that links corresponding tiles from both imaging modalities
 - Runs on a site-by-site basis for detailed validation
 
-### 8Z_StitchAlignedBarcoding
+#### 8Z_StitchAlignedBarcoding
 
 **Purpose**: Stitch and crop barcoding images from the aligned images directory instead of the corrected images directory
 
@@ -584,7 +589,7 @@ In addition to the main pipeline sequence, there are specialized pipelines for t
 - Supports compression of output images when configured
 - Can divide round wells into quarters for more manageable processing
 
-## Pipeline-Specific Implementation Details
+## Pipeline Configuration
 
 This section explains how CellProfiler pipelines interact with the configuration system and detailed implementation considerations for each pipeline step.
 
@@ -656,6 +661,169 @@ CellProfiler pipelines are parameterized through CSV columns that control their 
    ```
 
 This parameterization approach enables the same pipeline code to process different experimental designs based on the configuration-derived CSV input.
+
+## Pipeline Input Output Specifications
+
+### Cell Painting 
+
+#### Pipeline 1: Cell Painting Illumination Correction
+- **Input Images**: Raw Cell Painting images
+- **LoadData CSV Fields**:
+  - `FileName_Orig{Channel}`, `PathName_Orig{Channel}` (raw Cell Painting images, where Channel = DNA, Phalloidin, etc.)
+  - `Metadata_Plate`, `Metadata_Well`, `Metadata_Site`
+- **Output Files**: Per-plate illumination correction functions for each channel
+- **NPY Naming Pattern**: 
+  - `{Plate}_Illum{Channel}.npy`: Illumination function
+
+#### Pipeline 2: Cell Painting Illumination Application
+- **Input Images**: 
+  - Raw Cell Painting images
+  - Illumination correction files (`.npy`) from Pipeline 1
+- **LoadData CSV Fields**:
+  - `FileName_Orig{Channel}`, `PathName_Orig{Channel}` (raw Cell Painting images, where Channel = DNA, Phalloidin, etc.)
+  - `FileName_Illum{Channel}`, `PathName_Illum{Channel}` (corresponding illumination correction files)
+  - `Metadata_Plate`, `Metadata_Well`, `Metadata_Site`
+- **Output Files**: 
+  1. Illumination-corrected images for each channel and site
+  2. CSV files with image measurements and segmentation parameters
+- **Image Naming Pattern**: 
+  - `Plate_{Plate}_Well_{Well}_Site_{Site}_Corr{Channel}.tiff`: Illumination corrected image
+- **CSV Naming Pattern**:
+  - `PaintingIllumApplication_Image.csv`: Per-image measurements
+  - `PaintingIllumApplication_Cells.csv`: Cell segmentation parameters
+  - `PaintingIllumApplication_Nuclei.csv`: Nuclei segmentation parameters
+
+#### Pipeline 3: Cell Painting Segmentation Check
+- **Input Images**: Corrected Cell Painting images from Pipeline 2
+- **LoadData CSV Fields**: 
+  - `FileName_{Channel}`, `PathName_{Channel}` (corrected Cell Painting images, where Channel = DNA, Phalloidin, etc.)
+  - `Metadata_Plate`, `Metadata_Well`, `Metadata_Site`
+- **Output Files**: 
+  1. Quality control overlay images showing segmentation results
+  2. CSV files with segmentation verification metrics
+- **Image Naming Pattern**: 
+  - `Plate_{Plate}_Well_{Well}_Site_{Site}_Corr{Channel}_SegmentCheck.tiff`: Overlay image
+- **CSV Naming Pattern**:
+  - `SegmentationCheck_Image.csv`: QC metrics for segmentation
+  - `SegmentationCheck_Experiment.csv`: Experiment-level metrics
+
+#### Pipeline 4: Cell Painting Stitching and Cropping
+- **Input Images**: Corrected Cell Painting images from Pipeline 2
+- **FIJI Script Parameters** (instead of LoadData CSV):
+  - `input_file_location`: Path to corrected images directory
+  - `subdir`: Specific subfolder containing images to process
+  - `filterstring`: Pattern to match image files
+  - `channame`: Channel name for processing
+  - `rows`, `columns` or `imperwell`: Image grid layout
+  - `stitchorder`: Tile arrangement method
+  - `overlap_pct`: Image overlap percentage
+  - `size`: Size of individual tiles
+  - `round_or_square`: Well shape for processing
+  - `tileperside`: Number of tiles to create along each axis
+  - `final_tile_size`: Pixel dimensions for output tiles
+- **Stitched Image Naming Pattern**: `Stitched{Channel}.tiff`
+- **Cropped Image Naming Pattern**: `{Channel}_Site_{TileNumber}.tiff`
+
+### Barcoding
+
+#### Pipeline 5: Barcoding Illumination Correction
+- **Input Images**: Raw Barcoding images 
+- **LoadData CSV Fields**:
+  - `FileName_Orig{Channel}`, `PathName_Orig{Channel}` (raw barcoding images, where Channel = DNA, A, C, G, T)
+  - `Metadata_Plate`, `Metadata_Well`, `Metadata_Site`, `Metadata_SBSCycle`
+- **Output Files**: Per-plate, per-cycle illumination correction functions for each channel
+- **NPY Naming Pattern**: 
+  - `{Plate}_Cycle{K}_Illum{Channel}.npy`: Illumination function
+  
+#### Pipeline 6: Barcoding Illumination Application and Alignment
+- **Input Images**:
+  - Raw Barcoding images
+  - Illumination correction files from Pipeline 5
+- **LoadData CSV Fields**:
+  - `FileName_Cycle{K}_{Channel}`, `PathName_Cycle{K}_{Channel}` (raw barcoding images, where Channel = DNA, A, C, G, T; and K = 1...N)
+  - `FileName_Illum_Cycle{K}_{Channel}`, `PathName_Illum_Cycle{K}_{Channel}` (corresponding illumination correction files)
+  - `Metadata_Plate`, `Metadata_Well`, `Metadata_Site`
+- **Output Files**: 
+  1. Illumination-corrected and aligned images for each cycle, channel, and site
+  2. CSV files with alignment metrics
+- **Image Naming Pattern**: 
+  - `Plate_{Plate}_Well_{Well}_Site_{Site}_Cycle{K}_{Channel}.tiff`: Illumination corrected and aligned image
+- **CSV Naming Pattern**:
+  - `BarcodingIllumApplication_Image.csv`: Image measurements including alignment metrics
+
+#### Pipeline 7: Barcoding Preprocessing
+- **Input Images**: Aligned Barcoding images from Pipeline 6
+- **LoadData CSV Fields**:
+  - `FileName_Cycle{K}_{Channel}`, `PathName_Cycle{K}_{Channel}` (aligned barcoding images; where Channel = DAPI, A, C, G, T; and K = 1...N, except for DAPI where K = 1). Note that the `DNA` channel is called `DAPI` here to avoid name clash later when Cell Painting channels are brought it.
+  - `Metadata_Plate`, `Metadata_Well`, `Metadata_Site`
+- **Output Files**: 
+  1. Processed barcoding images with color compensation, background correction, etc.
+  2. CSV files with barcode calling results
+  3. Overlay images showing identified foci
+- **Image Naming Pattern**: 
+  - `Plate_{Plate}_Well_{Well}_Site_{Site}_Cycle{K}_{Channel}.tiff`: Processed image
+  - `Plate_{Plate}_Well_{Well}_Site_{Site}_Max_Overlay.png`: Overlay image
+- **CSV Files**:
+  - `BarcodePreprocessing_Foci.csv`: Barcode foci measurements
+  - `BarcodePreprocessing_Image.csv`: Image-level measurements
+  - `BarcodePreprocessing_Experiment.csv`: Summary metrics
+
+#### Pipeline 8: Barcoding Stitching and Cropping
+- **Input Images**: Processed Barcoding images from Pipeline 7
+- **FIJI Script Parameters**: Same as Pipeline 4, applied to barcoding images
+- **Output Files**: 
+  1. Stitched whole-well images
+  2. Cropped tiles from stitched images
+  3. Downsampled (10x) previews of stitched images
+- **Image Naming Pattern**: 
+  - `Stitched_Cycle{K}_{Channel}.tiff`: Stitched image
+  - `Cycle{K}_{Channel}_Site_{TileNumber}.tiff`: Cropped images
+
+### Final Analysis Pipeline
+
+#### Pipeline 9: Combined Analysis
+- **Input Images**:
+  - Cropped Cell Painting tiles from Pipeline 4
+  - Cropped Barcoding tiles from Pipeline 8
+- **LoadData CSV Fields**:
+  - `FileName_{Channel}`, `PathName_{Channel}` (cropped Cell Painting images, where Channel = DNA, Phalloidin, etc.)
+  - `FileName_Cycle{K}_{Channel}`, `PathName_Cycle{K}_{Channel}` (cropped barcoding images; where Channel = DAPI, A, C, G, T; and K = 1...N, except for DAPI where K = 1). 
+  - `Metadata_Plate`, `Metadata_Well`, `Metadata_Site`
+- **Additional Input**:
+  - `Barcodes.csv`: Contains reference barcode sequences for calling
+- **Output Files**: 
+  1. Measurement CSV files with cellular features and barcode calls
+  2. Segmentation mask images
+  3. Overlay images showing segmentation and barcode foci
+- **CSV Files**:
+  - `Analysis_Cells.csv`: Cell measurements
+  - `Analysis_Cytoplasm.csv`: Cytoplasm measurements
+  - `Analysis_Nuclei.csv`: Nuclei measurements
+  - `Analysis_Foci.csv`: Barcode foci measurements and calls
+  - `Analysis_Image.csv`: Image-level measurements
+  - `Analysis_Experiment.csv`: Experiment-level summary
+  - `Analysis_ConfluentRegions.csv`: Confluency metrics
+- **Image Naming Pattern**: 
+  - `{Plate}_{Well}_Site_{Site}_{ObjectType}_Objects.tiff`: Segmentation mask
+  - `CorrCh{ChannelNumber}_Site_{Site}_Overlay.png`: Overlay image
+
+### Special-Purpose Pipeline Outputs
+
+#### Pipeline 7A: Barcoding Preprocessing Troubleshooting
+- Similar to Pipeline 7 but with additional diagnostic outputs:
+  - `BarcodePreprocessingTroubleshoot_Foci.csv`: Enhanced foci metrics
+  - Additional overlay images with more detailed visualization
+  - Histogram plots of intensity distributions
+
+#### Pipeline 8Y: Barcoding Alignment Check
+- **Output Files**: 
+  - Alignment verification images showing overlay of Cell Painting and Barcoding channels
+  - CSV files with cross-modality alignment metrics
+- **Example**: `AlignmentCheck_Plate1_A01_Site_1.png`
+
+#### Pipeline 8Z: Stitching of Aligned Images
+- Similar to Pipeline 8 but operating on aligned images directory rather than corrected images
+- Output naming follows the same pattern as Pipeline 8
 
 ## Quality Control Steps and Scripts
 
