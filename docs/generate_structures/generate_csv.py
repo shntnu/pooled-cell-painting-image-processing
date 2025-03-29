@@ -44,6 +44,21 @@ def main():
     metadata_schema = io_config["metadata_schema"]
     channel_mapping = io_config["metadata_schema"]["channel_mapping"]
 
+    # Create more robust bidirectional mappings
+    microscope_to_cp_channel = channel_mapping["cp"]["microscope_mapping"]
+    cp_channel_to_microscope = {v: k for k, v in microscope_to_cp_channel.items()}
+
+    microscope_to_bc_channel = channel_mapping["bc"]["microscope_mapping"]
+    bc_channel_to_microscope = {v: k for k, v in microscope_to_bc_channel.items()}
+
+    # Get channel lists
+    cp_channels = list(microscope_to_cp_channel.values())
+    bc_channels = list(microscope_to_bc_channel.values())
+
+    if args.verbose:
+        print(f"CP channels: {cp_channels}")
+        print(f"BC channels: {bc_channels}")
+
     # Define metadata values from arguments
     metadata = {
         "batch": args.batch,
@@ -59,16 +74,6 @@ def main():
         # Special handling for Pipeline 5_BC_Illum which uses Metadata_SBSCycle
         if args.module == "5_BC_Illum":
             metadata["SBSCycle"] = args.cycle
-
-    # Get channel mappings
-    cp_channels = list(channel_mapping["cp"]["microscope_mapping"].values())
-    bc_channels = list(channel_mapping["bc"]["microscope_mapping"].values())
-    cp_microscope_channels = list(channel_mapping["cp"]["microscope_mapping"].keys())
-    bc_microscope_channels = list(channel_mapping["bc"]["microscope_mapping"].keys())
-
-    if args.verbose:
-        print(f"CP channels: {cp_channels}")
-        print(f"BC channels: {bc_channels}")
 
     # Get module configuration
     module_config = io_config[args.module]
@@ -113,8 +118,10 @@ def main():
                             or "cp_channel" in patterns[0]
                         ):
                             # Process Cell Painting images
-                            for idx, cp_channel in enumerate(cp_channels):
-                                cp_microscope_channel = cp_microscope_channels[idx]
+                            for cp_channel in cp_channels:
+                                cp_microscope_channel = cp_channel_to_microscope[
+                                    cp_channel
+                                ]
 
                                 # Add format parameters without duplicating metadata
                                 format_params = {
@@ -147,8 +154,10 @@ def main():
                         ):
                             # Process Barcoding images, only if cycle is provided
                             if "cycle" in metadata:
-                                for idx, bc_channel in enumerate(bc_channels):
-                                    bc_microscope_channel = bc_microscope_channels[idx]
+                                for bc_channel in bc_channels:
+                                    bc_microscope_channel = bc_channel_to_microscope[
+                                        bc_channel
+                                    ]
 
                                     # Add format parameters without duplicating metadata
                                     format_params = {
