@@ -749,6 +749,8 @@ This parameterization approach enables the same pipeline code to process differe
   - `FileName_Orig{Channel}`, `PathName_Orig{Channel}` (raw barcoding images, where Channel = DNA, A, C, G, T)
   - `Metadata_Plate`, `Metadata_Well`, `Metadata_Site`, `Metadata_SBSCycle`
 - **Output Files**: Per-plate, per-cycle illumination correction functions for each channel
+  - **Output Directory**: 
+    - `{Batch}/illum/{Plate}/`
   - **NPY Naming Pattern**: 
     - `{Plate}_Cycle{K}_Illum{Channel}.npy`: Illumination function
   
@@ -764,6 +766,8 @@ This parameterization approach enables the same pipeline code to process differe
 - **Output Files**: 
   1. Illumination-corrected and aligned images for each cycle, channel, and site
   2. CSV files with alignment metrics
+  - **Output Directory**: 
+    - `{Batch}/images_corrected/barcoding/{Plate}/`
   - **Image Naming Pattern**: 
     - `Plate_{Plate}_Well_{Well}_Site_{Site}_Cycle{K}_{Channel}.tiff`: Illumination corrected and aligned image
   - **CSV Naming Pattern**:
@@ -778,13 +782,15 @@ This parameterization approach enables the same pipeline code to process differe
   1. Processed barcoding images with color compensation, background correction, etc.
   2. CSV files with barcode calling results
   3. Overlay images showing identified foci
-- **Image Naming Pattern**: 
-  - `Plate_{Plate}_Well_{Well}_Site_{Site}_Cycle{K}_{Channel}.tiff`: Processed image
-  - `Plate_{Plate}_Well_{Well}_Site_{Site}_Max_Overlay.png`: Overlay image
-- **CSV Files**:
-  - `BarcodePreprocessing_Foci.csv`: Barcode foci measurements
-  - `BarcodePreprocessing_Image.csv`: Image-level measurements
-  - `BarcodePreprocessing_Experiment.csv`: Summary metrics
+  - **Output Directory**: 
+    - `{Batch}/images_aligned/barcoding/{Plate}/`
+  - **Image Naming Pattern**: 
+    - `Plate_{Plate}_Well_{Well}_Site_{Site}_Cycle{K}_{Channel}.tiff`: Processed image
+    - `Plate_{Plate}_Well_{Well}_Site_{Site}_Max_Overlay.png`: Overlay image
+  - **CSV Files**:
+    - `BarcodePreprocessing_Foci.csv`: Barcode foci measurements
+    - `BarcodePreprocessing_Image.csv`: Image-level measurements
+    - `BarcodePreprocessing_Experiment.csv`: Summary metrics
 
 #### Pipeline 8: Barcoding Stitching and Cropping
 - **Input Images**: Processed Barcoding images from Pipeline 7
@@ -818,21 +824,23 @@ This parameterization approach enables the same pipeline code to process differe
   - `Metadata_Plate`, `Metadata_Well`, `Metadata_Site`
 - **Additional Input**:
   - `Barcodes.csv`: Contains reference barcode sequences for calling. Must include two case-sensitive columns: `sgRNA` (barcode sequences) and `gene_symbol` (gene names)
-- **Output Files**: 
-  1. Measurement CSV files with cellular features and barcode calls
-  2. Segmentation mask images
-  3. Overlay images showing segmentation and barcode foci
-  - **CSV Files**:
-    - `Analysis_Cells.csv`: Cell measurements
-    - `Analysis_Cytoplasm.csv`: Cytoplasm measurements
-    - `Analysis_Nuclei.csv`: Nuclei measurements
-    - `Analysis_Foci.csv`: Barcode foci measurements and calls
-    - `Analysis_Image.csv`: Image-level measurements
-    - `Analysis_Experiment.csv`: Experiment-level summary
-    - `Analysis_ConfluentRegions.csv`: Confluency metrics
-  - **Image Naming Pattern**: 
-    - `{Plate}_{Well}_Site_{Site}_{ObjectType}_Objects.tiff`: Segmentation mask
-    - `CorrCh{ChannelNumber}_Site_{Site}_Overlay.png`: Overlay image
+  - **Output Directories**:
+    - `{Batch}/workspace/analysis/{Plate}_{Well}_{Site}/`: Stitched whole-well images
+  - **Output Files**: 
+    1. Measurement CSV files with cellular features and barcode calls
+    2. Segmentation mask images
+    3. Overlay images showing segmentation and barcode foci
+    - **CSV Files**:
+      - `Analysis_Cells.csv`: Cell measurements
+      - `Analysis_Cytoplasm.csv`: Cytoplasm measurements
+      - `Analysis_Nuclei.csv`: Nuclei measurements
+      - `Analysis_Foci.csv`: Barcode foci measurements and calls
+      - `Analysis_Image.csv`: Image-level measurements
+      - `Analysis_Experiment.csv`: Experiment-level summary
+      - `Analysis_ConfluentRegions.csv`: Confluency metrics
+    - **Image Naming Pattern**: 
+      - `{Plate}_{Well}_Site_{Site}_{ObjectType}_Objects.tiff`: Segmentation mask
+      - `CorrCh{ChannelNumber}_Site_{Site}_Overlay.png`: Overlay image
 
 ### Special-Purpose Pipeline Outputs
 
