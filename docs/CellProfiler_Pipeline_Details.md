@@ -677,6 +677,45 @@ This parameterization approach enables the same pipeline code to process differe
     - `{Batch}/illum/{Plate}/`
   - **NPY Naming Pattern**: 
     - `{Plate}_Illum{Channel}.npy`: Illumination function
+  
+```json
+{
+    "1_CP_Illum": {
+        "inputs": {
+            "images": {
+                "pattern": "{batch}/images/{plate}/20x_CP_{plate}/{template}_{well}_{site}_{channel}.tiff"
+            }
+        },
+        "outputs": {
+            "illum_functions": {
+                "pattern": "{batch}/illum/{plate}/{plate}_Illum{channel}.npy"
+            }
+        },
+        "csv_fields": [
+            {
+                "name": "FileName_Orig{channel}",
+                "source": "inputs.images.filename"
+            },
+            {
+                "name": "PathName_Orig{channel}",
+                "source": "inputs.images.path"
+            },
+            {
+                "name": "Metadata_Plate",
+                "source": "metadata.plate"
+            },
+            {
+                "name": "Metadata_Well",
+                "source": "metadata.well"
+            },
+            {
+                "name": "Metadata_Site",
+                "source": "metadata.site"
+            }
+        ]
+    }
+}
+```
 
 #### Pipeline 2: Cell Painting Illumination Application
 - **Input Images**: 
@@ -699,6 +738,65 @@ This parameterization approach enables the same pipeline code to process differe
     - `PaintingIllumApplication_Nuclei.csv`
     - `PaintingIllumApplication_ConfluentRegions.csv`
     - `PaintingIllumApplication_Experiment.csv`
+  
+```json
+{
+    "2_CP_Apply_Illum": {
+        "inputs": {
+            "images": {
+                "pattern": "{batch}/images/{plate}/20x_CP_{plate}/{template}_{well}_{site}_{channel}.tiff"
+            },
+            "illum_functions": {
+                "pattern": "{batch}/illum/{plate}/{plate}_Illum{channel}.npy"
+            }
+        },
+        "outputs": {
+            "corrected_images": {
+                "pattern": "{batch}/images_corrected/painting/{plate}-{well}/Plate_{plate}_Well_{well}_Site_{site}_Corr{channel}.tiff"
+            },
+            "csvs": {
+                "patterns": [
+                    "{batch}/images_corrected/painting/{plate}-{well}/PaintingIllumApplication_Image.csv",
+                    "{batch}/images_corrected/painting/{plate}-{well}/PaintingIllumApplication_Cells.csv",
+                    "{batch}/images_corrected/painting/{plate}-{well}/PaintingIllumApplication_Nuclei.csv",
+                    "{batch}/images_corrected/painting/{plate}-{well}/PaintingIllumApplication_ConfluentRegions.csv",
+                    "{batch}/images_corrected/painting/{plate}-{well}/PaintingIllumApplication_Experiment.csv"
+                ]
+            }
+        },
+        "csv_fields": [
+            {
+                "name": "FileName_Orig{channel}",
+                "source": "inputs.images.filename"
+            },
+            {
+                "name": "PathName_Orig{channel}",
+                "source": "inputs.images.path"
+            },
+            {
+                "name": "FileName_Illum{channel}",
+                "source": "inputs.illum_functions.filename"
+            },
+            {
+                "name": "PathName_Illum{channel}",
+                "source": "inputs.illum_functions.path"
+            },
+            {
+                "name": "Metadata_Plate",
+                "source": "metadata.plate"
+            },
+            {
+                "name": "Metadata_Well",
+                "source": "metadata.well"
+            },
+            {
+                "name": "Metadata_Site",
+                "source": "metadata.site"
+            }
+        ]
+    }
+}
+```
 
 #### Pipeline 3: Cell Painting Segmentation Check
 - **Input Images**: Corrected Cell Painting images from Pipeline 2
@@ -719,6 +817,58 @@ This parameterization approach enables the same pipeline code to process differe
     - `SegmentationCheck_Image.csv`
     - `SegmentationCheck_Nuclei.csv`
     - `SegmentationCheck_PreCells.csv`
+
+```json
+{
+    "3_CP_SegmentCheck": {
+        "inputs": {
+            "corrected_images": {
+                "pattern": "{batch}/images_corrected/painting/{plate}-{well}/Plate_{plate}_Well_{well}_Site_{site}_Corr{channel}.tiff"
+            }
+        },
+        "outputs": {
+            "overlay_images": {
+                "pattern": "{batch}/images_segmentation/{plate}/Plate_{plate}_Well_{well}_Site_{site}_Corr{channel}_SegmentCheck.png"
+            },
+            "csvs": {
+                "patterns": [
+                    "{batch}/images_segmentation/{plate}/SegmentationCheck_Cells.csv",
+                    "{batch}/images_segmentation/{plate}/SegmentationCheck_ConfluentRegions.csv",
+                    "{batch}/images_segmentation/{plate}/SegmentationCheck_Experiment.csv",
+                    "{batch}/images_segmentation/{plate}/SegmentationCheck_Image.csv",
+                    "{batch}/images_segmentation/{plate}/SegmentationCheck_Nuclei.csv",
+                    "{batch}/images_segmentation/{plate}/SegmentationCheck_PreCells.csv"
+                ]
+            }
+        },
+        "csv_fields": [
+            {
+                "name": "FileName_{channel}",
+                "source": "inputs.corrected_images.filename"
+            },
+            {
+                "name": "PathName_{channel}",
+                "source": "inputs.corrected_images.path"
+            },
+            {
+                "name": "Metadata_Plate",
+                "source": "metadata.plate"
+            },
+            {
+                "name": "Metadata_Well",
+                "source": "metadata.well"
+            },
+            {
+                "name": "Metadata_Site",
+                "source": "metadata.site"
+            }
+        ],
+        "special_params": {
+            "range_skip": "Skip factor for selecting subset of images"
+        }
+    }  
+}
+```
 
 #### Pipeline 4: Cell Painting Stitching and Cropping
 - **Input Images**: Corrected Cell Painting images from Pipeline 2
@@ -747,6 +897,51 @@ This parameterization approach enables the same pipeline code to process differe
     - `Stitched[TopLeft|TopRight|BottomLeft|BottomRight]{Channel}.tiff`: Stitched quadrant images (for round wells)
     - `{Channel}_Site_{TileNumber}.tiff`: Cropped tile image
 
+```json
+{
+    "4_CP_Stitching": {
+        "script_type": "FIJI",
+        "script_params": {
+            "input_file_location": "{batch}/images_corrected/painting",
+            "subdir": "{batch}/images_corrected/painting/{plate}-{well}",
+            "filterstring": "{well}",
+            "channame": "DNA",
+            "rows": "{painting_rows}",
+            "columns": "{painting_columns}",
+            "imperwell": "{painting_imperwell}",
+            "stitchorder": "{stitchorder}",
+            "overlap_pct": "{overlap_pct}",
+            "size": "{size}",
+            "round_or_square": "{round_or_square}",
+            "tileperside": "{tileperside}",
+            "final_tile_size": "{final_tile_size}"
+        },
+        "inputs": {
+            "corrected_images": {
+                "pattern": "{batch}/images_corrected/painting/{plate}-{well}/Plate_{plate}_Well_{well}_Site_{site}_Corr{channel}.tiff"
+            }
+        },        
+        "outputs": {
+            "stitched_images": {
+                "patterns": [
+                    "{batch}/images_corrected_stitched/cellpainting/{plate}/{plate}_{well}/Stitched{channel}.tiff",
+                    "{batch}/images_corrected_stitched/cellpainting/{plate}/{plate}_{well}/StitchedTopLeft{channel}.tiff",
+                    "{batch}/images_corrected_stitched/cellpainting/{plate}/{plate}_{well}/StitchedTopRight{channel}.tiff",
+                    "{batch}/images_corrected_stitched/cellpainting/{plate}/{plate}_{well}/StitchedBottomLeft{channel}.tiff",
+                    "{batch}/images_corrected_stitched/cellpainting/{plate}/{plate}_{well}/StitchedBottomRight{channel}.tiff"
+                ]
+            },
+            "cropped_tiles": {
+                "pattern": "{batch}/images_corrected_cropped/cellpainting/{plate}/{plate}_{well}/{channel}/{channel}_Site_{tile_number}.tiff"
+            },
+            "previews": {
+                "pattern": "{batch}/images_corrected_stitched_10X/cellpainting/{plate}/{plate}_{well}/"
+            }
+        }
+    }  
+}
+```
+
 ### Barcoding
 
 #### Pipeline 5: Barcoding Illumination Correction
@@ -760,6 +955,49 @@ This parameterization approach enables the same pipeline code to process differe
   - **NPY Naming Pattern**: 
     - `{Plate}_Cycle{K}_Illum{Channel}.npy`: Illumination function
   
+```json
+{
+    "5_BC_Illum": {
+        "inputs": {
+            "images": {
+                "pattern": "{batch}/images/{plate}/20x_SBS_{cycle}/{template}_{well}_{site}_{channel}.tiff"
+            }
+        },
+        "outputs": {
+            "illum_functions": {
+                "pattern": "{batch}/illum/{plate}/{plate}_Cycle{cycle}_Illum{channel}.npy"
+            }
+        },
+        "csv_fields": [
+            {
+                "name": "FileName_Orig{channel}",
+                "source": "inputs.images.filename"
+            },
+            {
+                "name": "PathName_Orig{channel}",
+                "source": "inputs.images.path"
+            },
+            {
+                "name": "Metadata_Plate",
+                "source": "metadata.plate"
+            },
+            {
+                "name": "Metadata_Well",
+                "source": "metadata.well"
+            },
+            {
+                "name": "Metadata_Site",
+                "source": "metadata.site"
+            },
+            {
+                "name": "Metadata_SBSCycle",
+                "source": "metadata.cycle"
+            }
+        ]
+    }  
+}
+```
+
 #### Pipeline 6: Barcoding Illumination Application and Alignment
 - **Input Images**:
   - Raw Barcoding images
@@ -768,7 +1006,8 @@ This parameterization approach enables the same pipeline code to process differe
   - `FileName_Cycle{K}_{Channel}`, `PathName_Cycle{K}_{Channel}` (raw barcoding images, where Channel = DNA, A, C, G, T; and K = 1...N)
   - `FileName_Illum_Cycle{K}_{Channel}`, `PathName_Illum_Cycle{K}_{Channel}` (corresponding illumination correction files)
   - `Metadata_Plate`, `Metadata_Well`, `Metadata_Site`
-  - FIXME: Pipeline 5 uses Metadata_SBSCycle but Pipeline 6 and 7 use cycle notation in filenames with {K}. The relationship between Metadata_SBSCycle and cycle number {K} isn't explicitly explained.
+  - Note: Pipeline 5 uses `Metadata_SBSCycle` while Pipelines 6 and 7 drop that and instead encode the cycle in the `FileName` and `PathName` column names. This reflects a deliberate pivot transformation of the data structure between pipelines. Pipeline 5 uses a narrow format CSV where each row represents one image from one cycle (with cycle as a row value). Pipeline 6 pivots this into a wide format where each row contains all cycle data for a site (with cycle embedded in column names). This transformation is necessary because Pipeline 6 needs all cycle data simultaneously to perform cross-cycle alignment.
+
 - **Output Files**: 
   1. Illumination-corrected and aligned images for each cycle, channel, and site
   2. CSV files with measurements
@@ -780,11 +1019,68 @@ This parameterization approach enables the same pipeline code to process differe
     - `BarcodingApplication_Image.csv`
     - `BarcodingApplication_Experiment.csv`
 
+```json
+{
+    "6_BC_Apply_Illum": {
+        "inputs": {
+            "images": {
+                "pattern": "{batch}/images/{plate}/20x_SBS_{cycle}/{template}_{well}_{site}_{channel}.tiff"
+            },
+            "illum_functions": {
+                "pattern": "{batch}/illum/{plate}/{plate}_Cycle{cycle}_Illum{channel}.npy"
+            }
+        },
+        "outputs": {
+            "aligned_images": {
+                "pattern": "{batch}/images_aligned/barcoding/{plate}-{well}-{site}/Plate_{plate}_Well_{well}_Site_{site}_Cycle{cycle}_{channel}.tiff"
+            },
+            "csvs": {
+                "patterns": [
+                    "{batch}/images_aligned/barcoding/{plate}-{well}-{site}/BarcodingApplication_Image.csv",
+                    "{batch}/images_aligned/barcoding/{plate}-{well}-{site}/BarcodingApplication_Experiment.csv"
+                ]
+            }
+        },
+        "csv_fields": [
+            {
+                "name": "FileName_Cycle{cycle}_{channel}",
+                "source": "inputs.images.filename"
+            },
+            {
+                "name": "PathName_Cycle{cycle}_{channel}",
+                "source": "inputs.images.path"
+            },
+            {
+                "name": "FileName_Illum_Cycle{cycle}_{channel}",
+                "source": "inputs.illum_functions.filename"
+            },
+            {
+                "name": "PathName_Illum_Cycle{cycle}_{channel}",
+                "source": "inputs.illum_functions.path"
+            },
+            {
+                "name": "Metadata_Plate",
+                "source": "metadata.plate"
+            },
+            {
+                "name": "Metadata_Well",
+                "source": "metadata.well"
+            },
+            {
+                "name": "Metadata_Site",
+                "source": "metadata.site"
+            }
+        ]
+    }  
+}
+```
+
 #### Pipeline 7: Barcoding Preprocessing
 - **Input Images**: Aligned Barcoding images from Pipeline 6
 - **LoadData CSV Fields**:
-  - `FileName_Cycle{K}_{Channel}`, `PathName_Cycle{K}_{Channel}` (aligned barcoding images; where Channel = DAPI, A, C, G, T; and K = 1...N, except for DAPI where K = 1). Note that the `DNA` channel is called `DAPI` here to avoid name clash later when Cell Painting channels are brought it.
+  - `FileName_Cycle{K}_{Channel}`, `PathName_Cycle{K}_{Channel}` (aligned barcoding images; where Channel = DAPI, A, C, G, T; and K = 1...N, except for DAPI where K = 1).
   - `Metadata_Plate`, `Metadata_Well`, `Metadata_Site`
+  - Note: `DNA` channel is called `DAPI` here to avoid name clash later when Cell Painting channels are brought it.
 - **Output Files**: 
   1. Processed barcoding images with color compensation, background correction, etc.
   2. CSV files with barcode calling results
@@ -795,9 +1091,56 @@ This parameterization approach enables the same pipeline code to process differe
     - `Plate_{Plate}_Well_{Well}_Site_{Site}_Cycle{K}_{Channel}.tiff`: Processed image
     - `Plate_{Plate}_Well_{Well}_Site_{Site}_Max_Overlay.png`: Overlay image
   - **CSV Naming Pattern**:
-    - `BarcodePreprocessing_Foci.csv`: Barcode foci measurements
-    - `BarcodePreprocessing_Image.csv`: Image-level measurements
-    - `BarcodePreprocessing_Experiment.csv`: Summary metrics
+    - `BarcodePreprocessing_Foci.csv`
+    - `BarcodePreprocessing_Image.csv`
+    - `BarcodePreprocessing_Experiment.csv`
+
+```json
+    "7_BC_Preprocess": {
+        "inputs": {
+            "aligned_images": {
+                "pattern": "{batch}/images_aligned/barcoding/{plate}-{well}-{site}/Plate_{plate}_Well_{well}_Site_{site}_Cycle{cycle}_{channel}.tiff"
+            }
+        },
+        "outputs": {
+            "processed_images": {
+                "pattern": "{batch}/images_corrected/barcoding/{plate}-{well}-{site}/Plate_{plate}_Well_{well}_Site_{site}_Cycle{cycle}_{channel}.tiff"
+            },
+            "overlay_images": {
+                "pattern": "{batch}/images_corrected/barcoding/{plate}-{well}-{site}/Plate_{plate}_Well_{well}_Site_{site}_Max_Overlay.png"
+            },
+            "csvs": {
+                "patterns": [
+                    "{batch}/images_corrected/barcoding/{plate}-{well}-{site}/BarcodePreprocessing_Foci.csv",
+                    "{batch}/images_corrected/barcoding/{plate}-{well}-{site}/BarcodePreprocessing_Image.csv",
+                    "{batch}/images_corrected/barcoding/{plate}-{well}-{site}/BarcodePreprocessing_Experiment.csv"
+                ]
+            }
+        },
+        "csv_fields": [
+            {
+                "name": "FileName_Cycle{cycle}_{channel}",
+                "source": "inputs.aligned_images.filename"
+            },
+            {
+                "name": "PathName_Cycle{cycle}_{channel}",
+                "source": "inputs.aligned_images.path"
+            },
+            {
+                "name": "Metadata_Plate",
+                "source": "metadata.plate"
+            },
+            {
+                "name": "Metadata_Well",
+                "source": "metadata.well"
+            },
+            {
+                "name": "Metadata_Site",
+                "source": "metadata.site"
+            }
+        ]
+    }
+```
 
 #### Pipeline 8: Barcoding Stitching and Cropping
 - **Input Images**: Processed Barcoding images from Pipeline 7
@@ -818,6 +1161,52 @@ This parameterization approach enables the same pipeline code to process differe
     - `Stitched_Cycle{K}_{Channel}.tiff`: Stitched whole-well image (for square wells)
     - `StitchedTopLeft_Cycle{K}_{Channel}.tiff`, etc.: Stitched quadrant images (for round wells)
     - `Cycle{K}_{Channel}_Site_{TileNumber}.tiff`: Cropped tile image (includes cycle information)
+
+```json
+{
+    "8_BC_Stitching": {
+        "script_type": "FIJI",
+        "script_params": {
+            "input_file_location": "{batch}/images_corrected/barcoding",
+            "subdir": "{batch}/images_corrected/barcoding/{plate}-{well}-{site}",
+            "filterstring": "{well}",
+            "channame": "DAPI",
+            "rows": "{barcoding_rows}",
+            "columns": "{barcoding_columns}",
+            "imperwell": "{barcoding_imperwell}",
+            "stitchorder": "{stitchorder}",
+            "overlap_pct": "{overlap_pct}",
+            "size": "{size}",
+            "round_or_square": "{round_or_square}",
+            "tileperside": "{tileperside}",
+            "final_tile_size": "{final_tile_size}",
+            "scalingstring": "1.99"
+        },
+        "inputs": {
+            "aligned_images": {
+                "pattern": "{batch}/images_aligned/barcoding/{plate}-{well}-{site}/Plate_{plate}_Well_{well}_Site_{site}_Cycle{cycle}_{channel}.tiff"
+            }
+        },
+        "outputs": {
+            "stitched_images": {
+                "patterns": [
+                    "{batch}/images_corrected_stitched/barcoding/{plate}/{plate}_{well}/Stitched_Cycle{cycle}_{channel}.tiff",
+                    "{batch}/images_corrected_stitched/barcoding/{plate}/{plate}_{well}/StitchedTopLeft_Cycle{cycle}_{channel}.tiff",
+                    "{batch}/images_corrected_stitched/barcoding/{plate}/{plate}_{well}/StitchedTopRight_Cycle{cycle}_{channel}.tiff",
+                    "{batch}/images_corrected_stitched/barcoding/{plate}/{plate}_{well}/StitchedBottomLeft_Cycle{cycle}_{channel}.tiff",
+                    "{batch}/images_corrected_stitched/barcoding/{plate}/{plate}_{well}/StitchedBottomRight_Cycle{cycle}_{channel}.tiff"
+                ]
+            },
+            "cropped_tiles": {
+                "pattern": "{batch}/images_corrected_cropped/barcoding/{plate}/{plate}_{well}/{channel}/Cycle{cycle}_{channel}_Site_{tile_number}.tiff"
+            },
+            "previews": {
+                "pattern": "{batch}/images_corrected_stitched_10X/barcoding/{plate}/{plate}_{well}/"
+            }
+        }
+    }
+}
+```
 
 ### Final Analysis Pipeline
 
@@ -855,6 +1244,82 @@ This parameterization approach enables the same pipeline code to process differe
     - **Image Naming Pattern**: 
       - `{Plate}_{Well}_Site_{Site}_{ObjectType}_Objects.tiff`: Segmentation mask
       - `CorrCh{ChannelNumber}_Site_{Site}_Overlay.png`: Overlay image
+
+```json
+{
+    "9_Analysis": {
+        "inputs": {
+            "cp_tiles": {
+                "pattern": "{batch}/images_corrected_cropped/cellpainting/{plate}/{plate}_{well}/{channel}/{channel}_Site_{tile_number}.tiff"
+            },
+            "bc_tiles": {
+                "pattern": "{batch}/images_corrected_cropped/barcoding/{plate}/{plate}_{well}/{channel}/Cycle{cycle}_{channel}_Site_{tile_number}.tiff"
+            },
+            "barcodes_file": {
+                "pattern": "{metadata_dir}/Barcodes.csv"
+            }
+        },
+        "outputs": {
+            "segmentation_masks": {
+                "pattern": "{batch}/workspace/analysis/{plate}-{well}-{site}/segmentation_masks/{plate}_{well}_Site_{site}_{object_type}_Objects.tiff"
+            },
+            "overlay_images": {
+                "pattern": "{batch}/workspace/analysis/{plate}-{well}-{site}/CorrCh{channel_number}_Site_{site}_Overlay.png"
+            },
+            "csvs": {
+                "patterns": [
+                    "{batch}/workspace/analysis/{plate}-{well}-{site}/BarcodeFoci.csv",
+                    "{batch}/workspace/analysis/{plate}-{well}-{site}/Cells.csv",
+                    "{batch}/workspace/analysis/{plate}-{well}-{site}/ConfluentRegions.csv",
+                    "{batch}/workspace/analysis/{plate}-{well}-{site}/Cytoplasm.csv",
+                    "{batch}/workspace/analysis/{plate}-{well}-{site}/Experiment.csv",
+                    "{batch}/workspace/analysis/{plate}-{well}-{site}/Foci.csv",
+                    "{batch}/workspace/analysis/{plate}-{well}-{site}/Foci_NonCellEdge.csv",
+                    "{batch}/workspace/analysis/{plate}-{well}-{site}/Foci_PreMask.csv",
+                    "{batch}/workspace/analysis/{plate}-{well}-{site}/Image.csv",
+                    "{batch}/workspace/analysis/{plate}-{well}-{site}/Nuclei.csv",
+                    "{batch}/workspace/analysis/{plate}-{well}-{site}/PreCells.csv",
+                    "{batch}/workspace/analysis/{plate}-{well}-{site}/RelateObjects.csv",
+                    "{batch}/workspace/analysis/{plate}-{well}-{site}/Resize_Foci.csv"
+                ]
+            }
+        },
+        "csv_fields": [
+            {
+                "name": "FileName_{channel}",
+                "source": "inputs.cp_tiles.filename"
+            },
+            {
+                "name": "PathName_{channel}",
+                "source": "inputs.cp_tiles.path"
+            },
+            {
+                "name": "FileName_Cycle{cycle}_{channel}",
+                "source": "inputs.bc_tiles.filename",
+                "condition": "cycle>0"
+            },
+            {
+                "name": "PathName_Cycle{cycle}_{channel}",
+                "source": "inputs.bc_tiles.path",
+                "condition": "cycle>0"
+            },
+            {
+                "name": "Metadata_Plate",
+                "source": "metadata.plate"
+            },
+            {
+                "name": "Metadata_Well",
+                "source": "metadata.well"
+            },
+            {
+                "name": "Metadata_Site",
+                "source": "metadata.site"
+            }
+        ]
+    }
+}  
+```
+
 
 ### Special-Purpose Pipeline Outputs
 
