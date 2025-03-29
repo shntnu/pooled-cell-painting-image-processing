@@ -664,6 +664,8 @@ This parameterization approach enables the same pipeline code to process differe
 
 ## Pipeline Input Output Specifications
 
+Note: In the jsons, `{1_CP_Illum|2_CP_Apply_Illum|5_BC_Illum|6_BC_Apply_Illum}.input.images.pattern` are mockups
+
 ### Cell Painting 
 
 #### Pipeline 1: Cell Painting Illumination Correction
