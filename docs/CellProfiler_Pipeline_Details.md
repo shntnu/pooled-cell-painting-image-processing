@@ -671,7 +671,10 @@ This parameterization approach enables the same pipeline code to process differe
 - **LoadData CSV Fields**:
   - `FileName_Orig{Channel}`, `PathName_Orig{Channel}` (raw Cell Painting images, where Channel = DNA, Phalloidin, etc.)
   - `Metadata_Plate`, `Metadata_Well`, `Metadata_Site`
-- **Output Files**: Per-plate illumination correction functions for each channel
+- **Output Files**: 
+  1. Per-plate illumination correction functions for each channel
+  - **Output Directory**: 
+    - `{Batch}/illum/{Plate}/`
   - **NPY Naming Pattern**: 
     - `{Plate}_Illum{Channel}.npy`: Illumination function
 
@@ -686,6 +689,8 @@ This parameterization approach enables the same pipeline code to process differe
 - **Output Files**: 
   1. Illumination-corrected images for each channel and site
   2. CSV files with image measurements and segmentation parameters
+  - **Output Directory**: 
+    - `{Batch}/images_corrected/painting/{Plate}/`
   - **Image Naming Pattern**: 
     - `Plate_{Plate}_Well_{Well}_Site_{Site}_Corr{Channel}.tiff`: Illumination corrected image
   - **CSV Naming Pattern**:
@@ -701,6 +706,8 @@ This parameterization approach enables the same pipeline code to process differe
 - **Output Files**: 
   1. Quality control overlay images showing segmentation results
   2. CSV files with segmentation verification metrics
+  - **Output Directory**: 
+    - `{Batch}/images_segmentation/{Plate}/`
   - **Image Naming Pattern**: 
     - `Plate_{Plate}_Well_{Well}_Site_{Site}_Corr{Channel}_SegmentCheck.tiff`: Overlay image
   - **CSV Naming Pattern**:
@@ -711,9 +718,9 @@ This parameterization approach enables the same pipeline code to process differe
 - **Input Images**: Corrected Cell Painting images from Pipeline 2
 - **FIJI Script Parameters** (instead of LoadData CSV):
   - `input_file_location`: Path to corrected images directory
-  - `subdir`: Specific subfolder containing images to process
-  - `filterstring`: Pattern to match image files
-  - `channame`: Channel name for processing
+  - `subdir`: Specific subfolder containing images to process (e.g., `{batch}/images_corrected/painting/{Plate}-{Well}`)
+  - `filterstring`: Pattern to match image files (typically contains well identifier)
+  - `channame`: Channel name for processing (e.g., "DNA")
   - `rows`, `columns` or `imperwell`: Image grid layout
   - `stitchorder`: Tile arrangement method
   - `overlap_pct`: Image overlap percentage
@@ -721,8 +728,18 @@ This parameterization approach enables the same pipeline code to process differe
   - `round_or_square`: Well shape for processing
   - `tileperside`: Number of tiles to create along each axis
   - `final_tile_size`: Pixel dimensions for output tiles
-- **Stitched Image Naming Pattern**: `Stitched{Channel}.tiff`
-- **Cropped Image Naming Pattern**: `{Channel}_Site_{TileNumber}.tiff`
+- **Output Files**: 
+  1. Stitched whole-well images for each channel
+  2. Cropped tiles from stitched images
+  3. Downsampled (10x) previews of stitched images
+  - **Output Directories**: 
+    - `{Batch}/{Plate}/{step_to_stitch}_stitched/{Plate}_{Well}/`: Stitched whole-well images
+    - `{Batch}/{Plate}/{step_to_stitch}_cropped/{Plate}_{Well}/{Channel}/`: Cropped tile images
+    - `{Batch}/{Plate}/{step_to_stitch}_stitched_10X/{Plate}_{Well}/`: Downsampled previews
+  - **Image Naming Pattern**:    
+    - `Stitched{Channel}.tiff`: Stitched whole-well image (for square wells)
+    - `Stitched[TopLeft|TopRight|BottomLeft|BottomRight]{Channel}.tiff`: Stitched quadrant images (for round wells)
+    - `{Channel}_Site_{TileNumber}.tiff`: Cropped tile image
 
 ### Barcoding
 
@@ -771,14 +788,20 @@ This parameterization approach enables the same pipeline code to process differe
 
 #### Pipeline 8: Barcoding Stitching and Cropping
 - **Input Images**: Processed Barcoding images from Pipeline 7
-- **FIJI Script Parameters**: Same as Pipeline 4, applied to barcoding images
+- **FIJI Script Parameters**: Same as Pipeline 4, with these key differences:
+  - `subdir`: Points to barcoding images (e.g., `{batch}/images_corrected/barcoding`)
+  - `channame`: Uses "DAPI" instead of "DNA"
+  - `rows`, `columns`, `imperwell`: Uses barcoding grid layout parameters
+  - `scalingstring`: Set to "1.99" (vs. "1" for cell painting)
 - **Output Files**: 
-  1. Stitched whole-well images
+  1. Stitched whole-well images for each channel and cycle
   2. Cropped tiles from stitched images
   3. Downsampled (10x) previews of stitched images
-  - **Image Naming Pattern**: 
-    - `Stitched_Cycle{K}_{Channel}.tiff`: Stitched image
-    - `Cycle{K}_{Channel}_Site_{TileNumber}.tiff`: Cropped images
+  - **Output Directories**: Same structure as Pipeline 4
+  - **Image Naming Pattern**:    
+    - `Stitched_Cycle{K}_{Channel}.tiff`: Stitched whole-well image (for square wells)
+    - `StitchedTopLeft_Cycle{K}_{Channel}.tiff`, etc.: Stitched quadrant images (for round wells)
+    - `Cycle{K}_{Channel}_Site_{TileNumber}.tiff`: Cropped tile image (includes cycle information)
 
 ### Final Analysis Pipeline
 
@@ -791,7 +814,7 @@ This parameterization approach enables the same pipeline code to process differe
   - `FileName_Cycle{K}_{Channel}`, `PathName_Cycle{K}_{Channel}` (cropped barcoding images; where Channel = DAPI, A, C, G, T; and K = 1...N, except for DAPI where K = 1). 
   - `Metadata_Plate`, `Metadata_Well`, `Metadata_Site`
 - **Additional Input**:
-  - `Barcodes.csv`: Contains reference barcode sequences for calling
+  - `Barcodes.csv`: Contains reference barcode sequences for calling. Must include two case-sensitive columns: `sgRNA` (barcode sequences) and `gene_symbol` (gene names)
 - **Output Files**: 
   1. Measurement CSV files with cellular features and barcode calls
   2. Segmentation mask images
