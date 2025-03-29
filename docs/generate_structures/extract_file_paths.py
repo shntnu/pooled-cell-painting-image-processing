@@ -2,7 +2,6 @@ import os
 import pandas as pd
 import glob
 import argparse
-from pathlib import Path
 
 
 def extract_file_paths(csv_file):
