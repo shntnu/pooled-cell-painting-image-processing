@@ -62,8 +62,24 @@
         }
     },
     "pipeline_dependencies": {
+        "1_CP_Illum": {
+            "dependencies": [
+                {
+                    "pipeline": "0_Microscope",
+                    "input_output_mapping": {
+                        "inputs.images": "outputs.cp_images"
+                    }
+                }
+            ]
+        },
         "2_CP_Apply_Illum": {
             "dependencies": [
+                {
+                    "pipeline": "0_Microscope",
+                    "input_output_mapping": {
+                        "inputs.images": "outputs.cp_images"
+                    }
+                },
                 {
                     "pipeline": "1_CP_Illum",
                     "input_output_mapping": {
@@ -92,8 +108,24 @@
                 }
             ]
         },
+        "5_BC_Illum": {
+            "dependencies": [
+                {
+                    "pipeline": "0_Microscope",
+                    "input_output_mapping": {
+                        "inputs.images": "outputs.bc_images"
+                    }
+                }
+            ]
+        },
         "6_BC_Apply_Illum": {
             "dependencies": [
+                {
+                    "pipeline": "0_Microscope",
+                    "input_output_mapping": {
+                        "inputs.images": "outputs.bc_images"
+                    }
+                },
                 {
                     "pipeline": "5_BC_Illum",
                     "input_output_mapping": {
@@ -137,6 +169,20 @@
                     }
                 }
             ]
+        }
+    },
+    "0_Microscope": {
+        "outputs": {
+            "cp_images": {
+                "patterns": [
+                    "{batch}/images/{plate}/20x_CP_{plate}/{raw_image_template}_{well}_{site}_{channel}.tiff"
+                ]
+            },
+            "bc_images": {
+                "patterns": [
+                    "{batch}/images/{plate}/20x_SBS_{cycle}/{raw_image_template}_{well}_{site}_{channel}.tiff"
+                ]
+            }
         }
     },
     "1_CP_Illum": {
