@@ -733,9 +733,9 @@ This parameterization approach enables the same pipeline code to process differe
   2. Cropped tiles from stitched images
   3. Downsampled (10x) previews of stitched images
   - **Output Directories**: 
-    - `{Batch}/{Plate}/{step_to_stitch}_stitched/{Plate}_{Well}/`: Stitched whole-well images
-    - `{Batch}/{Plate}/{step_to_stitch}_cropped/{Plate}_{Well}/{Channel}/`: Cropped tile images
-    - `{Batch}/{Plate}/{step_to_stitch}_stitched_10X/{Plate}_{Well}/`: Downsampled previews
+    - `{Batch}/images_corrected_stitched/cellpainting/{Plate}/{Plate}_{Well}/`: Stitched whole-well images
+    - `{Batch}/images_corrected_cropped/cellpainting/{Plate}/{Plate}_{Well}/{Channel}/`: Cropped tile images
+    - `{Batch}/images_corrected_stitched_10X/cellpainting/{Plate}/{Plate}_{Well}/`: Downsampled previews
   - **Image Naming Pattern**:    
     - `Stitched{Channel}.tiff`: Stitched whole-well image (for square wells)
     - `Stitched[TopLeft|TopRight|BottomLeft|BottomRight]{Channel}.tiff`: Stitched quadrant images (for round wells)
@@ -797,7 +797,10 @@ This parameterization approach enables the same pipeline code to process differe
   1. Stitched whole-well images for each channel and cycle
   2. Cropped tiles from stitched images
   3. Downsampled (10x) previews of stitched images
-  - **Output Directories**: Same structure as Pipeline 4
+  - **Output Directories**: 
+    - `{Batch}/images_corrected_stitched/barcoding/{Plate}/{Plate}_{Well}/`: Stitched whole-well images
+    - `{Batch}/images_corrected_cropped/barcoding/{Plate}/{Plate}_{Well}/{Channel}/`: Cropped tile images
+    - `{Batch}/images_corrected_stitched_10X/barcoding/{Plate}/{Plate}_{Well}/`: Downsampled previews
   - **Image Naming Pattern**:    
     - `Stitched_Cycle{K}_{Channel}.tiff`: Stitched whole-well image (for square wells)
     - `StitchedTopLeft_Cycle{K}_{Channel}.tiff`, etc.: Stitched quadrant images (for round wells)
