@@ -767,7 +767,7 @@ This parameterization approach enables the same pipeline code to process differe
   1. Illumination-corrected and aligned images for each cycle, channel, and site
   2. CSV files with alignment metrics
   - **Output Directory**: 
-    - `{Batch}/images_corrected/barcoding/{Plate}/`
+    - `{Batch}/images_aligned/barcoding/{Plate}/`
   - **Image Naming Pattern**: 
     - `Plate_{Plate}_Well_{Well}_Site_{Site}_Cycle{K}_{Channel}.tiff`: Illumination corrected and aligned image
   - **CSV Naming Pattern**:
@@ -783,7 +783,7 @@ This parameterization approach enables the same pipeline code to process differe
   2. CSV files with barcode calling results
   3. Overlay images showing identified foci
   - **Output Directory**: 
-    - `{Batch}/images_aligned/barcoding/{Plate}/`
+    - `{Batch}/images_corrected/barcoding/{Plate}/`
   - **Image Naming Pattern**: 
     - `Plate_{Plate}_Well_{Well}_Site_{Site}_Cycle{K}_{Channel}.tiff`: Processed image
     - `Plate_{Plate}_Well_{Well}_Site_{Site}_Max_Overlay.png`: Overlay image
