@@ -80,6 +80,31 @@
                 }
             }
         },
+        "pattern_configs": {
+            "cp_images": {
+                "channel_type": "cp",
+                "requires_cycle": false,
+                "output_key_format": "{channel}"
+            },
+            "bc_images": {
+                "channel_type": "bc",
+                "requires_cycle": true,
+                "output_key_format": "Cycle{cycle}_{channel}"
+            },
+            "illum_functions": {
+                "channel_types": [
+                    "cp",
+                    "bc"
+                ],
+                "requires_cycle_for": [
+                    "bc"
+                ],
+                "output_key_format": {
+                    "cp": "{channel}",
+                    "bc": "Cycle{cycle}_{channel}"
+                }
+            }
+        },
         "cycle": {
             "type": "integer",
             "min": 1,

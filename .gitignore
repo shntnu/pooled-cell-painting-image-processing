@@ -3,3 +3,7 @@
 substitutions.json
 scratch/
 load_data_csv_headers_and_first_row
+Source1
+list.txt
+output.csv
+output_paths.json
