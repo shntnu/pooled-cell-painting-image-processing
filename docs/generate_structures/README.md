@@ -10,6 +10,7 @@ This script allows filtering of cell painting CSV files by cycles, sites, wells,
   - Pipelines 1-3: No cycle field
   - Pipeline 5: Has `Metadata_SBSCycle` field (filtered row-wise)
   - Pipelines 6, 7, 9: Has cycle in column names (filtered column-wise)
+- Comprehensive logging system for debugging and monitoring
 
 ## Requirements
 
@@ -39,6 +40,24 @@ python filter_csv.py <csv_path> <output_path> [OPTIONS]
 - `--sites`: Site IDs to include
 - `--wells`: Well IDs to include
 - `--plates`: Plate IDs to include
+- `--log-level`: Set logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL, default: INFO)
+
+### Logging
+
+The script includes comprehensive logging that captures:
+- Pipeline type detection
+- Filter operations and their effects
+- Full exception tracebacks for error diagnosis
+- Statistics about the original and filtered data
+
+Logs are written to both:
+- Console (standard output)
+- Log files in the `logs` directory with timestamps in filenames
+
+For detailed debugging information, use:
+```bash
+python filter_csv.py input.csv output.csv --log-level DEBUG
+```
 
 ### Examples
 
@@ -55,6 +74,11 @@ python filter_csv.py pipeline5.csv filtered.csv --cycles 1 2 --wells WellA1
 3. Filter pipeline 6/7/9 CSVs by cycle (filters columns):
 ```bash
 python filter_csv.py pipeline6.csv filtered.csv --cycles 1 2 3 --plates Plate1
+```
+
+4. Run with debug logging:
+```bash
+python filter_csv.py input.csv filtered.csv --wells WellA1 --log-level DEBUG
 ```
 
 ## Pipeline Type Detection
