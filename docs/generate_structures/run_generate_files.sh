@@ -1,1 +1,12 @@
-python generate_outputs.py --io-json ../io.json --batch Batch1 --plates Plate1 --rows 1 --columns 1 --wells A01 --tileperside 1 --barcoding-cycles 1  --output-file output_paths.json --create-files --base-path Source1/
+python generate_outputs.py \
+    --io-json ../io.json \
+    --batch Batch1 \
+    --plates Plate1 \
+    --rows 2 \
+    --columns 1 \
+    --wells A01 \
+    --tileperside 1 \
+    --barcoding-cycles 2 \
+    --output-file output_paths.json \
+    --create-files \
+    --base-path Source1/

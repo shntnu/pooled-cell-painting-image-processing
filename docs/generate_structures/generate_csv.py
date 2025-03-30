@@ -292,287 +292,295 @@ def main():
     # Get field configurations
     field_configs = module_config["load_data_csv_config"]["fields"]
 
-    # Open CSV file for writing
-    with open(args.output, "w", newline="") as csvfile:
-        # We'll determine the fieldnames from the first combination
-        first_combo = True
-        writer = None
+    # Get the grouping keys from the config to determine how to pivot the data
+    grouping_keys = module_config["load_data_csv_config"].get(
+        "grouping_keys", ["plate", "well", "site"]
+    )
 
-        # Iterate through all combinations of well, site, and cycle
-        for well, site, cycle in itertools.product(wells, sites, cycles):
-            # Skip cycles <= 0 for modules that require cycles
-            if cycle <= 0 and any(
-                "{cycle}" in field["name"] for field in field_configs
+    # Initialize inputs dictionary and collect all possible fields
+    all_possible_fields = set()
+
+    # Dictionary to store rows indexed by group key
+    # This will ensure we combine all cycle data for the same plate/well/site
+    pivoted_data = {}
+
+    # Iterate through all combinations of well, site, and cycle
+    for well, site, cycle in itertools.product(wells, sites, cycles):
+        # Skip cycles <= 0 for modules that require cycles
+        if cycle <= 0 and any("{cycle}" in field["name"] for field in field_configs):
+            continue
+
+        if args.verbose:
+            print(f"Processing combination: Well={well}, Site={site}, Cycle={cycle}")
+
+        # Define metadata values for this combination
+        metadata = {
+            "batch": args.batch,
+            "plate": args.plate,
+            "well": well,
+            "site": site,
+        }
+
+        # Add cycle if provided
+        if cycle > 0:
+            metadata["cycle"] = cycle
+
+            # Special handling for Pipeline 5_BC_Illum which uses Metadata_SBSCycle
+            if args.module == "5_BC_Illum":
+                metadata["SBSCycle"] = cycle
+
+        # Initialize inputs dictionary
+        inputs = {}
+
+        # Process each input source defined in the module
+        if "inputs" in module_config:
+            for input_key, input_config in module_config["inputs"].items():
+                inputs[input_key] = {}
+
+                if "source" in input_config:
+                    source_path = input_config["source"].split(".")
+                    source_module = source_path[0]
+                    source_section = source_path[1]
+                    source_key = source_path[2] if len(source_path) > 2 else None
+
+                    # Get the source patterns
+                    if (
+                        source_module in io_config
+                        and source_section in io_config[source_module]
+                    ):
+                        source_patterns = io_config[source_module][source_section]
+
+                        if source_key and source_key in source_patterns:
+                            patterns = source_patterns[source_key]["patterns"]
+
+                            # Process the pattern using our generic function
+                            pattern_results = process_pattern(
+                                source_key,
+                                patterns,
+                                metadata,
+                                channels,
+                                channel_to_microscope,
+                                pattern_configs,
+                                args,
+                                args.verbose,
+                            )
+
+                            # Add the results to the inputs dictionary
+                            inputs[input_key].update(pattern_results)
+
+        # Create a dictionary to store the row data
+        row_data = {}
+
+        # Process fields and expand for all channels/cycles
+        processed_field_templates = []
+
+        for field_config in field_configs:
+            name_template = field_config["name"]
+            source = field_config["source"]
+
+            # Skip fields with conditions that aren't met
+            if "condition" in field_config:
+                condition = field_config["condition"]
+                if condition == "cycle>0" and (cycle <= 0 or "cycle" not in metadata):
+                    continue
+
+            # Debug the field template
+            if args.verbose:
+                print(f"Processing field template: {name_template}")
+
+            # Check for placeholders in the name template
+            has_cycle = "{cycle}" in name_template
+            has_cp_channel = "{cp_channel}" in name_template
+            has_bc_channel = "{bc_channel}" in name_template
+
+            # Generate all variations of the field
+            if has_cp_channel and not has_cycle:
+                # Cell painting channel fields
+                for cp_channel in cp_channels:
+                    field_name = name_template.format(cp_channel=cp_channel)
+                    processed_field_templates.append(
+                        (field_name, source, "cp_channel", cp_channel, None)
+                    )
+
+            elif has_bc_channel and not has_cycle and args.module == "5_BC_Illum":
+                # Special case for 5_BC_Illum: bc_channel fields without cycle in field name
+                for bc_channel in bc_channels:
+                    field_name = name_template.format(bc_channel=bc_channel)
+                    processed_field_templates.append(
+                        (
+                            field_name,
+                            source,
+                            "bc_channel",
+                            bc_channel,
+                            metadata.get("cycle"),
+                        )
+                    )
+
+            elif has_bc_channel and has_cycle and "cycle" in metadata:
+                # Barcoding channel fields with cycle
+                cycle_value = metadata["cycle"]
+                for bc_channel in bc_channels:
+                    field_name = name_template.format(
+                        bc_channel=bc_channel, cycle=cycle_value
+                    )
+                    processed_field_templates.append(
+                        (field_name, source, "bc_channel", bc_channel, cycle_value)
+                    )
+
+            elif (
+                has_cycle
+                and not has_bc_channel
+                and not has_cp_channel
+                and "cycle" in metadata
             ):
-                continue
+                # Cycle-only fields
+                field_name = name_template.format(cycle=metadata["cycle"])
+                processed_field_templates.append(
+                    (field_name, source, None, None, metadata["cycle"])
+                )
+
+            else:
+                # Plain fields with no substitution
+                processed_field_templates.append(
+                    (name_template, source, None, None, None)
+                )
+
+        # Process all expanded field templates
+        for field_info in processed_field_templates:
+            field_name, source, channel_type, channel, cycle_value = field_info
 
             if args.verbose:
-                print(
-                    f"Processing combination: Well={well}, Site={site}, Cycle={cycle}"
-                )
+                print(f"Processing field: {field_name} (source: {source})")
 
-            # Define metadata values for this combination
-            metadata = {
-                "batch": args.batch,
-                "plate": args.plate,
-                "well": well,
-                "site": site,
-            }
+            # Get the value based on source
+            if source.startswith("inputs."):
+                # Parse the source path
+                source_parts = source.split(".")
+                input_type = source_parts[1]
+                input_attr = source_parts[2]
 
-            # Add cycle if provided
-            if cycle > 0:
-                metadata["cycle"] = cycle
-
-                # Special handling for Pipeline 5_BC_Illum which uses Metadata_SBSCycle
-                if args.module == "5_BC_Illum":
-                    metadata["SBSCycle"] = cycle
-
-            # Initialize inputs dictionary
-            inputs = {}
-
-            # Process each input source defined in the module
-            if "inputs" in module_config:
-                for input_key, input_config in module_config["inputs"].items():
-                    inputs[input_key] = {}
-
-                    if "source" in input_config:
-                        source_path = input_config["source"].split(".")
-                        source_module = source_path[0]
-                        source_section = source_path[1]
-                        source_key = source_path[2] if len(source_path) > 2 else None
-
-                        # Get the source patterns
-                        if (
-                            source_module in io_config
-                            and source_section in io_config[source_module]
-                        ):
-                            source_patterns = io_config[source_module][source_section]
-
-                            if source_key and source_key in source_patterns:
-                                patterns = source_patterns[source_key]["patterns"]
-
-                                # Process the pattern using our generic function
-                                pattern_results = process_pattern(
-                                    source_key,
-                                    patterns,
-                                    metadata,
-                                    channels,
-                                    channel_to_microscope,
-                                    pattern_configs,
-                                    args,
-                                    args.verbose,
-                                )
-
-                                # Add the results to the inputs dictionary
-                                inputs[input_key].update(pattern_results)
-
-            # Create a dictionary to store the row data
-            row_data = {}
-
-            # Process fields and expand for all channels/cycles
-            processed_field_templates = []
-
-            for field_config in field_configs:
-                name_template = field_config["name"]
-                source = field_config["source"]
-
-                # Skip fields with conditions that aren't met
-                if "condition" in field_config:
-                    condition = field_config["condition"]
-                    if condition == "cycle>0" and (
-                        cycle <= 0 or "cycle" not in metadata
-                    ):
-                        continue
-
-                # Debug the field template
-                if args.verbose:
-                    print(f"Processing field template: {name_template}")
-
-                # Check for placeholders in the name template
-                has_cycle = "{cycle}" in name_template
-                has_cp_channel = "{cp_channel}" in name_template
-                has_bc_channel = "{bc_channel}" in name_template
-
-                # Generate all variations of the field
-                if has_cp_channel and not has_cycle:
-                    # Cell painting channel fields
-                    for cp_channel in cp_channels:
-                        field_name = name_template.format(cp_channel=cp_channel)
-                        processed_field_templates.append(
-                            (field_name, source, "cp_channel", cp_channel, None)
-                        )
-
-                elif has_bc_channel and not has_cycle and args.module == "5_BC_Illum":
-                    # Special case for 5_BC_Illum: bc_channel fields without cycle in field name
-                    for bc_channel in bc_channels:
-                        field_name = name_template.format(bc_channel=bc_channel)
-                        processed_field_templates.append(
-                            (
-                                field_name,
-                                source,
-                                "bc_channel",
-                                bc_channel,
-                                metadata.get("cycle"),
-                            )
-                        )
-
-                elif has_bc_channel and has_cycle and "cycle" in metadata:
-                    # Barcoding channel fields with cycle
-                    cycle_value = metadata["cycle"]
-                    for bc_channel in bc_channels:
-                        field_name = name_template.format(
-                            bc_channel=bc_channel, cycle=cycle_value
-                        )
-                        processed_field_templates.append(
-                            (field_name, source, "bc_channel", bc_channel, cycle_value)
-                        )
-
-                elif (
-                    has_cycle
-                    and not has_bc_channel
-                    and not has_cp_channel
-                    and "cycle" in metadata
-                ):
-                    # Cycle-only fields
-                    field_name = name_template.format(cycle=metadata["cycle"])
-                    processed_field_templates.append(
-                        (field_name, source, None, None, metadata["cycle"])
-                    )
-
-                else:
-                    # Plain fields with no substitution
-                    processed_field_templates.append(
-                        (name_template, source, None, None, None)
-                    )
-
-            # Process all expanded field templates
-            for field_info in processed_field_templates:
-                field_name, source, channel_type, channel, cycle_value = field_info
-
-                if args.verbose:
-                    print(f"Processing field: {field_name} (source: {source})")
-
-                # Get the value based on source
-                if source.startswith("inputs."):
-                    # Parse the source path
-                    source_parts = source.split(".")
-                    input_type = source_parts[1]
-                    input_attr = source_parts[2]
-
-                    value = ""
-                    # Handle different input types and naming schemes
-                    if input_type in inputs:
-                        if cycle_value and channel and channel_type == "bc_channel":
-                            # For barcoding with cycle, use the combined key
-                            cycle_key = f"Cycle{cycle_value}_{channel}"
-                            if cycle_key in inputs[input_type]:
-                                value = inputs[input_type][cycle_key].get(
-                                    input_attr, ""
-                                )
-                                if args.verbose:
-                                    print(
-                                        f"  Found value for {cycle_key}.{input_attr}: {value}"
-                                    )
-
-                        elif channel and channel_type == "cp_channel":
-                            # For cell painting channels
-                            if channel in inputs[input_type]:
-                                value = inputs[input_type][channel].get(input_attr, "")
-                                if args.verbose:
-                                    print(
-                                        f"  Found value for {channel}.{input_attr}: {value}"
-                                    )
-
-                        elif len(inputs[input_type]) > 0:
-                            # If no specific channel, use the first one
-                            first_key = next(iter(inputs[input_type]))
-                            value = inputs[input_type][first_key].get(input_attr, "")
+                value = ""
+                # Handle different input types and naming schemes
+                if input_type in inputs:
+                    if cycle_value and channel and channel_type == "bc_channel":
+                        # For barcoding with cycle, use the combined key
+                        cycle_key = f"Cycle{cycle_value}_{channel}"
+                        if cycle_key in inputs[input_type]:
+                            value = inputs[input_type][cycle_key].get(input_attr, "")
                             if args.verbose:
                                 print(
-                                    f"  Using first key {first_key}.{input_attr}: {value}"
+                                    f"  Found value for {cycle_key}.{input_attr}: {value}"
                                 )
 
-                elif source.startswith("metadata."):
-                    # Get value from metadata
-                    meta_key = source.split(".")[1]
-                    value = metadata.get(meta_key, "")
+                    elif channel and channel_type == "cp_channel":
+                        # For cell painting channels
+                        if channel in inputs[input_type]:
+                            value = inputs[input_type][channel].get(input_attr, "")
+                            if args.verbose:
+                                print(
+                                    f"  Found value for {channel}.{input_attr}: {value}"
+                                )
 
-                else:
-                    value = ""
+                    elif len(inputs[input_type]) > 0:
+                        # If no specific channel, use the first one
+                        first_key = next(iter(inputs[input_type]))
+                        value = inputs[input_type][first_key].get(input_attr, "")
+                        if args.verbose:
+                            print(
+                                f"  Using first key {first_key}.{input_attr}: {value}"
+                            )
 
-                row_data[field_name] = value
+            elif source.startswith("metadata."):
+                # Get value from metadata
+                meta_key = source.split(".")[1]
+                value = metadata.get(meta_key, "")
 
-            # For the first combination, set up the CSV writer with the correct column order
-            if first_combo:
-                # Sort columns in the desired order
-                # First the specific metadata columns
-                priority_metadata = ["Metadata_Plate", "Metadata_Well", "Metadata_Site"]
+            else:
+                value = ""
 
-                # Get all column names
-                all_columns = list(row_data.keys())
+            row_data[field_name] = value
 
-                # Separate columns into different categories
-                metadata_columns = [
-                    col for col in all_columns if col.startswith("Metadata_")
-                ]
-                filename_columns = [
-                    col for col in all_columns if col.startswith("FileName_")
-                ]
-                pathname_columns = [
-                    col for col in all_columns if col.startswith("PathName_")
-                ]
-                other_columns = [
-                    col
-                    for col in all_columns
-                    if not (
-                        col.startswith("Metadata_")
-                        or col.startswith("FileName_")
-                        or col.startswith("PathName_")
-                    )
-                ]
+        # Collect all field names for this row
+        all_possible_fields.update(row_data.keys())
 
-                # Sort the metadata columns to put priority ones first
-                sorted_metadata = []
-                for col in priority_metadata:
-                    if col in metadata_columns:
-                        sorted_metadata.append(col)
-                        metadata_columns.remove(col)
+        # Create a group key based on the grouping values
+        # Convert metadata values to tuple based on grouping keys (exclude cycle)
+        group_key = tuple(metadata.get(key) for key in grouping_keys)
 
-                # Add remaining metadata columns
-                sorted_metadata.extend(sorted(metadata_columns))
+        # If we already have a row for this group, update it with the new data
+        # otherwise create a new entry
+        if group_key in pivoted_data:
+            pivoted_data[group_key].update(row_data)
+        else:
+            pivoted_data[group_key] = row_data.copy()
 
-                # Create pairs of FileName/PathName columns and keep them together
-                filename_pathname_pairs = []
-                for filename_col in sorted(filename_columns):
-                    # Find the corresponding PathName column
-                    base_name = filename_col[len("FileName_") :]
-                    pathname_col = f"PathName_{base_name}"
-                    if pathname_col in pathname_columns:
-                        filename_pathname_pairs.extend([filename_col, pathname_col])
-                        pathname_columns.remove(pathname_col)
+    # Open CSV file for writing after collecting all possible fields
+    with open(args.output, "w", newline="") as csvfile:
+        # Sort columns in the desired order
+        # First the specific metadata columns
+        priority_metadata = ["Metadata_Plate", "Metadata_Well", "Metadata_Site"]
 
-                # Add any remaining pathname columns and other columns
-                remaining_columns = sorted(pathname_columns) + sorted(other_columns)
+        # Get all column names
+        all_columns = list(all_possible_fields)
 
-                # Combine all columns in the desired order
-                ordered_columns = (
-                    sorted_metadata + filename_pathname_pairs + remaining_columns
-                )
+        # Separate columns into different categories
+        metadata_columns = [col for col in all_columns if col.startswith("Metadata_")]
+        filename_columns = [col for col in all_columns if col.startswith("FileName_")]
+        pathname_columns = [col for col in all_columns if col.startswith("PathName_")]
+        other_columns = [
+            col
+            for col in all_columns
+            if not (
+                col.startswith("Metadata_")
+                or col.startswith("FileName_")
+                or col.startswith("PathName_")
+            )
+        ]
 
-                if args.verbose:
-                    print("Column order:")
-                    for i, col in enumerate(ordered_columns):
-                        print(f"  {i + 1}. {col}")
+        # Sort the metadata columns to put priority ones first
+        sorted_metadata = []
+        for col in priority_metadata:
+            if col in metadata_columns:
+                sorted_metadata.append(col)
+                metadata_columns.remove(col)
 
-                writer = csv.DictWriter(csvfile, fieldnames=ordered_columns)
-                writer.writeheader()
-                first_combo = False
+        # Add remaining metadata columns
+        sorted_metadata.extend(sorted(metadata_columns))
 
-            # Write the row for this combination
+        # Create pairs of FileName/PathName columns and keep them together
+        filename_pathname_pairs = []
+        for filename_col in sorted(filename_columns):
+            # Find the corresponding PathName column
+            base_name = filename_col[len("FileName_") :]
+            pathname_col = f"PathName_{base_name}"
+            if pathname_col in pathname_columns:
+                filename_pathname_pairs.extend([filename_col, pathname_col])
+                pathname_columns.remove(pathname_col)
+
+        # Add any remaining pathname columns and other columns
+        remaining_columns = sorted(pathname_columns) + sorted(other_columns)
+
+        # Combine all columns in the desired order
+        ordered_columns = sorted_metadata + filename_pathname_pairs + remaining_columns
+
+        if args.verbose:
+            print("Column order:")
+            for i, col in enumerate(ordered_columns):
+                print(f"  {i + 1}. {col}")
+
+        writer = csv.DictWriter(csvfile, fieldnames=ordered_columns)
+        writer.writeheader()
+
+        # Write all rows (now pivoted by group key)
+        for row_data in pivoted_data.values():
+            # Fill in missing fields with empty values
+            for field in ordered_columns:
+                if field not in row_data:
+                    row_data[field] = ""
             writer.writerow(row_data)
 
     # Print summary
-    num_combinations = len(wells) * len(sites) * len(cycles)
+    num_combinations = len(pivoted_data)
     print(
         f"CSV with {num_combinations} rows generated for {args.module} in {args.output}"
     )
