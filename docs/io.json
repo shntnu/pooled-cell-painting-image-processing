@@ -482,7 +482,7 @@
             },
             "cropped_tiles": {
                 "patterns": [
-                    "{batch}/images_corrected_cropped/barcoding/{plate}/{plate}_Well{well}/Cycle{cycle}_{bc_channel}/Cycle{cycle}_{bc_channel}_Site_{tile_number}.tiff"
+                    "{batch}/images_corrected_cropped/barcoding/{plate}/{plate}_Well{well}/Cycle{cycle}_{bc_channel}/Cycle{cycle}_{bc_channel}_Tile_{tile_number}.tiff"
                 ]
             },
             "previews": {
