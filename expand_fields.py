@@ -128,8 +128,8 @@ def resolve_input_source(pipelines, source, metadata):
 ###### Field processing functions ######
 
 
-def process_metadata_field(field_name, field_source, metadata, cycle=None):
-    """Process a metadata field and return it if valid."""
+def extract_metadata_field(field_name, field_source, metadata, cycle=None):
+    """Extract a metadata field and return it if valid."""
     if not field_name.startswith("Metadata_"):
         return None
 
@@ -146,7 +146,7 @@ def process_metadata_field(field_name, field_source, metadata, cycle=None):
     return None
 
 
-def process_field(
+def expand_field(
     field_name,
     field_source,
     pipeline,
@@ -159,7 +159,7 @@ def process_field(
     pipeline_name,
     reverse_channel_mappings,
 ):
-    """Process a single field with channel and cycle expansion"""
+    """Expand a single field with channel and cycle substitutions"""
     results = []
 
     # Skip if source is not specified
@@ -233,7 +233,7 @@ def process_field(
     return results
 
 
-def process_field_for_cycles(
+def expand_field_with_cycles(
     field_name,
     field_source,
     pipeline_name,
@@ -247,14 +247,14 @@ def process_field_for_cycles(
     reverse_channel_mappings,
     current_cycle=None,
 ):
-    """Process a field for specific cycles, handling metadata and channel fields."""
+    """Expand a field for specific cycles, handling metadata and channel fields."""
     # Create metadata with cycle if needed
     metadata = deepcopy(base_metadata)
     if current_cycle is not None:
         metadata["cycle"] = current_cycle
 
     # Handle metadata fields
-    metadata_field = process_metadata_field(
+    metadata_field = extract_metadata_field(
         field_name, field_source, metadata, current_cycle
     )
     if metadata_field:
@@ -281,8 +281,8 @@ def process_field_for_cycles(
         # Skip if not a channel field
         return []
 
-    # Process channel fields with appropriate cycles
-    return process_field(
+    # Expand field with appropriate cycles
+    return expand_field(
         field_name,
         field_source,
         pipeline,
@@ -300,7 +300,7 @@ def process_field_for_cycles(
 ###### Pipeline processing functions ######
 
 
-def process_pipeline_fields(
+def expand_pipeline_fields(
     pipeline_name,
     pipeline,
     pipelines,
@@ -313,7 +313,7 @@ def process_pipeline_fields(
     pipeline_results,
     reverse_channel_mappings,
 ):
-    """Process fields for a specific pipeline and location"""
+    """Expand fields for a specific pipeline and location"""
     # Get the load_data_csv_config
     load_data_config = pipeline["load_data_csv_config"]
     grouping_keys = load_data_config["grouping_keys"]
@@ -339,7 +339,7 @@ def process_pipeline_fields(
             # Process each cycle separately for cycle-grouped pipelines
             for cycle in cycles:
                 # Process this field for the current cycle
-                expanded = process_field_for_cycles(
+                expanded = expand_field_with_cycles(
                     field_name,
                     field_source,
                     pipeline_name,
@@ -356,7 +356,7 @@ def process_pipeline_fields(
                 result[cycle].extend(expanded)
         else:
             # Process non-cycle-grouped pipeline
-            expanded = process_field_for_cycles(
+            expanded = expand_field_with_cycles(
                 field_name,
                 field_source,
                 pipeline_name,
@@ -453,7 +453,7 @@ def expand_fields(io_json_path, config=None):
                 location_key = f"{well}-{location_value}"
 
                 # Process the fields for this location
-                process_pipeline_fields(
+                expand_pipeline_fields(
                     pipeline_name,
                     pipeline,
                     pipelines,
@@ -473,8 +473,11 @@ def expand_fields(io_json_path, config=None):
     return results
 
 
-def save_expanded_fields_as_json(results, output_file):
-    """Save the expanded fields to a JSON file"""
+###### Output functions ######
+
+
+def write_fields_to_json(results, output_file):
+    """Write the expanded fields to a JSON file"""
     # Convert cycle keys from int to str for JSON serialization
     json_results = {}
 
@@ -525,4 +528,4 @@ if __name__ == "__main__":
     results = expand_fields(args.io_json, config)
     # Save to JSON if output file is specified
     if args.output:
-        save_expanded_fields_as_json(results, args.output)
+        write_fields_to_json(results, args.output)
