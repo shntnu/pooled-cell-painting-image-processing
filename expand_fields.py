@@ -256,6 +256,20 @@ def process_metadata_field(field_name, field_source, metadata, cycle=None):
     return None
 
 
+def get_required_source(field, pipeline_name):
+    """Extract and validate the required source field."""
+    field_name = field["name"]
+
+    # Source is required
+    assert "source" in field, (
+        f"Field {field_name} in {pipeline_name} is missing source attribute"
+    )
+    field_source = field["source"]
+    assert field_source, f"Field {field_name} in {pipeline_name} has empty source"
+
+    return field_name, field_source
+
+
 def process_pipeline_fields(
     pipeline_name,
     pipeline,
@@ -288,8 +302,8 @@ def process_pipeline_fields(
 
             # Process all fields for this cycle
             for field in fields:
-                field_name = field["name"]
-                field_source = field.get("source", "")
+                # Get required field name and source
+                field_name, field_source = get_required_source(field, pipeline_name)
 
                 # Handle metadata fields
                 metadata_field = process_metadata_field(
@@ -333,8 +347,8 @@ def process_pipeline_fields(
         expanded_fields = []
 
         for field in fields:
-            field_name = field["name"]
-            field_source = field.get("source", "")
+            # Get required field name and source
+            field_name, field_source = get_required_source(field, pipeline_name)
 
             # Handle metadata fields
             metadata_field = process_metadata_field(field_name, field_source, metadata)
