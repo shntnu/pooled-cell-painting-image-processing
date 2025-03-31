@@ -29,13 +29,19 @@ def resolve_input_source(pipelines, source, metadata):
     return resolved_patterns
 
 
-def get_microscope_channel(channel, channel_type, mappings):
-    """Get the microscope channel for a logical channel"""
-    mapping = mappings.get(channel_type, {}).get("microscope_mapping", {})
-    for mic_ch, log_ch in mapping.items():
-        if log_ch == channel:
-            return mic_ch
-    return None
+def create_reverse_channel_mappings(channel_mappings):
+    """Create reverse mappings from logical channels to microscope channels.
+
+    This is done once up front instead of repeatedly during processing.
+    """
+    reverse_mappings = {}
+    for channel_type, mapping_data in channel_mappings.items():
+        microscope_mapping = mapping_data.get("microscope_mapping", {})
+        # Create reverse mapping (logical -> microscope)
+        reverse_mappings[channel_type] = {
+            logical: microscope for microscope, logical in microscope_mapping.items()
+        }
+    return reverse_mappings
 
 
 def apply_metadata_to_pattern(pattern, metadata):
@@ -46,13 +52,15 @@ def apply_metadata_to_pattern(pattern, metadata):
     return result
 
 
-def expand_channel_pattern(pattern, channel, channel_type, microscope_var, mappings):
+def expand_channel_pattern(
+    pattern, channel, channel_type, microscope_var, reverse_channel_mappings
+):
     """Expand a pattern with channel and microscope mappings"""
     result = pattern
 
-    # Handle microscope channel mapping
+    # Handle microscope channel mapping using direct lookup
     if microscope_var in result:
-        microscope_channel = get_microscope_channel(channel, channel_type, mappings)
+        microscope_channel = reverse_channel_mappings.get(channel_type, {}).get(channel)
         if microscope_channel:
             result = result.replace(microscope_var, microscope_channel)
 
@@ -72,8 +80,9 @@ def process_field(
     cycles,
     channel_type,
     channels,
-    mappings,
+    channel_mappings,
     pipeline_name,
+    reverse_channel_mappings,
 ):
     """Process a single field with channel and cycle expansion"""
     results = []
@@ -133,7 +142,11 @@ def process_field(
             # Apply channel mapping and substitution
             microscope_var = f"{{{channel_type}_microscope_channel}}"
             expanded_pattern = expand_channel_pattern(
-                expanded_pattern, channel, channel_type, microscope_var, mappings
+                expanded_pattern,
+                channel,
+                channel_type,
+                microscope_var,
+                reverse_channel_mappings,
             )
 
             # Handle cycle substitution if needed
@@ -173,6 +186,9 @@ def expand_fields(io_json_path, config=None):
     cp_channels = metadata_schema.get("cp_channel", {}).get("enum", [])
     bc_channels = metadata_schema.get("bc_channel", {}).get("enum", [])
     channel_mappings = metadata_schema.get("channel_mapping", {})
+
+    # Create reverse channel mappings once up front
+    reverse_channel_mappings = create_reverse_channel_mappings(channel_mappings)
 
     # Get parameters from config - these must exist
     assert "wells" in config, "wells must be specified in config"
@@ -230,6 +246,7 @@ def expand_fields(io_json_path, config=None):
                     channel_mappings,
                     location_key,
                     pipeline_results,
+                    reverse_channel_mappings,
                 )
 
         # Add this pipeline's results to the overall results
@@ -281,26 +298,10 @@ def process_field_for_cycles(
     cp_channels,
     bc_channels,
     channel_mappings,
+    reverse_channel_mappings,
     current_cycle=None,
 ):
-    """Process a field for specific cycles, handling metadata and channel fields.
-
-    Args:
-        field_name: Name of the field to process
-        field_source: Source string for the field
-        pipeline_name: Name of the current pipeline
-        pipeline: Pipeline configuration
-        pipelines: All pipelines configuration
-        base_metadata: Base metadata dict
-        cycles_to_use: List of cycles to use for this field
-        cp_channels: List of CP channels
-        bc_channels: List of BC channels
-        channel_mappings: Channel mapping configuration
-        current_cycle: Current cycle being processed (for cycle-grouped pipelines)
-
-    Returns:
-        List of expanded fields
-    """
+    """Process a field for specific cycles, handling metadata and channel fields."""
     # Create metadata with cycle if needed
     metadata = deepcopy(base_metadata)
     if current_cycle is not None:
@@ -346,6 +347,7 @@ def process_field_for_cycles(
         channels,
         channel_mappings,
         pipeline_name,
+        reverse_channel_mappings,
     )
 
 
@@ -360,6 +362,7 @@ def process_pipeline_fields(
     channel_mappings,
     location_key,
     pipeline_results,
+    reverse_channel_mappings,
 ):
     """Process fields for a specific pipeline and location"""
     # Get the load_data_csv_config
@@ -398,6 +401,7 @@ def process_pipeline_fields(
                     cp_channels,
                     bc_channels,
                     channel_mappings,
+                    reverse_channel_mappings,
                     current_cycle=cycle,
                 )
                 result[cycle].extend(expanded)
@@ -414,6 +418,7 @@ def process_pipeline_fields(
                 cp_channels,
                 bc_channels,
                 channel_mappings,
+                reverse_channel_mappings,
                 current_cycle=None,
             )
             result.extend(expanded)
