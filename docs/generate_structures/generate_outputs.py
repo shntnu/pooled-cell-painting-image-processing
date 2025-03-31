@@ -16,9 +16,10 @@ def load_json(json_path: str) -> Dict:
 
 def get_wells(specified_wells: Optional[List[str]] = None) -> List[str]:
     """Generate well IDs (A01-H12) if not specified."""
-    if specified_wells:
-        return specified_wells
-    return [f"{row}{col:02d}" for row in "ABCDEFGH" for col in range(1, 13)]
+    assert specified_wells is not None, (
+        "Wells must be explicitly specified with --wells argument"
+    )
+    return specified_wells
 
 
 def get_sites(
@@ -42,7 +43,10 @@ def get_sites(
 
 def get_tiles(tileperside: int) -> List[int]:
     """Generate tile numbers based on tileperside parameter."""
-    return list(range(1, (tileperside * tileperside) + 1))
+    if tileperside <= 0:
+        raise ValueError("tileperside must be a positive integer")
+    # Return tile numbers starting from 0
+    return list(range(0, tileperside * tileperside))
 
 
 def extract_pattern_vars(pattern: str) -> Set[str]:
@@ -95,6 +99,7 @@ def expand_pattern(
     if "cycle" in pattern_vars:
         param_options["cycle"] = cycles
     if "tile_number" in pattern_vars:
+        # For patterns that use tile_number (like pipeline 9)
         param_options["tile_number"] = tiles
     if "object_type" in pattern_vars:
         param_options["object_type"] = object_types
@@ -146,7 +151,7 @@ def generate_all_outputs(
     io_json_path: str,
     batch_id: str,
     plates: List[str],
-    wells: Optional[List[str]] = None,
+    wells: List[str],  # Wells are now required, not optional
     barcoding_cycles: int = 4,
     rows: Optional[int] = None,
     columns: Optional[int] = None,
@@ -178,7 +183,7 @@ def generate_all_outputs(
     schema = load_json(io_json_path)
 
     # 2. Generate parameter lists
-    wells_list = get_wells(wells)
+    wells_list = get_wells(wells)  # Format wells properly
 
     # Use appropriate rows/columns values
     painting_rows_val = painting_rows or rows
@@ -199,8 +204,17 @@ def generate_all_outputs(
     cp_microscope_channels = schema["metadata_schema"]["cp_microscope_channel"]["enum"]
     bc_microscope_channels = schema["metadata_schema"]["bc_microscope_channel"]["enum"]
 
-    # 4. Generate tiles list
+    # 4. Generate tiles list - ensure tileperside is valid
+    assert tileperside > 0, "tileperside must be a positive int"
     tiles_list = get_tiles(tileperside)
+
+    # Print parameter information for debugging
+    print(
+        f"Generating outputs with: {len(wells_list)} wells, "
+        f"{len(painting_sites_list)} painting sites, "
+        f"{len(barcoding_sites_list)} barcoding sites, "
+        f"{len(tiles_list)} tiles"
+    )
 
     # 5. Process each module and calculate its outputs
     for module_name in schema.keys():
@@ -326,10 +340,11 @@ def main():
     parser.add_argument(
         "--plates", required=True, nargs="+", help="List of plate identifiers"
     )
-
-    # Optional well specification
     parser.add_argument(
-        "--wells", nargs="+", help="List of wells (default: all 96 wells A01-H12)"
+        "--wells",
+        required=True,
+        nargs="+",
+        help="List of wells (required, format: A01 or A1)",
     )
 
     # Grid layout
