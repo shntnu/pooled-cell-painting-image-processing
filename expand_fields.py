@@ -270,6 +270,85 @@ def get_required_source(field, pipeline_name):
     return field_name, field_source
 
 
+def process_field_for_cycles(
+    field_name,
+    field_source,
+    pipeline_name,
+    pipeline,
+    pipelines,
+    base_metadata,
+    cycles_to_use,
+    cp_channels,
+    bc_channels,
+    channel_mappings,
+    current_cycle=None,
+):
+    """Process a field for specific cycles, handling metadata and channel fields.
+
+    Args:
+        field_name: Name of the field to process
+        field_source: Source string for the field
+        pipeline_name: Name of the current pipeline
+        pipeline: Pipeline configuration
+        pipelines: All pipelines configuration
+        base_metadata: Base metadata dict
+        cycles_to_use: List of cycles to use for this field
+        cp_channels: List of CP channels
+        bc_channels: List of BC channels
+        channel_mappings: Channel mapping configuration
+        current_cycle: Current cycle being processed (for cycle-grouped pipelines)
+
+    Returns:
+        List of expanded fields
+    """
+    # Create metadata with cycle if needed
+    metadata = deepcopy(base_metadata)
+    if current_cycle is not None:
+        metadata["cycle"] = current_cycle
+
+    # Handle metadata fields
+    metadata_field = process_metadata_field(
+        field_name, field_source, metadata, current_cycle
+    )
+    if metadata_field:
+        return [metadata_field]
+
+    # Determine channel type, channels list, and cycles to use
+    if "{cp_channel}" in field_name:
+        channel_type = "cp"
+        channels = cp_channels
+        if current_cycle is not None:
+            # For cycle-grouped pipelines
+            cycles_to_use = [current_cycle]
+        else:
+            # For non-cycle-grouped pipelines
+            cycles_to_use = [0]  # Default for CP channels
+    elif "{bc_channel}" in field_name:
+        channel_type = "bc"
+        channels = bc_channels
+        if current_cycle is not None:
+            # For cycle-grouped pipelines
+            cycles_to_use = [current_cycle]
+        # For non-cycle-grouped, use cycles_to_use passed in
+    else:
+        # Skip if not a channel field
+        return []
+
+    # Process channel fields with appropriate cycles
+    return process_field(
+        field_name,
+        field_source,
+        pipeline,
+        pipelines,
+        metadata,
+        cycles_to_use,
+        channel_type,
+        channels,
+        channel_mappings,
+        pipeline_name,
+    )
+
+
 def process_pipeline_fields(
     pipeline_name,
     pipeline,
@@ -307,77 +386,35 @@ def process_pipeline_fields(
         if cycle_is_grouping_key:
             # Process each cycle separately for cycle-grouped pipelines
             for cycle in cycles:
-                cycle_metadata = deepcopy(metadata)
-                cycle_metadata["cycle"] = cycle
-
-                # Handle metadata fields
-                metadata_field = process_metadata_field(
-                    field_name, field_source, cycle_metadata, cycle
-                )
-                if metadata_field:
-                    result[cycle].append(metadata_field)
-                    continue
-
-                # Determine channel type and channels list
-                if "{cp_channel}" in field_name:
-                    channel_type = "cp"
-                    channels = cp_channels
-                    cycles_to_use = [cycle]  # Just this cycle
-                elif "{bc_channel}" in field_name:
-                    channel_type = "bc"
-                    channels = bc_channels
-                    cycles_to_use = [cycle]  # Just this cycle
-                else:
-                    # Skip if not a channel field
-                    continue
-
-                # Process channel fields
-                expanded = process_field(
+                # Process this field for the current cycle
+                expanded = process_field_for_cycles(
                     field_name,
                     field_source,
+                    pipeline_name,
                     pipeline,
                     pipelines,
-                    cycle_metadata,
-                    cycles_to_use,
-                    channel_type,
-                    channels,
+                    metadata,
+                    cycles,  # All cycles (function will use only current cycle)
+                    cp_channels,
+                    bc_channels,
                     channel_mappings,
-                    pipeline_name,
+                    current_cycle=cycle,
                 )
                 result[cycle].extend(expanded)
         else:
-            # Handle non-cycle-grouped pipelines
-            # Handle metadata fields
-            metadata_field = process_metadata_field(field_name, field_source, metadata)
-            if metadata_field:
-                result.append(metadata_field)
-                continue
-
-            # Determine channel type, channels list, and cycles to use
-            if "{cp_channel}" in field_name:
-                channel_type = "cp"
-                channels = cp_channels
-                cycles_to_use = [0]  # Default for CP channels
-            elif "{bc_channel}" in field_name:
-                channel_type = "bc"
-                channels = bc_channels
-                cycles_to_use = cycles  # Use all cycles directly
-            else:
-                # Skip if not a channel field
-                continue
-
-            # Process channel fields with appropriate cycles
-            expanded = process_field(
+            # Process non-cycle-grouped pipeline
+            expanded = process_field_for_cycles(
                 field_name,
                 field_source,
+                pipeline_name,
                 pipeline,
                 pipelines,
                 metadata,
-                cycles_to_use,
-                channel_type,
-                channels,
+                cycles,  # All cycles (for BC channels)
+                cp_channels,
+                bc_channels,
                 channel_mappings,
-                pipeline_name,
+                current_cycle=None,
             )
             result.extend(expanded)
 
