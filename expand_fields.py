@@ -4,6 +4,102 @@ import argparse
 from copy import deepcopy
 
 
+###### Utility functions ######
+
+
+def apply_metadata_to_pattern(pattern, metadata):
+    """Apply all metadata substitutions to a pattern"""
+    result = pattern
+    for key, value in metadata.items():
+        result = result.replace(f"{{{key}}}", str(value))
+    return result
+
+
+def get_required_source(field, pipeline_name):
+    """Extract and validate the required source field."""
+    field_name = field["name"]
+
+    # Source is required
+    assert "source" in field, (
+        f"Field {field_name} in {pipeline_name} is missing source attribute"
+    )
+    field_source = field["source"]
+    assert field_source, f"Field {field_name} in {pipeline_name} has empty source"
+
+    return field_name, field_source
+
+
+def create_reverse_channel_mappings(channel_mappings):
+    """Create reverse mappings from logical channels to microscope channels.
+
+    This is done once up front instead of repeatedly during processing.
+    """
+    reverse_mappings = {}
+    for channel_type, mapping_data in channel_mappings.items():
+        microscope_mapping = mapping_data.get("microscope_mapping", {})
+        # Create reverse mapping (logical -> microscope)
+        reverse_mappings[channel_type] = {
+            logical: microscope for microscope, logical in microscope_mapping.items()
+        }
+    return reverse_mappings
+
+
+def parse_args():
+    """Parse command line arguments"""
+    parser = argparse.ArgumentParser(
+        description="Expand fields for CellProfiler pipelines"
+    )
+    parser.add_argument(
+        "--io_json", type=str, default="docs/io.json", help="Path to the io.json file"
+    )
+    parser.add_argument("--config", type=str, help="Path to a JSON config file")
+    parser.add_argument("--batch", type=str, default="Batch1", help="Batch identifier")
+    parser.add_argument("--plate", type=str, default="Plate1", help="Plate identifier")
+    parser.add_argument(
+        "--wells",
+        type=str,
+        nargs="+",
+        default=["A1"],
+        help="Well identifiers (e.g. A1 B02)",
+    )
+    parser.add_argument(
+        "--sites", type=int, nargs="+", default=[1], help="Site numbers"
+    )
+    parser.add_argument(
+        "--raw_image_template", type=str, default="FOV", help="Raw image template"
+    )
+    parser.add_argument(
+        "--cycles", type=int, nargs="+", default=[1, 2], help="Cycle numbers"
+    )
+    parser.add_argument(
+        "--tile_numbers", type=int, nargs="+", default=[1, 2, 3, 4], help="Tile numbers"
+    )
+    parser.add_argument("--output", type=str, help="Output file path for JSON results")
+    return parser.parse_args()
+
+
+###### Pattern resolution functions ######
+
+
+def expand_channel_pattern(
+    pattern, channel, channel_type, microscope_var, reverse_channel_mappings
+):
+    """Expand a pattern with channel and microscope mappings"""
+    result = pattern
+
+    # Handle microscope channel mapping using direct lookup
+    if microscope_var in result:
+        microscope_channel = reverse_channel_mappings.get(channel_type, {}).get(channel)
+        if microscope_channel:
+            result = result.replace(microscope_var, microscope_channel)
+
+    # Direct channel substitution
+    channel_var = f"{{{channel_type}_channel}}"
+    result = result.replace(channel_var, channel)
+
+    return result
+
+
 def resolve_input_source(pipelines, source, metadata):
     """Recursively resolve an input source to its file patterns"""
     parts = source.split(".")
@@ -29,46 +125,25 @@ def resolve_input_source(pipelines, source, metadata):
     return resolved_patterns
 
 
-def create_reverse_channel_mappings(channel_mappings):
-    """Create reverse mappings from logical channels to microscope channels.
-
-    This is done once up front instead of repeatedly during processing.
-    """
-    reverse_mappings = {}
-    for channel_type, mapping_data in channel_mappings.items():
-        microscope_mapping = mapping_data.get("microscope_mapping", {})
-        # Create reverse mapping (logical -> microscope)
-        reverse_mappings[channel_type] = {
-            logical: microscope for microscope, logical in microscope_mapping.items()
-        }
-    return reverse_mappings
+###### Field processing functions ######
 
 
-def apply_metadata_to_pattern(pattern, metadata):
-    """Apply all metadata substitutions to a pattern"""
-    result = pattern
-    for key, value in metadata.items():
-        result = result.replace(f"{{{key}}}", str(value))
-    return result
+def process_metadata_field(field_name, field_source, metadata, cycle=None):
+    """Process a metadata field and return it if valid."""
+    if not field_name.startswith("Metadata_"):
+        return None
 
+    # Handle special case for SBSCycle
+    if field_name == "Metadata_SBSCycle" and cycle is not None:
+        return {"name": field_name, "value": cycle}
 
-def expand_channel_pattern(
-    pattern, channel, channel_type, microscope_var, reverse_channel_mappings
-):
-    """Expand a pattern with channel and microscope mappings"""
-    result = pattern
+    # Handle metadata from source mapping
+    if field_source.startswith("metadata."):
+        meta_key = field_source.split(".")[1]
+        if meta_key in metadata:
+            return {"name": field_name, "value": metadata[meta_key]}
 
-    # Handle microscope channel mapping using direct lookup
-    if microscope_var in result:
-        microscope_channel = reverse_channel_mappings.get(channel_type, {}).get(channel)
-        if microscope_channel:
-            result = result.replace(microscope_var, microscope_channel)
-
-    # Direct channel substitution
-    channel_var = f"{{{channel_type}_channel}}"
-    result = result.replace(channel_var, channel)
-
-    return result
+    return None
 
 
 def process_field(
@@ -156,6 +231,149 @@ def process_field(
             results.append({"name": expanded_name, "value": expanded_pattern})
 
     return results
+
+
+def process_field_for_cycles(
+    field_name,
+    field_source,
+    pipeline_name,
+    pipeline,
+    pipelines,
+    base_metadata,
+    cycles_to_use,
+    cp_channels,
+    bc_channels,
+    channel_mappings,
+    reverse_channel_mappings,
+    current_cycle=None,
+):
+    """Process a field for specific cycles, handling metadata and channel fields."""
+    # Create metadata with cycle if needed
+    metadata = deepcopy(base_metadata)
+    if current_cycle is not None:
+        metadata["cycle"] = current_cycle
+
+    # Handle metadata fields
+    metadata_field = process_metadata_field(
+        field_name, field_source, metadata, current_cycle
+    )
+    if metadata_field:
+        return [metadata_field]
+
+    # Determine channel type, channels list, and cycles to use
+    if "{cp_channel}" in field_name:
+        channel_type = "cp"
+        channels = cp_channels
+        if current_cycle is not None:
+            # For cycle-grouped pipelines
+            cycles_to_use = [current_cycle]
+        else:
+            # For non-cycle-grouped pipelines
+            cycles_to_use = [0]  # Default for CP channels
+    elif "{bc_channel}" in field_name:
+        channel_type = "bc"
+        channels = bc_channels
+        if current_cycle is not None:
+            # For cycle-grouped pipelines
+            cycles_to_use = [current_cycle]
+        # For non-cycle-grouped, use cycles_to_use passed in
+    else:
+        # Skip if not a channel field
+        return []
+
+    # Process channel fields with appropriate cycles
+    return process_field(
+        field_name,
+        field_source,
+        pipeline,
+        pipelines,
+        metadata,
+        cycles_to_use,
+        channel_type,
+        channels,
+        channel_mappings,
+        pipeline_name,
+        reverse_channel_mappings,
+    )
+
+
+###### Pipeline processing functions ######
+
+
+def process_pipeline_fields(
+    pipeline_name,
+    pipeline,
+    pipelines,
+    metadata,
+    cycles,
+    cp_channels,
+    bc_channels,
+    channel_mappings,
+    location_key,
+    pipeline_results,
+    reverse_channel_mappings,
+):
+    """Process fields for a specific pipeline and location"""
+    # Get the load_data_csv_config
+    load_data_config = pipeline["load_data_csv_config"]
+    grouping_keys = load_data_config["grouping_keys"]
+    fields = load_data_config["fields"]
+
+    # Check if cycle is a grouping dimension
+    cycle_is_grouping_key = "cycle" in grouping_keys
+
+    # Initialize the result structure based on whether we're grouping by cycle
+    if cycle_is_grouping_key:
+        result = {}  # Will be a dict mapping cycles to field lists
+        for cycle in cycles:
+            result[cycle] = []
+    else:
+        result = []  # Will be a flat list of fields
+
+    # Process all fields
+    for field in fields:
+        # Get required field name and source
+        field_name, field_source = get_required_source(field, pipeline_name)
+
+        if cycle_is_grouping_key:
+            # Process each cycle separately for cycle-grouped pipelines
+            for cycle in cycles:
+                # Process this field for the current cycle
+                expanded = process_field_for_cycles(
+                    field_name,
+                    field_source,
+                    pipeline_name,
+                    pipeline,
+                    pipelines,
+                    metadata,
+                    cycles,  # All cycles (function will use only current cycle)
+                    cp_channels,
+                    bc_channels,
+                    channel_mappings,
+                    reverse_channel_mappings,
+                    current_cycle=cycle,
+                )
+                result[cycle].extend(expanded)
+        else:
+            # Process non-cycle-grouped pipeline
+            expanded = process_field_for_cycles(
+                field_name,
+                field_source,
+                pipeline_name,
+                pipeline,
+                pipelines,
+                metadata,
+                cycles,  # All cycles (for BC channels)
+                cp_channels,
+                bc_channels,
+                channel_mappings,
+                reverse_channel_mappings,
+                current_cycle=None,
+            )
+            result.extend(expanded)
+
+    # Store the results
+    pipeline_results[location_key] = result
 
 
 def expand_fields(io_json_path, config=None):
@@ -255,178 +473,6 @@ def expand_fields(io_json_path, config=None):
     return results
 
 
-def process_metadata_field(field_name, field_source, metadata, cycle=None):
-    """Process a metadata field and return it if valid."""
-    if not field_name.startswith("Metadata_"):
-        return None
-
-    # Handle special case for SBSCycle
-    if field_name == "Metadata_SBSCycle" and cycle is not None:
-        return {"name": field_name, "value": cycle}
-
-    # Handle metadata from source mapping
-    if field_source.startswith("metadata."):
-        meta_key = field_source.split(".")[1]
-        if meta_key in metadata:
-            return {"name": field_name, "value": metadata[meta_key]}
-
-    return None
-
-
-def get_required_source(field, pipeline_name):
-    """Extract and validate the required source field."""
-    field_name = field["name"]
-
-    # Source is required
-    assert "source" in field, (
-        f"Field {field_name} in {pipeline_name} is missing source attribute"
-    )
-    field_source = field["source"]
-    assert field_source, f"Field {field_name} in {pipeline_name} has empty source"
-
-    return field_name, field_source
-
-
-def process_field_for_cycles(
-    field_name,
-    field_source,
-    pipeline_name,
-    pipeline,
-    pipelines,
-    base_metadata,
-    cycles_to_use,
-    cp_channels,
-    bc_channels,
-    channel_mappings,
-    reverse_channel_mappings,
-    current_cycle=None,
-):
-    """Process a field for specific cycles, handling metadata and channel fields."""
-    # Create metadata with cycle if needed
-    metadata = deepcopy(base_metadata)
-    if current_cycle is not None:
-        metadata["cycle"] = current_cycle
-
-    # Handle metadata fields
-    metadata_field = process_metadata_field(
-        field_name, field_source, metadata, current_cycle
-    )
-    if metadata_field:
-        return [metadata_field]
-
-    # Determine channel type, channels list, and cycles to use
-    if "{cp_channel}" in field_name:
-        channel_type = "cp"
-        channels = cp_channels
-        if current_cycle is not None:
-            # For cycle-grouped pipelines
-            cycles_to_use = [current_cycle]
-        else:
-            # For non-cycle-grouped pipelines
-            cycles_to_use = [0]  # Default for CP channels
-    elif "{bc_channel}" in field_name:
-        channel_type = "bc"
-        channels = bc_channels
-        if current_cycle is not None:
-            # For cycle-grouped pipelines
-            cycles_to_use = [current_cycle]
-        # For non-cycle-grouped, use cycles_to_use passed in
-    else:
-        # Skip if not a channel field
-        return []
-
-    # Process channel fields with appropriate cycles
-    return process_field(
-        field_name,
-        field_source,
-        pipeline,
-        pipelines,
-        metadata,
-        cycles_to_use,
-        channel_type,
-        channels,
-        channel_mappings,
-        pipeline_name,
-        reverse_channel_mappings,
-    )
-
-
-def process_pipeline_fields(
-    pipeline_name,
-    pipeline,
-    pipelines,
-    metadata,
-    cycles,
-    cp_channels,
-    bc_channels,
-    channel_mappings,
-    location_key,
-    pipeline_results,
-    reverse_channel_mappings,
-):
-    """Process fields for a specific pipeline and location"""
-    # Get the load_data_csv_config
-    load_data_config = pipeline["load_data_csv_config"]
-    grouping_keys = load_data_config["grouping_keys"]
-    fields = load_data_config["fields"]
-
-    # Check if cycle is a grouping dimension
-    cycle_is_grouping_key = "cycle" in grouping_keys
-
-    # Initialize the result structure based on whether we're grouping by cycle
-    if cycle_is_grouping_key:
-        result = {}  # Will be a dict mapping cycles to field lists
-        for cycle in cycles:
-            result[cycle] = []
-    else:
-        result = []  # Will be a flat list of fields
-
-    # Process all fields
-    for field in fields:
-        # Get required field name and source
-        field_name, field_source = get_required_source(field, pipeline_name)
-
-        if cycle_is_grouping_key:
-            # Process each cycle separately for cycle-grouped pipelines
-            for cycle in cycles:
-                # Process this field for the current cycle
-                expanded = process_field_for_cycles(
-                    field_name,
-                    field_source,
-                    pipeline_name,
-                    pipeline,
-                    pipelines,
-                    metadata,
-                    cycles,  # All cycles (function will use only current cycle)
-                    cp_channels,
-                    bc_channels,
-                    channel_mappings,
-                    reverse_channel_mappings,
-                    current_cycle=cycle,
-                )
-                result[cycle].extend(expanded)
-        else:
-            # Process non-cycle-grouped pipeline
-            expanded = process_field_for_cycles(
-                field_name,
-                field_source,
-                pipeline_name,
-                pipeline,
-                pipelines,
-                metadata,
-                cycles,  # All cycles (for BC channels)
-                cp_channels,
-                bc_channels,
-                channel_mappings,
-                reverse_channel_mappings,
-                current_cycle=None,
-            )
-            result.extend(expanded)
-
-    # Store the results
-    pipeline_results[location_key] = result
-
-
 def save_expanded_fields_as_json(results, output_file):
     """Save the expanded fields to a JSON file"""
     # Convert cycle keys from int to str for JSON serialization
@@ -452,40 +498,6 @@ def save_expanded_fields_as_json(results, output_file):
         json.dump(json_results, f, indent=2)
 
     print(f"Expanded fields saved to: {output_file}")
-
-
-def parse_args():
-    """Parse command line arguments"""
-    parser = argparse.ArgumentParser(
-        description="Expand fields for CellProfiler pipelines"
-    )
-    parser.add_argument(
-        "--io_json", type=str, default="docs/io.json", help="Path to the io.json file"
-    )
-    parser.add_argument("--config", type=str, help="Path to a JSON config file")
-    parser.add_argument("--batch", type=str, default="Batch1", help="Batch identifier")
-    parser.add_argument("--plate", type=str, default="Plate1", help="Plate identifier")
-    parser.add_argument(
-        "--wells",
-        type=str,
-        nargs="+",
-        default=["A1"],
-        help="Well identifiers (e.g. A1 B02)",
-    )
-    parser.add_argument(
-        "--sites", type=int, nargs="+", default=[1], help="Site numbers"
-    )
-    parser.add_argument(
-        "--raw_image_template", type=str, default="FOV", help="Raw image template"
-    )
-    parser.add_argument(
-        "--cycles", type=int, nargs="+", default=[1, 2], help="Cycle numbers"
-    )
-    parser.add_argument(
-        "--tile_numbers", type=int, nargs="+", default=[1, 2, 3, 4], help="Tile numbers"
-    )
-    parser.add_argument("--output", type=str, help="Output file path for JSON results")
-    return parser.parse_args()
 
 
 if __name__ == "__main__":
