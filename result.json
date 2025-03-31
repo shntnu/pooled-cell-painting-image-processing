@@ -1,0 +1,2072 @@
+{
+  "1_CP_Illum": {
+    "A01-1": [
+      {
+        "name": "FilePath_OrigDNA",
+        "value": "Batch1/images/Plate1/20x_CP_Plate1/FOV_A01_1_DAPI.tiff"
+      },
+      {
+        "name": "FilePath_OrigPhalloidin",
+        "value": "Batch1/images/Plate1/20x_CP_Plate1/FOV_A01_1_PhalloAF750.tiff"
+      },
+      {
+        "name": "FilePath_OrigZO1",
+        "value": "Batch1/images/Plate1/20x_CP_Plate1/FOV_A01_1_ZO1-AF488.tiff"
+      },
+      {
+        "name": "Metadata_Plate",
+        "value": "Plate1"
+      },
+      {
+        "name": "Metadata_Well",
+        "value": "A01"
+      },
+      {
+        "name": "Metadata_Site",
+        "value": 1
+      }
+    ],
+    "A01-2": [
+      {
+        "name": "FilePath_OrigDNA",
+        "value": "Batch1/images/Plate1/20x_CP_Plate1/FOV_A01_2_DAPI.tiff"
+      },
+      {
+        "name": "FilePath_OrigPhalloidin",
+        "value": "Batch1/images/Plate1/20x_CP_Plate1/FOV_A01_2_PhalloAF750.tiff"
+      },
+      {
+        "name": "FilePath_OrigZO1",
+        "value": "Batch1/images/Plate1/20x_CP_Plate1/FOV_A01_2_ZO1-AF488.tiff"
+      },
+      {
+        "name": "Metadata_Plate",
+        "value": "Plate1"
+      },
+      {
+        "name": "Metadata_Well",
+        "value": "A01"
+      },
+      {
+        "name": "Metadata_Site",
+        "value": 2
+      }
+    ],
+    "B02-1": [
+      {
+        "name": "FilePath_OrigDNA",
+        "value": "Batch1/images/Plate1/20x_CP_Plate1/FOV_B02_1_DAPI.tiff"
+      },
+      {
+        "name": "FilePath_OrigPhalloidin",
+        "value": "Batch1/images/Plate1/20x_CP_Plate1/FOV_B02_1_PhalloAF750.tiff"
+      },
+      {
+        "name": "FilePath_OrigZO1",
+        "value": "Batch1/images/Plate1/20x_CP_Plate1/FOV_B02_1_ZO1-AF488.tiff"
+      },
+      {
+        "name": "Metadata_Plate",
+        "value": "Plate1"
+      },
+      {
+        "name": "Metadata_Well",
+        "value": "B02"
+      },
+      {
+        "name": "Metadata_Site",
+        "value": 1
+      }
+    ],
+    "B02-2": [
+      {
+        "name": "FilePath_OrigDNA",
+        "value": "Batch1/images/Plate1/20x_CP_Plate1/FOV_B02_2_DAPI.tiff"
+      },
+      {
+        "name": "FilePath_OrigPhalloidin",
+        "value": "Batch1/images/Plate1/20x_CP_Plate1/FOV_B02_2_PhalloAF750.tiff"
+      },
+      {
+        "name": "FilePath_OrigZO1",
+        "value": "Batch1/images/Plate1/20x_CP_Plate1/FOV_B02_2_ZO1-AF488.tiff"
+      },
+      {
+        "name": "Metadata_Plate",
+        "value": "Plate1"
+      },
+      {
+        "name": "Metadata_Well",
+        "value": "B02"
+      },
+      {
+        "name": "Metadata_Site",
+        "value": 2
+      }
+    ]
+  },
+  "2_CP_Apply_Illum": {
+    "A01-1": [
+      {
+        "name": "FilePath_OrigDNA",
+        "value": "Batch1/images/Plate1/20x_CP_Plate1/FOV_A01_1_DAPI.tiff"
+      },
+      {
+        "name": "FilePath_OrigPhalloidin",
+        "value": "Batch1/images/Plate1/20x_CP_Plate1/FOV_A01_1_PhalloAF750.tiff"
+      },
+      {
+        "name": "FilePath_OrigZO1",
+        "value": "Batch1/images/Plate1/20x_CP_Plate1/FOV_A01_1_ZO1-AF488.tiff"
+      },
+      {
+        "name": "FilePath_IllumDNA",
+        "value": "Batch1/illum/Plate1/Plate1_IllumDNA.npy"
+      },
+      {
+        "name": "FilePath_IllumPhalloidin",
+        "value": "Batch1/illum/Plate1/Plate1_IllumPhalloidin.npy"
+      },
+      {
+        "name": "FilePath_IllumZO1",
+        "value": "Batch1/illum/Plate1/Plate1_IllumZO1.npy"
+      },
+      {
+        "name": "Metadata_Plate",
+        "value": "Plate1"
+      },
+      {
+        "name": "Metadata_Well",
+        "value": "A01"
+      },
+      {
+        "name": "Metadata_Site",
+        "value": 1
+      }
+    ],
+    "A01-2": [
+      {
+        "name": "FilePath_OrigDNA",
+        "value": "Batch1/images/Plate1/20x_CP_Plate1/FOV_A01_2_DAPI.tiff"
+      },
+      {
+        "name": "FilePath_OrigPhalloidin",
+        "value": "Batch1/images/Plate1/20x_CP_Plate1/FOV_A01_2_PhalloAF750.tiff"
+      },
+      {
+        "name": "FilePath_OrigZO1",
+        "value": "Batch1/images/Plate1/20x_CP_Plate1/FOV_A01_2_ZO1-AF488.tiff"
+      },
+      {
+        "name": "FilePath_IllumDNA",
+        "value": "Batch1/illum/Plate1/Plate1_IllumDNA.npy"
+      },
+      {
+        "name": "FilePath_IllumPhalloidin",
+        "value": "Batch1/illum/Plate1/Plate1_IllumPhalloidin.npy"
+      },
+      {
+        "name": "FilePath_IllumZO1",
+        "value": "Batch1/illum/Plate1/Plate1_IllumZO1.npy"
+      },
+      {
+        "name": "Metadata_Plate",
+        "value": "Plate1"
+      },
+      {
+        "name": "Metadata_Well",
+        "value": "A01"
+      },
+      {
+        "name": "Metadata_Site",
+        "value": 2
+      }
+    ],
+    "B02-1": [
+      {
+        "name": "FilePath_OrigDNA",
+        "value": "Batch1/images/Plate1/20x_CP_Plate1/FOV_B02_1_DAPI.tiff"
+      },
+      {
+        "name": "FilePath_OrigPhalloidin",
+        "value": "Batch1/images/Plate1/20x_CP_Plate1/FOV_B02_1_PhalloAF750.tiff"
+      },
+      {
+        "name": "FilePath_OrigZO1",
+        "value": "Batch1/images/Plate1/20x_CP_Plate1/FOV_B02_1_ZO1-AF488.tiff"
+      },
+      {
+        "name": "FilePath_IllumDNA",
+        "value": "Batch1/illum/Plate1/Plate1_IllumDNA.npy"
+      },
+      {
+        "name": "FilePath_IllumPhalloidin",
+        "value": "Batch1/illum/Plate1/Plate1_IllumPhalloidin.npy"
+      },
+      {
+        "name": "FilePath_IllumZO1",
+        "value": "Batch1/illum/Plate1/Plate1_IllumZO1.npy"
+      },
+      {
+        "name": "Metadata_Plate",
+        "value": "Plate1"
+      },
+      {
+        "name": "Metadata_Well",
+        "value": "B02"
+      },
+      {
+        "name": "Metadata_Site",
+        "value": 1
+      }
+    ],
+    "B02-2": [
+      {
+        "name": "FilePath_OrigDNA",
+        "value": "Batch1/images/Plate1/20x_CP_Plate1/FOV_B02_2_DAPI.tiff"
+      },
+      {
+        "name": "FilePath_OrigPhalloidin",
+        "value": "Batch1/images/Plate1/20x_CP_Plate1/FOV_B02_2_PhalloAF750.tiff"
+      },
+      {
+        "name": "FilePath_OrigZO1",
+        "value": "Batch1/images/Plate1/20x_CP_Plate1/FOV_B02_2_ZO1-AF488.tiff"
+      },
+      {
+        "name": "FilePath_IllumDNA",
+        "value": "Batch1/illum/Plate1/Plate1_IllumDNA.npy"
+      },
+      {
+        "name": "FilePath_IllumPhalloidin",
+        "value": "Batch1/illum/Plate1/Plate1_IllumPhalloidin.npy"
+      },
+      {
+        "name": "FilePath_IllumZO1",
+        "value": "Batch1/illum/Plate1/Plate1_IllumZO1.npy"
+      },
+      {
+        "name": "Metadata_Plate",
+        "value": "Plate1"
+      },
+      {
+        "name": "Metadata_Well",
+        "value": "B02"
+      },
+      {
+        "name": "Metadata_Site",
+        "value": 2
+      }
+    ]
+  },
+  "3_CP_SegmentCheck": {
+    "A01-1": [
+      {
+        "name": "FilePath_DNA",
+        "value": "Batch1/images_corrected/painting/Plate1-WellA01/Plate_Plate1_Well_WellA01_Site_1_CorrDNA.tiff"
+      },
+      {
+        "name": "FilePath_Phalloidin",
+        "value": "Batch1/images_corrected/painting/Plate1-WellA01/Plate_Plate1_Well_WellA01_Site_1_CorrPhalloidin.tiff"
+      },
+      {
+        "name": "FilePath_ZO1",
+        "value": "Batch1/images_corrected/painting/Plate1-WellA01/Plate_Plate1_Well_WellA01_Site_1_CorrZO1.tiff"
+      },
+      {
+        "name": "Metadata_Plate",
+        "value": "Plate1"
+      },
+      {
+        "name": "Metadata_Well",
+        "value": "A01"
+      },
+      {
+        "name": "Metadata_Site",
+        "value": 1
+      }
+    ],
+    "A01-2": [
+      {
+        "name": "FilePath_DNA",
+        "value": "Batch1/images_corrected/painting/Plate1-WellA01/Plate_Plate1_Well_WellA01_Site_2_CorrDNA.tiff"
+      },
+      {
+        "name": "FilePath_Phalloidin",
+        "value": "Batch1/images_corrected/painting/Plate1-WellA01/Plate_Plate1_Well_WellA01_Site_2_CorrPhalloidin.tiff"
+      },
+      {
+        "name": "FilePath_ZO1",
+        "value": "Batch1/images_corrected/painting/Plate1-WellA01/Plate_Plate1_Well_WellA01_Site_2_CorrZO1.tiff"
+      },
+      {
+        "name": "Metadata_Plate",
+        "value": "Plate1"
+      },
+      {
+        "name": "Metadata_Well",
+        "value": "A01"
+      },
+      {
+        "name": "Metadata_Site",
+        "value": 2
+      }
+    ],
+    "B02-1": [
+      {
+        "name": "FilePath_DNA",
+        "value": "Batch1/images_corrected/painting/Plate1-WellB02/Plate_Plate1_Well_WellB02_Site_1_CorrDNA.tiff"
+      },
+      {
+        "name": "FilePath_Phalloidin",
+        "value": "Batch1/images_corrected/painting/Plate1-WellB02/Plate_Plate1_Well_WellB02_Site_1_CorrPhalloidin.tiff"
+      },
+      {
+        "name": "FilePath_ZO1",
+        "value": "Batch1/images_corrected/painting/Plate1-WellB02/Plate_Plate1_Well_WellB02_Site_1_CorrZO1.tiff"
+      },
+      {
+        "name": "Metadata_Plate",
+        "value": "Plate1"
+      },
+      {
+        "name": "Metadata_Well",
+        "value": "B02"
+      },
+      {
+        "name": "Metadata_Site",
+        "value": 1
+      }
+    ],
+    "B02-2": [
+      {
+        "name": "FilePath_DNA",
+        "value": "Batch1/images_corrected/painting/Plate1-WellB02/Plate_Plate1_Well_WellB02_Site_2_CorrDNA.tiff"
+      },
+      {
+        "name": "FilePath_Phalloidin",
+        "value": "Batch1/images_corrected/painting/Plate1-WellB02/Plate_Plate1_Well_WellB02_Site_2_CorrPhalloidin.tiff"
+      },
+      {
+        "name": "FilePath_ZO1",
+        "value": "Batch1/images_corrected/painting/Plate1-WellB02/Plate_Plate1_Well_WellB02_Site_2_CorrZO1.tiff"
+      },
+      {
+        "name": "Metadata_Plate",
+        "value": "Plate1"
+      },
+      {
+        "name": "Metadata_Well",
+        "value": "B02"
+      },
+      {
+        "name": "Metadata_Site",
+        "value": 2
+      }
+    ]
+  },
+  "5_BC_Illum": {
+    "A01-1": {
+      "1": [
+        {
+          "name": "FilePath_OrigC",
+          "value": "Batch1/images/Plate1/20x_SBS_1/FOV_A01_1_C.tiff"
+        },
+        {
+          "name": "FilePath_OrigA",
+          "value": "Batch1/images/Plate1/20x_SBS_1/FOV_A01_1_A.tiff"
+        },
+        {
+          "name": "FilePath_OrigT",
+          "value": "Batch1/images/Plate1/20x_SBS_1/FOV_A01_1_T.tiff"
+        },
+        {
+          "name": "FilePath_OrigG",
+          "value": "Batch1/images/Plate1/20x_SBS_1/FOV_A01_1_G.tiff"
+        },
+        {
+          "name": "FilePath_OrigDAPI",
+          "value": "Batch1/images/Plate1/20x_SBS_1/FOV_A01_1_DAPI.tiff"
+        },
+        {
+          "name": "Metadata_Plate",
+          "value": "Plate1"
+        },
+        {
+          "name": "Metadata_Well",
+          "value": "A01"
+        },
+        {
+          "name": "Metadata_Site",
+          "value": 1
+        },
+        {
+          "name": "Metadata_SBSCycle",
+          "value": 1
+        }
+      ],
+      "2": [
+        {
+          "name": "FilePath_OrigC",
+          "value": "Batch1/images/Plate1/20x_SBS_2/FOV_A01_1_C.tiff"
+        },
+        {
+          "name": "FilePath_OrigA",
+          "value": "Batch1/images/Plate1/20x_SBS_2/FOV_A01_1_A.tiff"
+        },
+        {
+          "name": "FilePath_OrigT",
+          "value": "Batch1/images/Plate1/20x_SBS_2/FOV_A01_1_T.tiff"
+        },
+        {
+          "name": "FilePath_OrigG",
+          "value": "Batch1/images/Plate1/20x_SBS_2/FOV_A01_1_G.tiff"
+        },
+        {
+          "name": "FilePath_OrigDAPI",
+          "value": "Batch1/images/Plate1/20x_SBS_2/FOV_A01_1_DAPI.tiff"
+        },
+        {
+          "name": "Metadata_Plate",
+          "value": "Plate1"
+        },
+        {
+          "name": "Metadata_Well",
+          "value": "A01"
+        },
+        {
+          "name": "Metadata_Site",
+          "value": 1
+        },
+        {
+          "name": "Metadata_SBSCycle",
+          "value": 2
+        }
+      ]
+    },
+    "A01-2": {
+      "1": [
+        {
+          "name": "FilePath_OrigC",
+          "value": "Batch1/images/Plate1/20x_SBS_1/FOV_A01_2_C.tiff"
+        },
+        {
+          "name": "FilePath_OrigA",
+          "value": "Batch1/images/Plate1/20x_SBS_1/FOV_A01_2_A.tiff"
+        },
+        {
+          "name": "FilePath_OrigT",
+          "value": "Batch1/images/Plate1/20x_SBS_1/FOV_A01_2_T.tiff"
+        },
+        {
+          "name": "FilePath_OrigG",
+          "value": "Batch1/images/Plate1/20x_SBS_1/FOV_A01_2_G.tiff"
+        },
+        {
+          "name": "FilePath_OrigDAPI",
+          "value": "Batch1/images/Plate1/20x_SBS_1/FOV_A01_2_DAPI.tiff"
+        },
+        {
+          "name": "Metadata_Plate",
+          "value": "Plate1"
+        },
+        {
+          "name": "Metadata_Well",
+          "value": "A01"
+        },
+        {
+          "name": "Metadata_Site",
+          "value": 2
+        },
+        {
+          "name": "Metadata_SBSCycle",
+          "value": 1
+        }
+      ],
+      "2": [
+        {
+          "name": "FilePath_OrigC",
+          "value": "Batch1/images/Plate1/20x_SBS_2/FOV_A01_2_C.tiff"
+        },
+        {
+          "name": "FilePath_OrigA",
+          "value": "Batch1/images/Plate1/20x_SBS_2/FOV_A01_2_A.tiff"
+        },
+        {
+          "name": "FilePath_OrigT",
+          "value": "Batch1/images/Plate1/20x_SBS_2/FOV_A01_2_T.tiff"
+        },
+        {
+          "name": "FilePath_OrigG",
+          "value": "Batch1/images/Plate1/20x_SBS_2/FOV_A01_2_G.tiff"
+        },
+        {
+          "name": "FilePath_OrigDAPI",
+          "value": "Batch1/images/Plate1/20x_SBS_2/FOV_A01_2_DAPI.tiff"
+        },
+        {
+          "name": "Metadata_Plate",
+          "value": "Plate1"
+        },
+        {
+          "name": "Metadata_Well",
+          "value": "A01"
+        },
+        {
+          "name": "Metadata_Site",
+          "value": 2
+        },
+        {
+          "name": "Metadata_SBSCycle",
+          "value": 2
+        }
+      ]
+    },
+    "B02-1": {
+      "1": [
+        {
+          "name": "FilePath_OrigC",
+          "value": "Batch1/images/Plate1/20x_SBS_1/FOV_B02_1_C.tiff"
+        },
+        {
+          "name": "FilePath_OrigA",
+          "value": "Batch1/images/Plate1/20x_SBS_1/FOV_B02_1_A.tiff"
+        },
+        {
+          "name": "FilePath_OrigT",
+          "value": "Batch1/images/Plate1/20x_SBS_1/FOV_B02_1_T.tiff"
+        },
+        {
+          "name": "FilePath_OrigG",
+          "value": "Batch1/images/Plate1/20x_SBS_1/FOV_B02_1_G.tiff"
+        },
+        {
+          "name": "FilePath_OrigDAPI",
+          "value": "Batch1/images/Plate1/20x_SBS_1/FOV_B02_1_DAPI.tiff"
+        },
+        {
+          "name": "Metadata_Plate",
+          "value": "Plate1"
+        },
+        {
+          "name": "Metadata_Well",
+          "value": "B02"
+        },
+        {
+          "name": "Metadata_Site",
+          "value": 1
+        },
+        {
+          "name": "Metadata_SBSCycle",
+          "value": 1
+        }
+      ],
+      "2": [
+        {
+          "name": "FilePath_OrigC",
+          "value": "Batch1/images/Plate1/20x_SBS_2/FOV_B02_1_C.tiff"
+        },
+        {
+          "name": "FilePath_OrigA",
+          "value": "Batch1/images/Plate1/20x_SBS_2/FOV_B02_1_A.tiff"
+        },
+        {
+          "name": "FilePath_OrigT",
+          "value": "Batch1/images/Plate1/20x_SBS_2/FOV_B02_1_T.tiff"
+        },
+        {
+          "name": "FilePath_OrigG",
+          "value": "Batch1/images/Plate1/20x_SBS_2/FOV_B02_1_G.tiff"
+        },
+        {
+          "name": "FilePath_OrigDAPI",
+          "value": "Batch1/images/Plate1/20x_SBS_2/FOV_B02_1_DAPI.tiff"
+        },
+        {
+          "name": "Metadata_Plate",
+          "value": "Plate1"
+        },
+        {
+          "name": "Metadata_Well",
+          "value": "B02"
+        },
+        {
+          "name": "Metadata_Site",
+          "value": 1
+        },
+        {
+          "name": "Metadata_SBSCycle",
+          "value": 2
+        }
+      ]
+    },
+    "B02-2": {
+      "1": [
+        {
+          "name": "FilePath_OrigC",
+          "value": "Batch1/images/Plate1/20x_SBS_1/FOV_B02_2_C.tiff"
+        },
+        {
+          "name": "FilePath_OrigA",
+          "value": "Batch1/images/Plate1/20x_SBS_1/FOV_B02_2_A.tiff"
+        },
+        {
+          "name": "FilePath_OrigT",
+          "value": "Batch1/images/Plate1/20x_SBS_1/FOV_B02_2_T.tiff"
+        },
+        {
+          "name": "FilePath_OrigG",
+          "value": "Batch1/images/Plate1/20x_SBS_1/FOV_B02_2_G.tiff"
+        },
+        {
+          "name": "FilePath_OrigDAPI",
+          "value": "Batch1/images/Plate1/20x_SBS_1/FOV_B02_2_DAPI.tiff"
+        },
+        {
+          "name": "Metadata_Plate",
+          "value": "Plate1"
+        },
+        {
+          "name": "Metadata_Well",
+          "value": "B02"
+        },
+        {
+          "name": "Metadata_Site",
+          "value": 2
+        },
+        {
+          "name": "Metadata_SBSCycle",
+          "value": 1
+        }
+      ],
+      "2": [
+        {
+          "name": "FilePath_OrigC",
+          "value": "Batch1/images/Plate1/20x_SBS_2/FOV_B02_2_C.tiff"
+        },
+        {
+          "name": "FilePath_OrigA",
+          "value": "Batch1/images/Plate1/20x_SBS_2/FOV_B02_2_A.tiff"
+        },
+        {
+          "name": "FilePath_OrigT",
+          "value": "Batch1/images/Plate1/20x_SBS_2/FOV_B02_2_T.tiff"
+        },
+        {
+          "name": "FilePath_OrigG",
+          "value": "Batch1/images/Plate1/20x_SBS_2/FOV_B02_2_G.tiff"
+        },
+        {
+          "name": "FilePath_OrigDAPI",
+          "value": "Batch1/images/Plate1/20x_SBS_2/FOV_B02_2_DAPI.tiff"
+        },
+        {
+          "name": "Metadata_Plate",
+          "value": "Plate1"
+        },
+        {
+          "name": "Metadata_Well",
+          "value": "B02"
+        },
+        {
+          "name": "Metadata_Site",
+          "value": 2
+        },
+        {
+          "name": "Metadata_SBSCycle",
+          "value": 2
+        }
+      ]
+    }
+  },
+  "6_BC_Apply_Illum": {
+    "A01-1": [
+      {
+        "name": "FilePath_Cycle1_C",
+        "value": "Batch1/images/Plate1/20x_SBS_1/FOV_A01_1_C.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_C",
+        "value": "Batch1/images/Plate1/20x_SBS_2/FOV_A01_1_C.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_A",
+        "value": "Batch1/images/Plate1/20x_SBS_1/FOV_A01_1_A.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_A",
+        "value": "Batch1/images/Plate1/20x_SBS_2/FOV_A01_1_A.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_T",
+        "value": "Batch1/images/Plate1/20x_SBS_1/FOV_A01_1_T.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_T",
+        "value": "Batch1/images/Plate1/20x_SBS_2/FOV_A01_1_T.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_G",
+        "value": "Batch1/images/Plate1/20x_SBS_1/FOV_A01_1_G.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_G",
+        "value": "Batch1/images/Plate1/20x_SBS_2/FOV_A01_1_G.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_DAPI",
+        "value": "Batch1/images/Plate1/20x_SBS_1/FOV_A01_1_DAPI.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_DAPI",
+        "value": "Batch1/images/Plate1/20x_SBS_2/FOV_A01_1_DAPI.tiff"
+      },
+      {
+        "name": "FilePath_Illum_Cycle1_C",
+        "value": "Batch1/illum/Plate1/Plate1_Cycle1_IllumC.npy"
+      },
+      {
+        "name": "FilePath_Illum_Cycle2_C",
+        "value": "Batch1/illum/Plate1/Plate1_Cycle2_IllumC.npy"
+      },
+      {
+        "name": "FilePath_Illum_Cycle1_A",
+        "value": "Batch1/illum/Plate1/Plate1_Cycle1_IllumA.npy"
+      },
+      {
+        "name": "FilePath_Illum_Cycle2_A",
+        "value": "Batch1/illum/Plate1/Plate1_Cycle2_IllumA.npy"
+      },
+      {
+        "name": "FilePath_Illum_Cycle1_T",
+        "value": "Batch1/illum/Plate1/Plate1_Cycle1_IllumT.npy"
+      },
+      {
+        "name": "FilePath_Illum_Cycle2_T",
+        "value": "Batch1/illum/Plate1/Plate1_Cycle2_IllumT.npy"
+      },
+      {
+        "name": "FilePath_Illum_Cycle1_G",
+        "value": "Batch1/illum/Plate1/Plate1_Cycle1_IllumG.npy"
+      },
+      {
+        "name": "FilePath_Illum_Cycle2_G",
+        "value": "Batch1/illum/Plate1/Plate1_Cycle2_IllumG.npy"
+      },
+      {
+        "name": "FilePath_Illum_Cycle1_DAPI",
+        "value": "Batch1/illum/Plate1/Plate1_Cycle1_IllumDAPI.npy"
+      },
+      {
+        "name": "FilePath_Illum_Cycle2_DAPI",
+        "value": "Batch1/illum/Plate1/Plate1_Cycle2_IllumDAPI.npy"
+      },
+      {
+        "name": "Metadata_Plate",
+        "value": "Plate1"
+      },
+      {
+        "name": "Metadata_Well",
+        "value": "A01"
+      },
+      {
+        "name": "Metadata_Site",
+        "value": 1
+      }
+    ],
+    "A01-2": [
+      {
+        "name": "FilePath_Cycle1_C",
+        "value": "Batch1/images/Plate1/20x_SBS_1/FOV_A01_2_C.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_C",
+        "value": "Batch1/images/Plate1/20x_SBS_2/FOV_A01_2_C.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_A",
+        "value": "Batch1/images/Plate1/20x_SBS_1/FOV_A01_2_A.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_A",
+        "value": "Batch1/images/Plate1/20x_SBS_2/FOV_A01_2_A.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_T",
+        "value": "Batch1/images/Plate1/20x_SBS_1/FOV_A01_2_T.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_T",
+        "value": "Batch1/images/Plate1/20x_SBS_2/FOV_A01_2_T.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_G",
+        "value": "Batch1/images/Plate1/20x_SBS_1/FOV_A01_2_G.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_G",
+        "value": "Batch1/images/Plate1/20x_SBS_2/FOV_A01_2_G.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_DAPI",
+        "value": "Batch1/images/Plate1/20x_SBS_1/FOV_A01_2_DAPI.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_DAPI",
+        "value": "Batch1/images/Plate1/20x_SBS_2/FOV_A01_2_DAPI.tiff"
+      },
+      {
+        "name": "FilePath_Illum_Cycle1_C",
+        "value": "Batch1/illum/Plate1/Plate1_Cycle1_IllumC.npy"
+      },
+      {
+        "name": "FilePath_Illum_Cycle2_C",
+        "value": "Batch1/illum/Plate1/Plate1_Cycle2_IllumC.npy"
+      },
+      {
+        "name": "FilePath_Illum_Cycle1_A",
+        "value": "Batch1/illum/Plate1/Plate1_Cycle1_IllumA.npy"
+      },
+      {
+        "name": "FilePath_Illum_Cycle2_A",
+        "value": "Batch1/illum/Plate1/Plate1_Cycle2_IllumA.npy"
+      },
+      {
+        "name": "FilePath_Illum_Cycle1_T",
+        "value": "Batch1/illum/Plate1/Plate1_Cycle1_IllumT.npy"
+      },
+      {
+        "name": "FilePath_Illum_Cycle2_T",
+        "value": "Batch1/illum/Plate1/Plate1_Cycle2_IllumT.npy"
+      },
+      {
+        "name": "FilePath_Illum_Cycle1_G",
+        "value": "Batch1/illum/Plate1/Plate1_Cycle1_IllumG.npy"
+      },
+      {
+        "name": "FilePath_Illum_Cycle2_G",
+        "value": "Batch1/illum/Plate1/Plate1_Cycle2_IllumG.npy"
+      },
+      {
+        "name": "FilePath_Illum_Cycle1_DAPI",
+        "value": "Batch1/illum/Plate1/Plate1_Cycle1_IllumDAPI.npy"
+      },
+      {
+        "name": "FilePath_Illum_Cycle2_DAPI",
+        "value": "Batch1/illum/Plate1/Plate1_Cycle2_IllumDAPI.npy"
+      },
+      {
+        "name": "Metadata_Plate",
+        "value": "Plate1"
+      },
+      {
+        "name": "Metadata_Well",
+        "value": "A01"
+      },
+      {
+        "name": "Metadata_Site",
+        "value": 2
+      }
+    ],
+    "B02-1": [
+      {
+        "name": "FilePath_Cycle1_C",
+        "value": "Batch1/images/Plate1/20x_SBS_1/FOV_B02_1_C.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_C",
+        "value": "Batch1/images/Plate1/20x_SBS_2/FOV_B02_1_C.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_A",
+        "value": "Batch1/images/Plate1/20x_SBS_1/FOV_B02_1_A.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_A",
+        "value": "Batch1/images/Plate1/20x_SBS_2/FOV_B02_1_A.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_T",
+        "value": "Batch1/images/Plate1/20x_SBS_1/FOV_B02_1_T.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_T",
+        "value": "Batch1/images/Plate1/20x_SBS_2/FOV_B02_1_T.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_G",
+        "value": "Batch1/images/Plate1/20x_SBS_1/FOV_B02_1_G.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_G",
+        "value": "Batch1/images/Plate1/20x_SBS_2/FOV_B02_1_G.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_DAPI",
+        "value": "Batch1/images/Plate1/20x_SBS_1/FOV_B02_1_DAPI.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_DAPI",
+        "value": "Batch1/images/Plate1/20x_SBS_2/FOV_B02_1_DAPI.tiff"
+      },
+      {
+        "name": "FilePath_Illum_Cycle1_C",
+        "value": "Batch1/illum/Plate1/Plate1_Cycle1_IllumC.npy"
+      },
+      {
+        "name": "FilePath_Illum_Cycle2_C",
+        "value": "Batch1/illum/Plate1/Plate1_Cycle2_IllumC.npy"
+      },
+      {
+        "name": "FilePath_Illum_Cycle1_A",
+        "value": "Batch1/illum/Plate1/Plate1_Cycle1_IllumA.npy"
+      },
+      {
+        "name": "FilePath_Illum_Cycle2_A",
+        "value": "Batch1/illum/Plate1/Plate1_Cycle2_IllumA.npy"
+      },
+      {
+        "name": "FilePath_Illum_Cycle1_T",
+        "value": "Batch1/illum/Plate1/Plate1_Cycle1_IllumT.npy"
+      },
+      {
+        "name": "FilePath_Illum_Cycle2_T",
+        "value": "Batch1/illum/Plate1/Plate1_Cycle2_IllumT.npy"
+      },
+      {
+        "name": "FilePath_Illum_Cycle1_G",
+        "value": "Batch1/illum/Plate1/Plate1_Cycle1_IllumG.npy"
+      },
+      {
+        "name": "FilePath_Illum_Cycle2_G",
+        "value": "Batch1/illum/Plate1/Plate1_Cycle2_IllumG.npy"
+      },
+      {
+        "name": "FilePath_Illum_Cycle1_DAPI",
+        "value": "Batch1/illum/Plate1/Plate1_Cycle1_IllumDAPI.npy"
+      },
+      {
+        "name": "FilePath_Illum_Cycle2_DAPI",
+        "value": "Batch1/illum/Plate1/Plate1_Cycle2_IllumDAPI.npy"
+      },
+      {
+        "name": "Metadata_Plate",
+        "value": "Plate1"
+      },
+      {
+        "name": "Metadata_Well",
+        "value": "B02"
+      },
+      {
+        "name": "Metadata_Site",
+        "value": 1
+      }
+    ],
+    "B02-2": [
+      {
+        "name": "FilePath_Cycle1_C",
+        "value": "Batch1/images/Plate1/20x_SBS_1/FOV_B02_2_C.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_C",
+        "value": "Batch1/images/Plate1/20x_SBS_2/FOV_B02_2_C.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_A",
+        "value": "Batch1/images/Plate1/20x_SBS_1/FOV_B02_2_A.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_A",
+        "value": "Batch1/images/Plate1/20x_SBS_2/FOV_B02_2_A.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_T",
+        "value": "Batch1/images/Plate1/20x_SBS_1/FOV_B02_2_T.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_T",
+        "value": "Batch1/images/Plate1/20x_SBS_2/FOV_B02_2_T.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_G",
+        "value": "Batch1/images/Plate1/20x_SBS_1/FOV_B02_2_G.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_G",
+        "value": "Batch1/images/Plate1/20x_SBS_2/FOV_B02_2_G.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_DAPI",
+        "value": "Batch1/images/Plate1/20x_SBS_1/FOV_B02_2_DAPI.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_DAPI",
+        "value": "Batch1/images/Plate1/20x_SBS_2/FOV_B02_2_DAPI.tiff"
+      },
+      {
+        "name": "FilePath_Illum_Cycle1_C",
+        "value": "Batch1/illum/Plate1/Plate1_Cycle1_IllumC.npy"
+      },
+      {
+        "name": "FilePath_Illum_Cycle2_C",
+        "value": "Batch1/illum/Plate1/Plate1_Cycle2_IllumC.npy"
+      },
+      {
+        "name": "FilePath_Illum_Cycle1_A",
+        "value": "Batch1/illum/Plate1/Plate1_Cycle1_IllumA.npy"
+      },
+      {
+        "name": "FilePath_Illum_Cycle2_A",
+        "value": "Batch1/illum/Plate1/Plate1_Cycle2_IllumA.npy"
+      },
+      {
+        "name": "FilePath_Illum_Cycle1_T",
+        "value": "Batch1/illum/Plate1/Plate1_Cycle1_IllumT.npy"
+      },
+      {
+        "name": "FilePath_Illum_Cycle2_T",
+        "value": "Batch1/illum/Plate1/Plate1_Cycle2_IllumT.npy"
+      },
+      {
+        "name": "FilePath_Illum_Cycle1_G",
+        "value": "Batch1/illum/Plate1/Plate1_Cycle1_IllumG.npy"
+      },
+      {
+        "name": "FilePath_Illum_Cycle2_G",
+        "value": "Batch1/illum/Plate1/Plate1_Cycle2_IllumG.npy"
+      },
+      {
+        "name": "FilePath_Illum_Cycle1_DAPI",
+        "value": "Batch1/illum/Plate1/Plate1_Cycle1_IllumDAPI.npy"
+      },
+      {
+        "name": "FilePath_Illum_Cycle2_DAPI",
+        "value": "Batch1/illum/Plate1/Plate1_Cycle2_IllumDAPI.npy"
+      },
+      {
+        "name": "Metadata_Plate",
+        "value": "Plate1"
+      },
+      {
+        "name": "Metadata_Well",
+        "value": "B02"
+      },
+      {
+        "name": "Metadata_Site",
+        "value": 2
+      }
+    ]
+  },
+  "7_BC_Preprocess": {
+    "A01-1": [
+      {
+        "name": "FilePath_Cycle1_C",
+        "value": "Batch1/images_aligned/barcoding/Plate1-WellA01-1/Plate_Plate1_Well_A01_Site_1_Cycle1_C.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_C",
+        "value": "Batch1/images_aligned/barcoding/Plate1-WellA01-1/Plate_Plate1_Well_A01_Site_1_Cycle2_C.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_A",
+        "value": "Batch1/images_aligned/barcoding/Plate1-WellA01-1/Plate_Plate1_Well_A01_Site_1_Cycle1_A.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_A",
+        "value": "Batch1/images_aligned/barcoding/Plate1-WellA01-1/Plate_Plate1_Well_A01_Site_1_Cycle2_A.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_T",
+        "value": "Batch1/images_aligned/barcoding/Plate1-WellA01-1/Plate_Plate1_Well_A01_Site_1_Cycle1_T.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_T",
+        "value": "Batch1/images_aligned/barcoding/Plate1-WellA01-1/Plate_Plate1_Well_A01_Site_1_Cycle2_T.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_G",
+        "value": "Batch1/images_aligned/barcoding/Plate1-WellA01-1/Plate_Plate1_Well_A01_Site_1_Cycle1_G.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_G",
+        "value": "Batch1/images_aligned/barcoding/Plate1-WellA01-1/Plate_Plate1_Well_A01_Site_1_Cycle2_G.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_DAPI",
+        "value": "Batch1/images_aligned/barcoding/Plate1-WellA01-1/Plate_Plate1_Well_A01_Site_1_Cycle1_DAPI.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_DAPI",
+        "value": "Batch1/images_aligned/barcoding/Plate1-WellA01-1/Plate_Plate1_Well_A01_Site_1_Cycle2_DAPI.tiff"
+      },
+      {
+        "name": "Metadata_Plate",
+        "value": "Plate1"
+      },
+      {
+        "name": "Metadata_Well",
+        "value": "A01"
+      },
+      {
+        "name": "Metadata_Site",
+        "value": 1
+      }
+    ],
+    "A01-2": [
+      {
+        "name": "FilePath_Cycle1_C",
+        "value": "Batch1/images_aligned/barcoding/Plate1-WellA01-2/Plate_Plate1_Well_A01_Site_2_Cycle1_C.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_C",
+        "value": "Batch1/images_aligned/barcoding/Plate1-WellA01-2/Plate_Plate1_Well_A01_Site_2_Cycle2_C.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_A",
+        "value": "Batch1/images_aligned/barcoding/Plate1-WellA01-2/Plate_Plate1_Well_A01_Site_2_Cycle1_A.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_A",
+        "value": "Batch1/images_aligned/barcoding/Plate1-WellA01-2/Plate_Plate1_Well_A01_Site_2_Cycle2_A.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_T",
+        "value": "Batch1/images_aligned/barcoding/Plate1-WellA01-2/Plate_Plate1_Well_A01_Site_2_Cycle1_T.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_T",
+        "value": "Batch1/images_aligned/barcoding/Plate1-WellA01-2/Plate_Plate1_Well_A01_Site_2_Cycle2_T.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_G",
+        "value": "Batch1/images_aligned/barcoding/Plate1-WellA01-2/Plate_Plate1_Well_A01_Site_2_Cycle1_G.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_G",
+        "value": "Batch1/images_aligned/barcoding/Plate1-WellA01-2/Plate_Plate1_Well_A01_Site_2_Cycle2_G.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_DAPI",
+        "value": "Batch1/images_aligned/barcoding/Plate1-WellA01-2/Plate_Plate1_Well_A01_Site_2_Cycle1_DAPI.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_DAPI",
+        "value": "Batch1/images_aligned/barcoding/Plate1-WellA01-2/Plate_Plate1_Well_A01_Site_2_Cycle2_DAPI.tiff"
+      },
+      {
+        "name": "Metadata_Plate",
+        "value": "Plate1"
+      },
+      {
+        "name": "Metadata_Well",
+        "value": "A01"
+      },
+      {
+        "name": "Metadata_Site",
+        "value": 2
+      }
+    ],
+    "B02-1": [
+      {
+        "name": "FilePath_Cycle1_C",
+        "value": "Batch1/images_aligned/barcoding/Plate1-WellB02-1/Plate_Plate1_Well_B02_Site_1_Cycle1_C.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_C",
+        "value": "Batch1/images_aligned/barcoding/Plate1-WellB02-1/Plate_Plate1_Well_B02_Site_1_Cycle2_C.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_A",
+        "value": "Batch1/images_aligned/barcoding/Plate1-WellB02-1/Plate_Plate1_Well_B02_Site_1_Cycle1_A.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_A",
+        "value": "Batch1/images_aligned/barcoding/Plate1-WellB02-1/Plate_Plate1_Well_B02_Site_1_Cycle2_A.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_T",
+        "value": "Batch1/images_aligned/barcoding/Plate1-WellB02-1/Plate_Plate1_Well_B02_Site_1_Cycle1_T.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_T",
+        "value": "Batch1/images_aligned/barcoding/Plate1-WellB02-1/Plate_Plate1_Well_B02_Site_1_Cycle2_T.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_G",
+        "value": "Batch1/images_aligned/barcoding/Plate1-WellB02-1/Plate_Plate1_Well_B02_Site_1_Cycle1_G.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_G",
+        "value": "Batch1/images_aligned/barcoding/Plate1-WellB02-1/Plate_Plate1_Well_B02_Site_1_Cycle2_G.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_DAPI",
+        "value": "Batch1/images_aligned/barcoding/Plate1-WellB02-1/Plate_Plate1_Well_B02_Site_1_Cycle1_DAPI.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_DAPI",
+        "value": "Batch1/images_aligned/barcoding/Plate1-WellB02-1/Plate_Plate1_Well_B02_Site_1_Cycle2_DAPI.tiff"
+      },
+      {
+        "name": "Metadata_Plate",
+        "value": "Plate1"
+      },
+      {
+        "name": "Metadata_Well",
+        "value": "B02"
+      },
+      {
+        "name": "Metadata_Site",
+        "value": 1
+      }
+    ],
+    "B02-2": [
+      {
+        "name": "FilePath_Cycle1_C",
+        "value": "Batch1/images_aligned/barcoding/Plate1-WellB02-2/Plate_Plate1_Well_B02_Site_2_Cycle1_C.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_C",
+        "value": "Batch1/images_aligned/barcoding/Plate1-WellB02-2/Plate_Plate1_Well_B02_Site_2_Cycle2_C.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_A",
+        "value": "Batch1/images_aligned/barcoding/Plate1-WellB02-2/Plate_Plate1_Well_B02_Site_2_Cycle1_A.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_A",
+        "value": "Batch1/images_aligned/barcoding/Plate1-WellB02-2/Plate_Plate1_Well_B02_Site_2_Cycle2_A.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_T",
+        "value": "Batch1/images_aligned/barcoding/Plate1-WellB02-2/Plate_Plate1_Well_B02_Site_2_Cycle1_T.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_T",
+        "value": "Batch1/images_aligned/barcoding/Plate1-WellB02-2/Plate_Plate1_Well_B02_Site_2_Cycle2_T.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_G",
+        "value": "Batch1/images_aligned/barcoding/Plate1-WellB02-2/Plate_Plate1_Well_B02_Site_2_Cycle1_G.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_G",
+        "value": "Batch1/images_aligned/barcoding/Plate1-WellB02-2/Plate_Plate1_Well_B02_Site_2_Cycle2_G.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_DAPI",
+        "value": "Batch1/images_aligned/barcoding/Plate1-WellB02-2/Plate_Plate1_Well_B02_Site_2_Cycle1_DAPI.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_DAPI",
+        "value": "Batch1/images_aligned/barcoding/Plate1-WellB02-2/Plate_Plate1_Well_B02_Site_2_Cycle2_DAPI.tiff"
+      },
+      {
+        "name": "Metadata_Plate",
+        "value": "Plate1"
+      },
+      {
+        "name": "Metadata_Well",
+        "value": "B02"
+      },
+      {
+        "name": "Metadata_Site",
+        "value": 2
+      }
+    ]
+  },
+  "9_Analysis": {
+    "A01-1": [
+      {
+        "name": "FilePath_DNA",
+        "value": "Batch1/images_corrected_cropped/cellpainting/Plate1/Plate1_WellA01/Corr_DNA/Corr_DNA_Tile_1.tiff"
+      },
+      {
+        "name": "FilePath_Phalloidin",
+        "value": "Batch1/images_corrected_cropped/cellpainting/Plate1/Plate1_WellA01/Corr_Phalloidin/Corr_Phalloidin_Tile_1.tiff"
+      },
+      {
+        "name": "FilePath_ZO1",
+        "value": "Batch1/images_corrected_cropped/cellpainting/Plate1/Plate1_WellA01/Corr_ZO1/Corr_ZO1_Tile_1.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_C",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellA01/Cycle1_C/Cycle1_C_Site_1.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_C",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellA01/Cycle2_C/Cycle2_C_Site_1.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_A",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellA01/Cycle1_A/Cycle1_A_Site_1.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_A",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellA01/Cycle2_A/Cycle2_A_Site_1.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_T",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellA01/Cycle1_T/Cycle1_T_Site_1.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_T",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellA01/Cycle2_T/Cycle2_T_Site_1.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_G",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellA01/Cycle1_G/Cycle1_G_Site_1.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_G",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellA01/Cycle2_G/Cycle2_G_Site_1.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_DAPI",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellA01/Cycle1_DAPI/Cycle1_DAPI_Site_1.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_DAPI",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellA01/Cycle2_DAPI/Cycle2_DAPI_Site_1.tiff"
+      },
+      {
+        "name": "Metadata_Plate",
+        "value": "Plate1"
+      },
+      {
+        "name": "Metadata_Well",
+        "value": "A01"
+      },
+      {
+        "name": "Metadata_Tile",
+        "value": 1
+      }
+    ],
+    "A01-2": [
+      {
+        "name": "FilePath_DNA",
+        "value": "Batch1/images_corrected_cropped/cellpainting/Plate1/Plate1_WellA01/Corr_DNA/Corr_DNA_Tile_2.tiff"
+      },
+      {
+        "name": "FilePath_Phalloidin",
+        "value": "Batch1/images_corrected_cropped/cellpainting/Plate1/Plate1_WellA01/Corr_Phalloidin/Corr_Phalloidin_Tile_2.tiff"
+      },
+      {
+        "name": "FilePath_ZO1",
+        "value": "Batch1/images_corrected_cropped/cellpainting/Plate1/Plate1_WellA01/Corr_ZO1/Corr_ZO1_Tile_2.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_C",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellA01/Cycle1_C/Cycle1_C_Site_2.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_C",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellA01/Cycle2_C/Cycle2_C_Site_2.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_A",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellA01/Cycle1_A/Cycle1_A_Site_2.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_A",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellA01/Cycle2_A/Cycle2_A_Site_2.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_T",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellA01/Cycle1_T/Cycle1_T_Site_2.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_T",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellA01/Cycle2_T/Cycle2_T_Site_2.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_G",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellA01/Cycle1_G/Cycle1_G_Site_2.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_G",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellA01/Cycle2_G/Cycle2_G_Site_2.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_DAPI",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellA01/Cycle1_DAPI/Cycle1_DAPI_Site_2.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_DAPI",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellA01/Cycle2_DAPI/Cycle2_DAPI_Site_2.tiff"
+      },
+      {
+        "name": "Metadata_Plate",
+        "value": "Plate1"
+      },
+      {
+        "name": "Metadata_Well",
+        "value": "A01"
+      },
+      {
+        "name": "Metadata_Tile",
+        "value": 2
+      }
+    ],
+    "A01-3": [
+      {
+        "name": "FilePath_DNA",
+        "value": "Batch1/images_corrected_cropped/cellpainting/Plate1/Plate1_WellA01/Corr_DNA/Corr_DNA_Tile_3.tiff"
+      },
+      {
+        "name": "FilePath_Phalloidin",
+        "value": "Batch1/images_corrected_cropped/cellpainting/Plate1/Plate1_WellA01/Corr_Phalloidin/Corr_Phalloidin_Tile_3.tiff"
+      },
+      {
+        "name": "FilePath_ZO1",
+        "value": "Batch1/images_corrected_cropped/cellpainting/Plate1/Plate1_WellA01/Corr_ZO1/Corr_ZO1_Tile_3.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_C",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellA01/Cycle1_C/Cycle1_C_Site_3.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_C",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellA01/Cycle2_C/Cycle2_C_Site_3.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_A",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellA01/Cycle1_A/Cycle1_A_Site_3.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_A",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellA01/Cycle2_A/Cycle2_A_Site_3.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_T",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellA01/Cycle1_T/Cycle1_T_Site_3.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_T",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellA01/Cycle2_T/Cycle2_T_Site_3.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_G",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellA01/Cycle1_G/Cycle1_G_Site_3.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_G",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellA01/Cycle2_G/Cycle2_G_Site_3.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_DAPI",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellA01/Cycle1_DAPI/Cycle1_DAPI_Site_3.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_DAPI",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellA01/Cycle2_DAPI/Cycle2_DAPI_Site_3.tiff"
+      },
+      {
+        "name": "Metadata_Plate",
+        "value": "Plate1"
+      },
+      {
+        "name": "Metadata_Well",
+        "value": "A01"
+      },
+      {
+        "name": "Metadata_Tile",
+        "value": 3
+      }
+    ],
+    "A01-4": [
+      {
+        "name": "FilePath_DNA",
+        "value": "Batch1/images_corrected_cropped/cellpainting/Plate1/Plate1_WellA01/Corr_DNA/Corr_DNA_Tile_4.tiff"
+      },
+      {
+        "name": "FilePath_Phalloidin",
+        "value": "Batch1/images_corrected_cropped/cellpainting/Plate1/Plate1_WellA01/Corr_Phalloidin/Corr_Phalloidin_Tile_4.tiff"
+      },
+      {
+        "name": "FilePath_ZO1",
+        "value": "Batch1/images_corrected_cropped/cellpainting/Plate1/Plate1_WellA01/Corr_ZO1/Corr_ZO1_Tile_4.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_C",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellA01/Cycle1_C/Cycle1_C_Site_4.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_C",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellA01/Cycle2_C/Cycle2_C_Site_4.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_A",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellA01/Cycle1_A/Cycle1_A_Site_4.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_A",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellA01/Cycle2_A/Cycle2_A_Site_4.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_T",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellA01/Cycle1_T/Cycle1_T_Site_4.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_T",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellA01/Cycle2_T/Cycle2_T_Site_4.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_G",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellA01/Cycle1_G/Cycle1_G_Site_4.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_G",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellA01/Cycle2_G/Cycle2_G_Site_4.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_DAPI",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellA01/Cycle1_DAPI/Cycle1_DAPI_Site_4.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_DAPI",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellA01/Cycle2_DAPI/Cycle2_DAPI_Site_4.tiff"
+      },
+      {
+        "name": "Metadata_Plate",
+        "value": "Plate1"
+      },
+      {
+        "name": "Metadata_Well",
+        "value": "A01"
+      },
+      {
+        "name": "Metadata_Tile",
+        "value": 4
+      }
+    ],
+    "A01-5": [
+      {
+        "name": "FilePath_DNA",
+        "value": "Batch1/images_corrected_cropped/cellpainting/Plate1/Plate1_WellA01/Corr_DNA/Corr_DNA_Tile_5.tiff"
+      },
+      {
+        "name": "FilePath_Phalloidin",
+        "value": "Batch1/images_corrected_cropped/cellpainting/Plate1/Plate1_WellA01/Corr_Phalloidin/Corr_Phalloidin_Tile_5.tiff"
+      },
+      {
+        "name": "FilePath_ZO1",
+        "value": "Batch1/images_corrected_cropped/cellpainting/Plate1/Plate1_WellA01/Corr_ZO1/Corr_ZO1_Tile_5.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_C",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellA01/Cycle1_C/Cycle1_C_Site_5.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_C",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellA01/Cycle2_C/Cycle2_C_Site_5.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_A",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellA01/Cycle1_A/Cycle1_A_Site_5.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_A",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellA01/Cycle2_A/Cycle2_A_Site_5.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_T",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellA01/Cycle1_T/Cycle1_T_Site_5.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_T",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellA01/Cycle2_T/Cycle2_T_Site_5.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_G",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellA01/Cycle1_G/Cycle1_G_Site_5.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_G",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellA01/Cycle2_G/Cycle2_G_Site_5.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_DAPI",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellA01/Cycle1_DAPI/Cycle1_DAPI_Site_5.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_DAPI",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellA01/Cycle2_DAPI/Cycle2_DAPI_Site_5.tiff"
+      },
+      {
+        "name": "Metadata_Plate",
+        "value": "Plate1"
+      },
+      {
+        "name": "Metadata_Well",
+        "value": "A01"
+      },
+      {
+        "name": "Metadata_Tile",
+        "value": 5
+      }
+    ],
+    "A01-6": [
+      {
+        "name": "FilePath_DNA",
+        "value": "Batch1/images_corrected_cropped/cellpainting/Plate1/Plate1_WellA01/Corr_DNA/Corr_DNA_Tile_6.tiff"
+      },
+      {
+        "name": "FilePath_Phalloidin",
+        "value": "Batch1/images_corrected_cropped/cellpainting/Plate1/Plate1_WellA01/Corr_Phalloidin/Corr_Phalloidin_Tile_6.tiff"
+      },
+      {
+        "name": "FilePath_ZO1",
+        "value": "Batch1/images_corrected_cropped/cellpainting/Plate1/Plate1_WellA01/Corr_ZO1/Corr_ZO1_Tile_6.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_C",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellA01/Cycle1_C/Cycle1_C_Site_6.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_C",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellA01/Cycle2_C/Cycle2_C_Site_6.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_A",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellA01/Cycle1_A/Cycle1_A_Site_6.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_A",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellA01/Cycle2_A/Cycle2_A_Site_6.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_T",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellA01/Cycle1_T/Cycle1_T_Site_6.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_T",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellA01/Cycle2_T/Cycle2_T_Site_6.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_G",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellA01/Cycle1_G/Cycle1_G_Site_6.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_G",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellA01/Cycle2_G/Cycle2_G_Site_6.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_DAPI",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellA01/Cycle1_DAPI/Cycle1_DAPI_Site_6.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_DAPI",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellA01/Cycle2_DAPI/Cycle2_DAPI_Site_6.tiff"
+      },
+      {
+        "name": "Metadata_Plate",
+        "value": "Plate1"
+      },
+      {
+        "name": "Metadata_Well",
+        "value": "A01"
+      },
+      {
+        "name": "Metadata_Tile",
+        "value": 6
+      }
+    ],
+    "B02-1": [
+      {
+        "name": "FilePath_DNA",
+        "value": "Batch1/images_corrected_cropped/cellpainting/Plate1/Plate1_WellB02/Corr_DNA/Corr_DNA_Tile_1.tiff"
+      },
+      {
+        "name": "FilePath_Phalloidin",
+        "value": "Batch1/images_corrected_cropped/cellpainting/Plate1/Plate1_WellB02/Corr_Phalloidin/Corr_Phalloidin_Tile_1.tiff"
+      },
+      {
+        "name": "FilePath_ZO1",
+        "value": "Batch1/images_corrected_cropped/cellpainting/Plate1/Plate1_WellB02/Corr_ZO1/Corr_ZO1_Tile_1.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_C",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellB02/Cycle1_C/Cycle1_C_Site_1.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_C",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellB02/Cycle2_C/Cycle2_C_Site_1.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_A",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellB02/Cycle1_A/Cycle1_A_Site_1.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_A",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellB02/Cycle2_A/Cycle2_A_Site_1.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_T",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellB02/Cycle1_T/Cycle1_T_Site_1.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_T",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellB02/Cycle2_T/Cycle2_T_Site_1.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_G",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellB02/Cycle1_G/Cycle1_G_Site_1.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_G",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellB02/Cycle2_G/Cycle2_G_Site_1.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_DAPI",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellB02/Cycle1_DAPI/Cycle1_DAPI_Site_1.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_DAPI",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellB02/Cycle2_DAPI/Cycle2_DAPI_Site_1.tiff"
+      },
+      {
+        "name": "Metadata_Plate",
+        "value": "Plate1"
+      },
+      {
+        "name": "Metadata_Well",
+        "value": "B02"
+      },
+      {
+        "name": "Metadata_Tile",
+        "value": 1
+      }
+    ],
+    "B02-2": [
+      {
+        "name": "FilePath_DNA",
+        "value": "Batch1/images_corrected_cropped/cellpainting/Plate1/Plate1_WellB02/Corr_DNA/Corr_DNA_Tile_2.tiff"
+      },
+      {
+        "name": "FilePath_Phalloidin",
+        "value": "Batch1/images_corrected_cropped/cellpainting/Plate1/Plate1_WellB02/Corr_Phalloidin/Corr_Phalloidin_Tile_2.tiff"
+      },
+      {
+        "name": "FilePath_ZO1",
+        "value": "Batch1/images_corrected_cropped/cellpainting/Plate1/Plate1_WellB02/Corr_ZO1/Corr_ZO1_Tile_2.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_C",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellB02/Cycle1_C/Cycle1_C_Site_2.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_C",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellB02/Cycle2_C/Cycle2_C_Site_2.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_A",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellB02/Cycle1_A/Cycle1_A_Site_2.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_A",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellB02/Cycle2_A/Cycle2_A_Site_2.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_T",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellB02/Cycle1_T/Cycle1_T_Site_2.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_T",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellB02/Cycle2_T/Cycle2_T_Site_2.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_G",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellB02/Cycle1_G/Cycle1_G_Site_2.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_G",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellB02/Cycle2_G/Cycle2_G_Site_2.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_DAPI",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellB02/Cycle1_DAPI/Cycle1_DAPI_Site_2.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_DAPI",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellB02/Cycle2_DAPI/Cycle2_DAPI_Site_2.tiff"
+      },
+      {
+        "name": "Metadata_Plate",
+        "value": "Plate1"
+      },
+      {
+        "name": "Metadata_Well",
+        "value": "B02"
+      },
+      {
+        "name": "Metadata_Tile",
+        "value": 2
+      }
+    ],
+    "B02-3": [
+      {
+        "name": "FilePath_DNA",
+        "value": "Batch1/images_corrected_cropped/cellpainting/Plate1/Plate1_WellB02/Corr_DNA/Corr_DNA_Tile_3.tiff"
+      },
+      {
+        "name": "FilePath_Phalloidin",
+        "value": "Batch1/images_corrected_cropped/cellpainting/Plate1/Plate1_WellB02/Corr_Phalloidin/Corr_Phalloidin_Tile_3.tiff"
+      },
+      {
+        "name": "FilePath_ZO1",
+        "value": "Batch1/images_corrected_cropped/cellpainting/Plate1/Plate1_WellB02/Corr_ZO1/Corr_ZO1_Tile_3.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_C",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellB02/Cycle1_C/Cycle1_C_Site_3.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_C",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellB02/Cycle2_C/Cycle2_C_Site_3.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_A",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellB02/Cycle1_A/Cycle1_A_Site_3.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_A",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellB02/Cycle2_A/Cycle2_A_Site_3.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_T",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellB02/Cycle1_T/Cycle1_T_Site_3.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_T",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellB02/Cycle2_T/Cycle2_T_Site_3.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_G",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellB02/Cycle1_G/Cycle1_G_Site_3.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_G",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellB02/Cycle2_G/Cycle2_G_Site_3.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_DAPI",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellB02/Cycle1_DAPI/Cycle1_DAPI_Site_3.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_DAPI",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellB02/Cycle2_DAPI/Cycle2_DAPI_Site_3.tiff"
+      },
+      {
+        "name": "Metadata_Plate",
+        "value": "Plate1"
+      },
+      {
+        "name": "Metadata_Well",
+        "value": "B02"
+      },
+      {
+        "name": "Metadata_Tile",
+        "value": 3
+      }
+    ],
+    "B02-4": [
+      {
+        "name": "FilePath_DNA",
+        "value": "Batch1/images_corrected_cropped/cellpainting/Plate1/Plate1_WellB02/Corr_DNA/Corr_DNA_Tile_4.tiff"
+      },
+      {
+        "name": "FilePath_Phalloidin",
+        "value": "Batch1/images_corrected_cropped/cellpainting/Plate1/Plate1_WellB02/Corr_Phalloidin/Corr_Phalloidin_Tile_4.tiff"
+      },
+      {
+        "name": "FilePath_ZO1",
+        "value": "Batch1/images_corrected_cropped/cellpainting/Plate1/Plate1_WellB02/Corr_ZO1/Corr_ZO1_Tile_4.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_C",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellB02/Cycle1_C/Cycle1_C_Site_4.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_C",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellB02/Cycle2_C/Cycle2_C_Site_4.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_A",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellB02/Cycle1_A/Cycle1_A_Site_4.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_A",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellB02/Cycle2_A/Cycle2_A_Site_4.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_T",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellB02/Cycle1_T/Cycle1_T_Site_4.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_T",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellB02/Cycle2_T/Cycle2_T_Site_4.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_G",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellB02/Cycle1_G/Cycle1_G_Site_4.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_G",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellB02/Cycle2_G/Cycle2_G_Site_4.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_DAPI",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellB02/Cycle1_DAPI/Cycle1_DAPI_Site_4.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_DAPI",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellB02/Cycle2_DAPI/Cycle2_DAPI_Site_4.tiff"
+      },
+      {
+        "name": "Metadata_Plate",
+        "value": "Plate1"
+      },
+      {
+        "name": "Metadata_Well",
+        "value": "B02"
+      },
+      {
+        "name": "Metadata_Tile",
+        "value": 4
+      }
+    ],
+    "B02-5": [
+      {
+        "name": "FilePath_DNA",
+        "value": "Batch1/images_corrected_cropped/cellpainting/Plate1/Plate1_WellB02/Corr_DNA/Corr_DNA_Tile_5.tiff"
+      },
+      {
+        "name": "FilePath_Phalloidin",
+        "value": "Batch1/images_corrected_cropped/cellpainting/Plate1/Plate1_WellB02/Corr_Phalloidin/Corr_Phalloidin_Tile_5.tiff"
+      },
+      {
+        "name": "FilePath_ZO1",
+        "value": "Batch1/images_corrected_cropped/cellpainting/Plate1/Plate1_WellB02/Corr_ZO1/Corr_ZO1_Tile_5.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_C",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellB02/Cycle1_C/Cycle1_C_Site_5.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_C",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellB02/Cycle2_C/Cycle2_C_Site_5.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_A",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellB02/Cycle1_A/Cycle1_A_Site_5.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_A",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellB02/Cycle2_A/Cycle2_A_Site_5.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_T",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellB02/Cycle1_T/Cycle1_T_Site_5.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_T",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellB02/Cycle2_T/Cycle2_T_Site_5.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_G",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellB02/Cycle1_G/Cycle1_G_Site_5.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_G",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellB02/Cycle2_G/Cycle2_G_Site_5.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_DAPI",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellB02/Cycle1_DAPI/Cycle1_DAPI_Site_5.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_DAPI",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellB02/Cycle2_DAPI/Cycle2_DAPI_Site_5.tiff"
+      },
+      {
+        "name": "Metadata_Plate",
+        "value": "Plate1"
+      },
+      {
+        "name": "Metadata_Well",
+        "value": "B02"
+      },
+      {
+        "name": "Metadata_Tile",
+        "value": 5
+      }
+    ],
+    "B02-6": [
+      {
+        "name": "FilePath_DNA",
+        "value": "Batch1/images_corrected_cropped/cellpainting/Plate1/Plate1_WellB02/Corr_DNA/Corr_DNA_Tile_6.tiff"
+      },
+      {
+        "name": "FilePath_Phalloidin",
+        "value": "Batch1/images_corrected_cropped/cellpainting/Plate1/Plate1_WellB02/Corr_Phalloidin/Corr_Phalloidin_Tile_6.tiff"
+      },
+      {
+        "name": "FilePath_ZO1",
+        "value": "Batch1/images_corrected_cropped/cellpainting/Plate1/Plate1_WellB02/Corr_ZO1/Corr_ZO1_Tile_6.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_C",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellB02/Cycle1_C/Cycle1_C_Site_6.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_C",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellB02/Cycle2_C/Cycle2_C_Site_6.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_A",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellB02/Cycle1_A/Cycle1_A_Site_6.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_A",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellB02/Cycle2_A/Cycle2_A_Site_6.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_T",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellB02/Cycle1_T/Cycle1_T_Site_6.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_T",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellB02/Cycle2_T/Cycle2_T_Site_6.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_G",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellB02/Cycle1_G/Cycle1_G_Site_6.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_G",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellB02/Cycle2_G/Cycle2_G_Site_6.tiff"
+      },
+      {
+        "name": "FilePath_Cycle1_DAPI",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellB02/Cycle1_DAPI/Cycle1_DAPI_Site_6.tiff"
+      },
+      {
+        "name": "FilePath_Cycle2_DAPI",
+        "value": "Batch1/images_corrected_cropped/barcoding/Plate1/Plate1_WellB02/Cycle2_DAPI/Cycle2_DAPI_Site_6.tiff"
+      },
+      {
+        "name": "Metadata_Plate",
+        "value": "Plate1"
+      },
+      {
+        "name": "Metadata_Well",
+        "value": "B02"
+      },
+      {
+        "name": "Metadata_Tile",
+        "value": 6
+      }
+    ]
+  }
+}
