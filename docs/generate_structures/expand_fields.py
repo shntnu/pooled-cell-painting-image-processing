@@ -639,9 +639,8 @@ def serialize_fields_to_json(results, output_file):
     """Serialize the generated field results to a JSON file.
 
     Processes the nested results structure, handling special cases:
-    - Converts the hierarchical structure into flat lists of fields
-    - Transforms field arrays with name/value pairs into simple key-value dictionaries
-    - Removes redundant location keys since metadata is included in each field
+    - Ignores nesting structure and just extracts field data
+    - Transforms field arrays with name/value pairs into key-value dictionaries
 
     Args:
         results: Nested dictionary with generated field results
@@ -651,28 +650,31 @@ def serialize_fields_to_json(results, output_file):
         Creates or overwrites the output file with formatted JSON
         Prints a confirmation message to stdout
     """
-    # Flatten the structure to lists of field dictionaries
     json_results = {}
 
     for pipeline_name, locations in results.items():
-        # Create a list instead of a dictionary for each pipeline
         pipeline_fields = []
 
-        for location_key, fields in locations.items():
-            if isinstance(fields, dict) and all(
-                isinstance(key, int) for key in fields.keys()
+        # Function to process a node in the nested structure
+        def process_node(node):
+            # We found field data when we have a list of dicts with 'name' and 'value' keys
+            if (
+                isinstance(node, list)
+                and node
+                and isinstance(node[0], dict)
+                and "name" in node[0]
+                and "value" in node[0]
             ):
-                # Handle cycle-grouped fields - flatten cycles into the list
-                for cycle, cycle_fields in fields.items():
-                    # Transform each field in the cycle from {name, value} to {name: value}
-                    field_dict = {
-                        field["name"]: field["value"] for field in cycle_fields
-                    }
-                    pipeline_fields.append(field_dict)
-            else:
-                # Handle regular field arrays
-                field_dict = {field["name"]: field["value"] for field in fields}
+                # Convert the fields to a simple dictionary
+                field_dict = {field["name"]: field["value"] for field in node}
                 pipeline_fields.append(field_dict)
+            # For dictionaries, process all values recursively
+            elif isinstance(node, dict):
+                for value in node.values():
+                    process_node(value)
+
+        # Start processing from the locations dictionary
+        process_node(locations)
 
         json_results[pipeline_name] = pipeline_fields
 
