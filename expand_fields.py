@@ -238,6 +238,24 @@ def expand_fields(io_json_path, config=None):
     return results
 
 
+def process_metadata_field(field_name, field_source, metadata, cycle=None):
+    """Process a metadata field and return it if valid."""
+    if not field_name.startswith("Metadata_"):
+        return None
+
+    # Handle special case for SBSCycle
+    if field_name == "Metadata_SBSCycle" and cycle is not None:
+        return {"name": field_name, "value": cycle}
+
+    # Handle metadata from source mapping
+    if field_source.startswith("metadata."):
+        meta_key = field_source.split(".")[1]
+        if meta_key in metadata:
+            return {"name": field_name, "value": metadata[meta_key]}
+
+    return None
+
+
 def process_pipeline_fields(
     pipeline_name,
     pipeline,
@@ -268,62 +286,50 @@ def process_pipeline_fields(
             cycle_metadata = deepcopy(metadata)
             cycle_metadata["cycle"] = cycle
 
+            # Process all fields for this cycle
             for field in fields:
                 field_name = field["name"]
                 field_source = field.get("source", "")
 
                 # Handle metadata fields
-                if field_name.startswith("Metadata_"):
-                    source = field.get("source", "")
-                    if source.startswith("metadata."):
-                        # Extract the metadata key from the source
-                        meta_key = source.split(".")[1]
-                        if meta_key in cycle_metadata:
-                            cycle_fields.append(
-                                {"name": field_name, "value": cycle_metadata[meta_key]}
-                            )
-                    elif (
-                        field_name == "Metadata_SBSCycle" and "cycle" in cycle_metadata
-                    ):
-                        # Special case for SBSCycle
-                        cycle_fields.append({"name": field_name, "value": cycle})
+                metadata_field = process_metadata_field(
+                    field_name, field_source, cycle_metadata, cycle
+                )
+                if metadata_field:
+                    cycle_fields.append(metadata_field)
+                    continue
+
+                # Determine channel type and channels list
+                if "{cp_channel}" in field_name:
+                    channel_type = "cp"
+                    channels = cp_channels
+                elif "{bc_channel}" in field_name:
+                    channel_type = "bc"
+                    channels = bc_channels
+                else:
+                    # Skip if not a channel field
                     continue
 
                 # Process channel fields
-                if "{cp_channel}" in field_name:
-                    expanded = process_field(
-                        field_name,
-                        field_source,
-                        pipeline,
-                        pipelines,
-                        cycle_metadata,
-                        [cycle],
-                        "cp",
-                        cp_channels,
-                        channel_mappings,
-                        pipeline_name,
-                    )
-                    cycle_fields.extend(expanded)
-                elif "{bc_channel}" in field_name:
-                    expanded = process_field(
-                        field_name,
-                        field_source,
-                        pipeline,
-                        pipelines,
-                        cycle_metadata,
-                        [cycle],
-                        "bc",
-                        bc_channels,
-                        channel_mappings,
-                        pipeline_name,
-                    )
-                    cycle_fields.extend(expanded)
+                expanded = process_field(
+                    field_name,
+                    field_source,
+                    pipeline,
+                    pipelines,
+                    cycle_metadata,
+                    [cycle],  # Just this cycle
+                    channel_type,
+                    channels,
+                    channel_mappings,
+                    pipeline_name,
+                )
+                cycle_fields.extend(expanded)
 
             cycle_grouped_fields[cycle] = cycle_fields
 
         pipeline_results[location_key] = cycle_grouped_fields
     else:
-        # Regular field expansion
+        # Regular field expansion (not grouped by cycle)
         expanded_fields = []
 
         for field in fields:
@@ -332,54 +338,52 @@ def process_pipeline_fields(
             condition = field.get("condition", "")
 
             # Handle metadata fields
-            if field_name.startswith("Metadata_"):
-                source = field.get("source", "")
-                if source.startswith("metadata."):
-                    # Extract the metadata key from the source
-                    meta_key = source.split(".")[1]
-                    if meta_key in metadata:
-                        expanded_fields.append(
-                            {"name": field_name, "value": metadata[meta_key]}
-                        )
+            metadata_field = process_metadata_field(field_name, field_source, metadata)
+            if metadata_field:
+                expanded_fields.append(metadata_field)
                 continue
 
-            # Process channel fields
+            # Determine channel type, channels list, and cycles to use
             if "{cp_channel}" in field_name:
-                expanded = process_field(
-                    field_name,
-                    field_source,
-                    pipeline,
-                    pipelines,
-                    metadata,
-                    [0],  # Non-cycle fields
-                    "cp",
-                    cp_channels,
-                    channel_mappings,
-                    pipeline_name,
-                )
-                expanded_fields.extend(expanded)
+                channel_type = "cp"
+                channels = cp_channels
+                cycles_to_use = [0]  # Default for CP channels
             elif "{bc_channel}" in field_name:
-                # For bc_channel fields, we need to check the condition
-                valid_cycles = []
-                for cycle in cycles:
-                    if not condition or eval(condition, {"cycle": cycle}):
-                        valid_cycles.append(cycle)
+                channel_type = "bc"
+                channels = bc_channels
+                cycles_to_use = get_valid_cycles(cycles, condition)
+            else:
+                # Skip if not a channel field
+                continue
 
-                expanded = process_field(
-                    field_name,
-                    field_source,
-                    pipeline,
-                    pipelines,
-                    metadata,
-                    valid_cycles,
-                    "bc",
-                    bc_channels,
-                    channel_mappings,
-                    pipeline_name,
-                )
-                expanded_fields.extend(expanded)
+            # Process channel fields with appropriate cycles
+            expanded = process_field(
+                field_name,
+                field_source,
+                pipeline,
+                pipelines,
+                metadata,
+                cycles_to_use,
+                channel_type,
+                channels,
+                channel_mappings,
+                pipeline_name,
+            )
+            expanded_fields.extend(expanded)
 
         pipeline_results[location_key] = expanded_fields
+
+
+def get_valid_cycles(cycles, condition=""):
+    """Determine which cycles are valid based on the condition."""
+    if not condition:
+        return cycles
+
+    valid_cycles = []
+    for cycle in cycles:
+        if eval(condition, {"cycle": cycle}):
+            valid_cycles.append(cycle)
+    return valid_cycles
 
 
 def save_expanded_fields_as_json(results, output_file):
