@@ -335,7 +335,6 @@ def process_pipeline_fields(
         for field in fields:
             field_name = field["name"]
             field_source = field.get("source", "")
-            condition = field.get("condition", "")
 
             # Handle metadata fields
             metadata_field = process_metadata_field(field_name, field_source, metadata)
@@ -351,7 +350,7 @@ def process_pipeline_fields(
             elif "{bc_channel}" in field_name:
                 channel_type = "bc"
                 channels = bc_channels
-                cycles_to_use = get_valid_cycles(cycles, condition)
+                cycles_to_use = cycles  # Use all cycles directly
             else:
                 # Skip if not a channel field
                 continue
@@ -372,18 +371,6 @@ def process_pipeline_fields(
             expanded_fields.extend(expanded)
 
         pipeline_results[location_key] = expanded_fields
-
-
-def get_valid_cycles(cycles, condition=""):
-    """Determine which cycles are valid based on the condition."""
-    if not condition:
-        return cycles
-
-    valid_cycles = []
-    for cycle in cycles:
-        if eval(condition, {"cycle": cycle}):
-            valid_cycles.append(cycle)
-    return valid_cycles
 
 
 def save_expanded_fields_as_json(results, output_file):
