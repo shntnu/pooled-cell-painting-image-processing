@@ -607,7 +607,7 @@ def parse_args():
         description="Expand fields for CellProfiler pipelines"
     )
     parser.add_argument(
-        "--io_json", type=str, default="docs/io.json", help="Path to the io.json file"
+        "--io_json", type=str, default="../io.json", help="Path to the io.json file"
     )
     parser.add_argument("--config", type=str, help="Path to a JSON config file")
     parser.add_argument("--batch", type=str, default="Batch1", help="Batch identifier")
