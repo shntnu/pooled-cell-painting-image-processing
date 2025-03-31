@@ -509,30 +509,30 @@
         "outputs": {
             "segmentation_masks": {
                 "patterns": [
-                    "workspace/analysis/{plate}-Well{well}-{site}/segmentation_masks/Plate_{plate}_Well_{well}_Site_{site}_{object_type}_Objects.tiff"
+                    "workspace/analysis/{plate}-Well{well}-Tile{tile_number}/segmentation_masks/Plate_{plate}_Well_{well}_Site_{tile_number}_{object_type}_Objects.tiff"
                 ]
             },
             "overlay_images": {
                 "patterns": [
-                    "workspace/analysis/{plate}-Well{well}-{site}/Plate_{plate}_Well_{well}_Site_{site}_Corr{cp_channel}_Overlay.png",
-                    "workspace/analysis/{plate}-Well{well}-{site}/Plate_{plate}_Well_{well}_Site_{site}_Corr{cp_channel}_SpotOverlay.png"
+                    "workspace/analysis/{plate}-Well{well}-Tile{tile_number}/Plate_{plate}_Well_{well}_Site_{tile_number}_Corr{cp_channel}_Overlay.png",
+                    "workspace/analysis/{plate}-Well{well}-Tile{tile_number}/Plate_{plate}_Well_{well}_Site_{tile_number}_Corr{cp_channel}_SpotOverlay.png"
                 ]
             },
             "csvs": {
                 "patterns": [
-                    "workspace/analysis/{plate}-Well{well}-{site}/BarcodeFoci.csv",
-                    "workspace/analysis/{plate}-Well{well}-{site}/Cells.csv",
-                    "workspace/analysis/{plate}-Well{well}-{site}/ConfluentRegions.csv",
-                    "workspace/analysis/{plate}-Well{well}-{site}/Cytoplasm.csv",
-                    "workspace/analysis/{plate}-Well{well}-{site}/Experiment.csv",
-                    "workspace/analysis/{plate}-Well{well}-{site}/Foci.csv",
-                    "workspace/analysis/{plate}-Well{well}-{site}/Foci_NonCellEdge.csv",
-                    "workspace/analysis/{plate}-Well{well}-{site}/Foci_PreMask.csv",
-                    "workspace/analysis/{plate}-Well{well}-{site}/Image.csv",
-                    "workspace/analysis/{plate}-Well{well}-{site}/Nuclei.csv",
-                    "workspace/analysis/{plate}-Well{well}-{site}/PreCells.csv",
-                    "workspace/analysis/{plate}-Well{well}-{site}/RelateObjects.csv",
-                    "workspace/analysis/{plate}-Well{well}-{site}/Resize_Foci.csv"
+                    "workspace/analysis/{plate}-Well{well}-Tile{tile_number}/BarcodeFoci.csv",
+                    "workspace/analysis/{plate}-Well{well}-Tile{tile_number}/Cells.csv",
+                    "workspace/analysis/{plate}-Well{well}-Tile{tile_number}/ConfluentRegions.csv",
+                    "workspace/analysis/{plate}-Well{well}-Tile{tile_number}/Cytoplasm.csv",
+                    "workspace/analysis/{plate}-Well{well}-Tile{tile_number}/Experiment.csv",
+                    "workspace/analysis/{plate}-Well{well}-Tile{tile_number}/Foci.csv",
+                    "workspace/analysis/{plate}-Well{well}-Tile{tile_number}/Foci_NonCellEdge.csv",
+                    "workspace/analysis/{plate}-Well{well}-Tile{tile_number}/Foci_PreMask.csv",
+                    "workspace/analysis/{plate}-Well{well}-Tile{tile_number}/Image.csv",
+                    "workspace/analysis/{plate}-Well{well}-Tile{tile_number}/Nuclei.csv",
+                    "workspace/analysis/{plate}-Well{well}-Tile{tile_number}/PreCells.csv",
+                    "workspace/analysis/{plate}-Well{well}-Tile{tile_number}/RelateObjects.csv",
+                    "workspace/analysis/{plate}-Well{well}-Tile{tile_number}/Resize_Foci.csv"
                 ]
             }
         },
@@ -540,7 +540,7 @@
             "grouping_keys": [
                 "plate",
                 "well",
-                "site"
+                "tile_number"
             ],
             "fields": [
                 {
@@ -560,8 +560,8 @@
                     "source": "metadata.well"
                 },
                 {
-                    "name": "Metadata_Site",
-                    "source": "metadata.site"
+                    "name": "Metadata_Tile",
+                    "source": "metadata.tile_number"
                 }
             ]
         }
