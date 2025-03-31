@@ -25,24 +25,19 @@ def get_sites(
     rows: Optional[int] = None,
     columns: Optional[int] = None,
     painting_imperwell: Optional[int] = None,
-    painting_sites: Optional[List[int]] = None,
     default_sites: int = 144,
 ) -> List[int]:
     """Calculate site numbers based on grid layout or total sites."""
-    # Direct list of sites
-    if painting_sites:
-        return painting_sites
-
     # Grid-based calculation
     if rows and columns:
-        return list(range(1, rows * columns + 1))
+        return list(range(0, rows * columns))
 
     # Total sites
     if painting_imperwell:
-        return list(range(1, painting_imperwell + 1))
+        return list(range(0, painting_imperwell))
 
     # Default
-    return list(range(1, default_sites + 1))
+    return list(range(0, default_sites))
 
 
 def get_tiles(tileperside: int) -> List[int]:
@@ -159,7 +154,6 @@ def generate_all_outputs(
     bc_columns: Optional[int] = None,
     painting_imperwell: Optional[int] = None,
     barcoding_imperwell: Optional[int] = None,
-    painting_sites: Optional[List[int]] = None,
     stitchorder: str = "Grid: row-by-row",
     round_or_square: str = "square",
     overlap_pct: int = 10,
@@ -193,10 +187,10 @@ def generate_all_outputs(
     barcoding_columns_val = barcoding_columns or bc_columns or columns
 
     painting_sites_list = get_sites(
-        painting_rows_val, painting_columns_val, painting_imperwell, painting_sites
+        painting_rows_val, painting_columns_val, painting_imperwell
     )
     barcoding_sites_list = get_sites(
-        barcoding_rows_val, barcoding_columns_val, barcoding_imperwell, painting_sites
+        barcoding_rows_val, barcoding_columns_val, barcoding_imperwell
     )
 
     # 3. Extract channel information from schema
@@ -245,7 +239,7 @@ def generate_all_outputs(
                     bc_channels=bc_channels,
                     cp_microscope_channels=cp_microscope_channels,
                     bc_microscope_channels=bc_microscope_channels,
-                    cycles=list(range(1, barcoding_cycles + 1)),
+                    cycles=[f"{cycle:02d}" for cycle in range(1, barcoding_cycles + 1)],
                     tiles=tiles_list,
                     # Include all other parameters
                     stitchorder=stitchorder,
