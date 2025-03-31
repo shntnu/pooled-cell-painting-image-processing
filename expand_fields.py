@@ -8,7 +8,18 @@ from copy import deepcopy
 
 
 def validate_field_source(field, pipeline_name):
-    """Validate and extract the required source field."""
+    """Extract field name and source from a field definition, ensuring the source exists.
+
+    Performs validation to ensure the field has a 'source' attribute that isn't empty.
+    Raises assertions if requirements aren't met.
+
+    Args:
+        field: The field definition dictionary containing 'name' and 'source'
+        pipeline_name: Name of the pipeline for error reporting
+
+    Returns:
+        tuple: (field_name, field_source) extracted from the field
+    """
     field_name = field["name"]
 
     # Source is required
@@ -22,9 +33,16 @@ def validate_field_source(field, pipeline_name):
 
 
 def create_reverse_channel_mappings(channel_mappings):
-    """Create reverse mappings from logical channels to microscope channels.
+    """Create lookups from logical channels to microscope channels for efficient retrieval.
 
-    This is done once up front instead of repeatedly during processing.
+    Converts the original mappings (microscope->logical) to reverse mappings (logical->microscope)
+    for direct dictionary lookups rather than linear searching.
+
+    Args:
+        channel_mappings: Dictionary containing channel mappings with microscope_mapping
+
+    Returns:
+        dict: Dictionary with channel_type keys and {logical_channel: microscope_channel} values
     """
     reverse_mappings = {}
     for channel_type, mapping_data in channel_mappings.items():
@@ -40,7 +58,18 @@ def create_reverse_channel_mappings(channel_mappings):
 
 
 def apply_metadata_to_pattern(pattern, metadata):
-    """Apply all metadata substitutions to a pattern"""
+    """Replace metadata placeholders in a pattern with their actual values.
+
+    Substitutes all occurrences of {key} in the pattern with the corresponding
+    value from the metadata dictionary, converting values to strings.
+
+    Args:
+        pattern: String containing {key} placeholders
+        metadata: Dictionary of metadata values to substitute
+
+    Returns:
+        str: Pattern with all metadata placeholders replaced with values
+    """
     result = pattern
     for key, value in metadata.items():
         result = result.replace(f"{{{key}}}", str(value))
@@ -50,7 +79,22 @@ def apply_metadata_to_pattern(pattern, metadata):
 def substitute_channel_in_pattern(
     pattern, channel, channel_type, microscope_var, reverse_channel_mappings
 ):
-    """Substitute channel and microscope channel placeholders in a pattern"""
+    """Replace channel and microscope channel placeholders in a pattern.
+
+    Handles two types of substitutions:
+    1. {channel_type_microscope_channel} → corresponding microscope channel
+    2. {channel_type_channel} → the logical channel value
+
+    Args:
+        pattern: String containing channel placeholders
+        channel: Current channel value
+        channel_type: Channel type ('cp' or 'bc')
+        microscope_var: The microscope variable format to replace
+        reverse_channel_mappings: Mapping from logical to microscope channels
+
+    Returns:
+        str: Pattern with channel placeholders substituted
+    """
     result = pattern
 
     # Handle microscope channel mapping using direct lookup
@@ -67,7 +111,21 @@ def substitute_channel_in_pattern(
 
 
 def resolve_pattern_from_source(pipelines, source, metadata):
-    """Resolve an input source to its file patterns with metadata substitution"""
+    """Resolve an input source specification to concrete file patterns.
+
+    Navigates through pipeline definitions to find patterns associated with the
+    specified input source, applying metadata substitutions as needed.
+
+    The source format is expected to be: "pipeline_name.inputs.output_type"
+
+    Args:
+        pipelines: Dictionary of all pipeline definitions
+        source: Input source specification string
+        metadata: Metadata to apply to patterns
+
+    Returns:
+        list: List of resolved pattern strings with metadata applied
+    """
     parts = source.split(".")
     pipeline_name = parts[0]
     output_type = parts[2]
@@ -94,14 +152,22 @@ def resolve_pattern_from_source(pipelines, source, metadata):
 ###### Field processing functions ######
 
 
-def create_metadata_field(field_name, field_source, metadata, cycle=None):
-    """Create a metadata field object if the field is a valid metadata field."""
+def create_metadata_field(field_name, field_source, metadata):
+    """Create a metadata field object if the field name indicates it's a metadata field.
+
+    Extracts metadata values from the metadata dictionary based on the field source.
+
+    Args:
+        field_name: Name of the field
+        field_source: Source specification for the field
+        metadata: Dictionary of available metadata
+
+    Returns:
+        dict: Metadata field object with name and value if valid, None otherwise
+    """
+    # Only process fields that start with Metadata_
     if not field_name.startswith("Metadata_"):
         return None
-
-    # Handle special case for SBSCycle
-    if field_name == "Metadata_SBSCycle" and cycle is not None:
-        return {"name": field_name, "value": cycle}
 
     # Handle metadata from source mapping
     if field_source.startswith("metadata."):
@@ -123,7 +189,32 @@ def generate_field_variants(
     channels,
     reverse_channel_mappings,
 ):
-    """Generate all variants of a field by combining channel and cycle combinations"""
+    """Generate all concrete field variants by combining channels and cycles.
+
+    For each combination of applicable channels and cycles:
+    1. Resolves the appropriate pattern from the input source
+    2. Substitutes channel placeholders and cycle values
+    3. Applies metadata values to the pattern
+
+    The function handles the following cases differently:
+    - Fields with cycle in name vs. fields without cycle
+    - Cycle-dependent input sources vs. cycle-independent sources
+    - Fields with cycle in their pattern but not in name
+
+    Args:
+        field_name: Name template for the field with possible {cycle} and {channel} placeholders
+        field_source: Source specification for the field pattern
+        pipeline: Current pipeline definition
+        pipelines: Dictionary of all pipeline definitions
+        metadata: Base metadata to apply to patterns
+        cycles: List of cycles to process
+        channel_type: Type of channel ('cp' or 'bc')
+        channels: List of channels to process
+        reverse_channel_mappings: Mapping from logical to microscope channels
+
+    Returns:
+        list: List of field objects with name and value pairs
+    """
     results = []
 
     # Skip if source is not specified
@@ -260,7 +351,31 @@ def process_pipeline_location_fields(
     pipeline_results,
     reverse_channel_mappings,
 ):
-    """Process all fields for a specific pipeline and location"""
+    """Process all fields for a specific pipeline and location (well/site/tile).
+
+    Handles two distinct pipeline types:
+    1. Cycle-grouped pipelines: Creates a nested structure with per-cycle field lists
+    2. Non-cycle pipelines: Creates a flat list of field objects
+
+    For each field, determines if it's:
+    - A metadata field: Processed directly
+    - A channel field: Determines channel type and processes appropriately
+
+    Args:
+        pipeline_name: Name of the current pipeline
+        pipeline: Current pipeline definition
+        pipelines: Dictionary of all pipeline definitions
+        metadata: Metadata for this location
+        cycles: List of cycles to process
+        cp_channels: List of cell painting channels
+        bc_channels: List of barcode channels
+        location_key: Key for this location (e.g., "A1-1")
+        pipeline_results: Dictionary to store results for this pipeline
+        reverse_channel_mappings: Mapping from logical to microscope channels
+
+    Modifies:
+        pipeline_results: Adds field results for this location
+    """
     # Get the load_data_csv_config
     load_data_config = pipeline["load_data_csv_config"]
     grouping_keys = load_data_config["grouping_keys"]
@@ -291,7 +406,7 @@ def process_pipeline_location_fields(
 
                 # Handle metadata fields first
                 metadata_field = create_metadata_field(
-                    field_name, field_source, cycle_metadata, cycle
+                    field_name, field_source, cycle_metadata
                 )
                 if metadata_field:
                     result[cycle].append(metadata_field)
@@ -363,7 +478,22 @@ def process_pipeline_location_fields(
 
 
 def generate_all_pipeline_fields(io_json_path, config=None):
-    """Generate fields for all pipeline configurations from an IO JSON file"""
+    """Generate fields for all pipelines defined in an IO JSON file.
+
+    Main entry point for field generation that:
+    1. Loads and parses pipeline definitions from the IO JSON
+    2. Initializes channel mappings, lists, and configuration
+    3. Iterates through all pipelines and processes each
+    4. For each pipeline, processes all applicable locations (wells/sites/tiles)
+
+    Args:
+        io_json_path: Path to the IO JSON file with pipeline definitions
+        config: Optional configuration dictionary (falls back to defaults if None)
+
+    Returns:
+        dict: Nested dictionary with pipeline, location, and field results:
+             {pipeline_name: {location_key: fields}}
+    """
     # Default config if none provided
     if config is None:
         config = {
@@ -462,7 +592,17 @@ def generate_all_pipeline_fields(io_json_path, config=None):
 
 
 def parse_args():
-    """Parse command line arguments"""
+    """Parse command-line arguments for the field generation script.
+
+    Defines and processes all the command-line options:
+    - IO JSON file path
+    - Configuration options
+    - Experimental parameters (wells, sites, cycles, etc.)
+    - Output path
+
+    Returns:
+        Namespace: Parsed argument values
+    """
     parser = argparse.ArgumentParser(
         description="Expand fields for CellProfiler pipelines"
     )
@@ -496,7 +636,20 @@ def parse_args():
 
 
 def serialize_fields_to_json(results, output_file):
-    """Serialize the generated fields to a JSON file"""
+    """Serialize the generated field results to a JSON file.
+
+    Processes the nested results structure, handling special cases:
+    - Converts integer cycle keys to strings for JSON compatibility
+    - Maintains the hierarchical structure of pipeline → location → fields
+
+    Args:
+        results: Nested dictionary with generated field results
+        output_file: Path to write the JSON output
+
+    Side effects:
+        Creates or overwrites the output file with formatted JSON
+        Prints a confirmation message to stdout
+    """
     # Convert cycle keys from int to str for JSON serialization
     json_results = {}
 
