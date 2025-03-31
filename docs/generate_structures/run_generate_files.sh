@@ -6,7 +6,7 @@ python generate_outputs.py \
     --plates Plate1 \
     --rows 1 \
     --columns 1 \
-    --wells A01 \
+    --wells A1 \
     --tileperside 2 \
     --barcoding-cycles 1 \
     --output-file output_paths.json \
