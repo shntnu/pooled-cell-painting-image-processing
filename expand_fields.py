@@ -639,8 +639,9 @@ def serialize_fields_to_json(results, output_file):
     """Serialize the generated field results to a JSON file.
 
     Processes the nested results structure, handling special cases:
-    - Converts integer cycle keys to strings for JSON compatibility
-    - Maintains the hierarchical structure of pipeline → location → fields
+    - Converts the hierarchical structure into flat lists of fields
+    - Transforms field arrays with name/value pairs into simple key-value dictionaries
+    - Removes redundant location keys since metadata is included in each field
 
     Args:
         results: Nested dictionary with generated field results
@@ -650,24 +651,30 @@ def serialize_fields_to_json(results, output_file):
         Creates or overwrites the output file with formatted JSON
         Prints a confirmation message to stdout
     """
-    # Convert cycle keys from int to str for JSON serialization
+    # Flatten the structure to lists of field dictionaries
     json_results = {}
 
     for pipeline_name, locations in results.items():
-        pipeline_json = {}
+        # Create a list instead of a dictionary for each pipeline
+        pipeline_fields = []
 
         for location_key, fields in locations.items():
             if isinstance(fields, dict) and all(
                 isinstance(key, int) for key in fields.keys()
             ):
-                # Convert cycle keys to strings for JSON
-                pipeline_json[location_key] = {
-                    str(cycle): cycle_fields for cycle, cycle_fields in fields.items()
-                }
+                # Handle cycle-grouped fields - flatten cycles into the list
+                for cycle, cycle_fields in fields.items():
+                    # Transform each field in the cycle from {name, value} to {name: value}
+                    field_dict = {
+                        field["name"]: field["value"] for field in cycle_fields
+                    }
+                    pipeline_fields.append(field_dict)
             else:
-                pipeline_json[location_key] = fields
+                # Handle regular field arrays
+                field_dict = {field["name"]: field["value"] for field in fields}
+                pipeline_fields.append(field_dict)
 
-        json_results[pipeline_name] = pipeline_json
+        json_results[pipeline_name] = pipeline_fields
 
     with open(output_file, "w") as f:
         json.dump(json_results, f, indent=2)
