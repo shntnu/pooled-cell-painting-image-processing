@@ -84,11 +84,11 @@
             },
             "bc": {
                 "microscope_mapping": {
-                    "w1": "DAPI",
-                    "w2": "A",
-                    "w3": "C",
-                    "w4": "G",
-                    "w5": "T"
+                    "DAPI": "DAPI",
+                    "A": "A",
+                    "C": "C",
+                    "G": "G",
+                    "T": "T"
                 }
             }
         }
