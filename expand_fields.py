@@ -291,35 +291,42 @@ def process_pipeline_fields(
     # Check if cycle is a grouping dimension
     cycle_is_grouping_key = "cycle" in grouping_keys
 
+    # Initialize the result structure based on whether we're grouping by cycle
     if cycle_is_grouping_key:
-        # Create a cycle-grouped result for this location
-        cycle_grouped_fields = {}
-
+        result = {}  # Will be a dict mapping cycles to field lists
         for cycle in cycles:
-            cycle_fields = []
-            cycle_metadata = deepcopy(metadata)
-            cycle_metadata["cycle"] = cycle
+            result[cycle] = []
+    else:
+        result = []  # Will be a flat list of fields
 
-            # Process all fields for this cycle
-            for field in fields:
-                # Get required field name and source
-                field_name, field_source = get_required_source(field, pipeline_name)
+    # Process all fields
+    for field in fields:
+        # Get required field name and source
+        field_name, field_source = get_required_source(field, pipeline_name)
+
+        if cycle_is_grouping_key:
+            # Process each cycle separately for cycle-grouped pipelines
+            for cycle in cycles:
+                cycle_metadata = deepcopy(metadata)
+                cycle_metadata["cycle"] = cycle
 
                 # Handle metadata fields
                 metadata_field = process_metadata_field(
                     field_name, field_source, cycle_metadata, cycle
                 )
                 if metadata_field:
-                    cycle_fields.append(metadata_field)
+                    result[cycle].append(metadata_field)
                     continue
 
                 # Determine channel type and channels list
                 if "{cp_channel}" in field_name:
                     channel_type = "cp"
                     channels = cp_channels
+                    cycles_to_use = [cycle]  # Just this cycle
                 elif "{bc_channel}" in field_name:
                     channel_type = "bc"
                     channels = bc_channels
+                    cycles_to_use = [cycle]  # Just this cycle
                 else:
                     # Skip if not a channel field
                     continue
@@ -331,29 +338,19 @@ def process_pipeline_fields(
                     pipeline,
                     pipelines,
                     cycle_metadata,
-                    [cycle],  # Just this cycle
+                    cycles_to_use,
                     channel_type,
                     channels,
                     channel_mappings,
                     pipeline_name,
                 )
-                cycle_fields.extend(expanded)
-
-            cycle_grouped_fields[cycle] = cycle_fields
-
-        pipeline_results[location_key] = cycle_grouped_fields
-    else:
-        # Regular field expansion (not grouped by cycle)
-        expanded_fields = []
-
-        for field in fields:
-            # Get required field name and source
-            field_name, field_source = get_required_source(field, pipeline_name)
-
+                result[cycle].extend(expanded)
+        else:
+            # Handle non-cycle-grouped pipelines
             # Handle metadata fields
             metadata_field = process_metadata_field(field_name, field_source, metadata)
             if metadata_field:
-                expanded_fields.append(metadata_field)
+                result.append(metadata_field)
                 continue
 
             # Determine channel type, channels list, and cycles to use
@@ -382,9 +379,10 @@ def process_pipeline_fields(
                 channel_mappings,
                 pipeline_name,
             )
-            expanded_fields.extend(expanded)
+            result.extend(expanded)
 
-        pipeline_results[location_key] = expanded_fields
+    # Store the results
+    pipeline_results[location_key] = result
 
 
 def save_expanded_fields_as_json(results, output_file):
