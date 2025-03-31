@@ -39,7 +39,7 @@ def create_reverse_channel_mappings(channel_mappings):
 ###### Pattern resolution functions ######
 
 
-def expand_metadata_pattern(pattern, metadata):
+def apply_metadata_to_pattern(pattern, metadata):
     """Apply all metadata substitutions to a pattern"""
     result = pattern
     for key, value in metadata.items():
@@ -140,122 +140,107 @@ def expand_field(
 
     input_source = pipeline["inputs"][input_name]["source"]
 
-    # Resolve pattern based on whether this is a cycle-dependent field
-    needs_cycle = "{cycle}" in field_name
-    cycle_patterns = {}
+    # Determine if cycle substitution is needed in field name or pattern
+    field_name_contains_cycle = "{cycle}" in field_name
 
-    if needs_cycle:
-        # Create cycle-specific patterns for each cycle
-        for cycle in cycles:
-            cycle_metadata = deepcopy(metadata)
-            cycle_metadata["cycle"] = cycle
-            patterns = resolve_input_source(pipelines, input_source, cycle_metadata)
-            if patterns:
-                cycle_patterns[cycle] = patterns[0]
+    # Get pattern(s) - either one common pattern or cycle-specific patterns
+    if field_name_contains_cycle:
+        # We only need cycle-specific patterns if input_source contains {cycle}
+        # Otherwise, we can use the same pattern for all cycles
+        if "{cycle}" in input_source:
+            # Get a specific pattern for each cycle
+            cycle_patterns = {}
+            for cycle in cycles:
+                cycle_metadata = deepcopy(metadata)
+                cycle_metadata["cycle"] = cycle
+                patterns = resolve_input_source(pipelines, input_source, cycle_metadata)
+                if patterns:
+                    cycle_patterns[cycle] = patterns[0]
+
+            # If no cycles had valid patterns, return empty results
+            if not cycle_patterns:
+                return results
+        else:
+            # If input_source doesn't depend on cycle, use the same pattern for all cycles
+            patterns = resolve_input_source(pipelines, input_source, metadata)
+            if not patterns:
+                return results
+
+            # Create a mapping with the same pattern for all cycles
+            cycle_patterns = {cycle: patterns[0] for cycle in cycles}
     else:
-        # Just get a single pattern
+        # For non-cycle fields, we just need one pattern
         patterns = resolve_input_source(pipelines, input_source, metadata)
         if not patterns:
             return results
-        for cycle in cycles:
-            cycle_patterns[cycle] = patterns[0]
+
+        # Since field doesn't need cycle substitution, we only need one pattern
+        pattern = patterns[0]
 
     # Process each channel
     for channel in channels:
         base_name = field_name.replace(f"{{{channel_type}_channel}}", channel)
 
-        for cycle, pattern in cycle_patterns.items():
-            # Replace cycle in field name if needed
-            if needs_cycle:
+        # Apply channel mapping to the microscope variable
+        microscope_var = f"{{{channel_type}_microscope_channel}}"
+        microscope_channel = reverse_channel_mappings.get(channel_type, {}).get(channel)
+
+        if field_name_contains_cycle:
+            # Process pattern for each cycle when field name contains cycle
+            for cycle, pattern in cycle_patterns.items():
+                # Create expanded field name with cycle
                 expanded_name = base_name.replace("{cycle}", str(cycle))
-            else:
-                expanded_name = base_name
 
-            # Apply metadata to pattern
-            cycle_metadata = deepcopy(metadata)
-            if needs_cycle:
+                # Apply metadata (including cycle) to pattern
+                cycle_metadata = deepcopy(metadata)
                 cycle_metadata["cycle"] = cycle
+                expanded_pattern = apply_metadata_to_pattern(pattern, cycle_metadata)
 
-            expanded_pattern = expand_metadata_pattern(pattern, cycle_metadata)
+                # Apply channel mapping
+                if microscope_var in expanded_pattern and microscope_channel:
+                    expanded_pattern = expanded_pattern.replace(
+                        microscope_var, microscope_channel
+                    )
 
-            # Apply channel mapping and substitution
-            microscope_var = f"{{{channel_type}_microscope_channel}}"
-            expanded_pattern = expand_channel_pattern(
-                expanded_pattern,
-                channel,
-                channel_type,
-                microscope_var,
-                reverse_channel_mappings,
-            )
+                # Replace channel variable
+                channel_var = f"{{{channel_type}_channel}}"
+                if channel_var in expanded_pattern:
+                    expanded_pattern = expanded_pattern.replace(channel_var, channel)
 
-            # Handle cycle substitution if needed
+                # Handle cycle substitution in pattern if needed
+                if "{cycle}" in expanded_pattern:
+                    expanded_pattern = expanded_pattern.replace("{cycle}", str(cycle))
+
+                results.append({"name": expanded_name, "value": expanded_pattern})
+        else:
+            # For non-cycle fields, process just once
+            expanded_name = base_name
+
+            # Apply metadata to pattern (no cycle specific info needed)
+            expanded_pattern = apply_metadata_to_pattern(pattern, metadata)
+
+            # Apply channel mapping
+            if microscope_var in expanded_pattern and microscope_channel:
+                expanded_pattern = expanded_pattern.replace(
+                    microscope_var, microscope_channel
+                )
+
+            # Replace channel variable
+            channel_var = f"{{{channel_type}_channel}}"
+            if channel_var in expanded_pattern:
+                expanded_pattern = expanded_pattern.replace(channel_var, channel)
+
+            # Non-cycle fields might still have cycle in pattern (like bc_channels)
             if "{cycle}" in expanded_pattern:
-                expanded_pattern = expanded_pattern.replace("{cycle}", str(cycle))
-
-            results.append({"name": expanded_name, "value": expanded_pattern})
+                # Create one entry per cycle
+                for cycle in cycles:
+                    cycle_pattern = expanded_pattern.replace("{cycle}", str(cycle))
+                    results.append({"name": expanded_name, "value": cycle_pattern})
+            else:
+                # No cycle in pattern - just one result
+                results.append({"name": expanded_name, "value": expanded_pattern})
 
     return results
-
-
-def expand_field_with_cycles(
-    field_name,
-    field_source,
-    pipeline_name,
-    pipeline,
-    pipelines,
-    base_metadata,
-    cycles_to_use,
-    cp_channels,
-    bc_channels,
-    reverse_channel_mappings,
-    current_cycle=None,
-):
-    """Expand a field for specific cycles, handling metadata and channel fields."""
-    # Create metadata with cycle if needed
-    metadata = deepcopy(base_metadata)
-    if current_cycle is not None:
-        metadata["cycle"] = current_cycle
-
-    # Handle metadata fields
-    metadata_field = extract_metadata_field(
-        field_name, field_source, metadata, current_cycle
-    )
-    if metadata_field:
-        return [metadata_field]
-
-    # Determine channel type, channels list, and cycles to use
-    if "{cp_channel}" in field_name:
-        channel_type = "cp"
-        channels = cp_channels
-        if current_cycle is not None:
-            # For cycle-grouped pipelines
-            cycles_to_use = [current_cycle]
-        else:
-            # For non-cycle-grouped pipelines
-            cycles_to_use = [0]  # Default for CP channels
-    elif "{bc_channel}" in field_name:
-        channel_type = "bc"
-        channels = bc_channels
-        if current_cycle is not None:
-            # For cycle-grouped pipelines
-            cycles_to_use = [current_cycle]
-        # For non-cycle-grouped, use cycles_to_use passed in
-    else:
-        # Skip if not a channel field
-        return []
-
-    # Expand field with appropriate cycles
-    return expand_field(
-        field_name,
-        field_source,
-        pipeline,
-        pipelines,
-        metadata,
-        cycles_to_use,
-        channel_type,
-        channels,
-        reverse_channel_mappings,
-    )
 
 
 ###### Pipeline processing functions ######
@@ -298,35 +283,76 @@ def expand_pipeline_fields(
         if cycle_is_grouping_key:
             # Process each cycle separately for cycle-grouped pipelines
             for cycle in cycles:
-                # Process this field for the current cycle
-                expanded = expand_field_with_cycles(
+                # Create metadata with cycle
+                cycle_metadata = deepcopy(metadata)
+                cycle_metadata["cycle"] = cycle
+
+                # Handle metadata fields first
+                metadata_field = extract_metadata_field(
+                    field_name, field_source, cycle_metadata, cycle
+                )
+                if metadata_field:
+                    result[cycle].append(metadata_field)
+                    continue
+
+                # Determine channel type, channels list, and cycles to use
+                if "{cp_channel}" in field_name:
+                    channel_type = "cp"
+                    channels = cp_channels
+                    cycles_to_use = [cycle]  # For cycle-grouped pipelines
+                elif "{bc_channel}" in field_name:
+                    channel_type = "bc"
+                    channels = bc_channels
+                    cycles_to_use = [cycle]  # For cycle-grouped pipelines
+                else:
+                    # Skip if not a channel field
+                    continue
+
+                # Expand the field
+                expanded = expand_field(
                     field_name,
                     field_source,
-                    pipeline_name,
                     pipeline,
                     pipelines,
-                    metadata,
-                    cycles,  # All cycles (function will use only current cycle)
-                    cp_channels,
-                    bc_channels,
+                    cycle_metadata,
+                    cycles_to_use,
+                    channel_type,
+                    channels,
                     reverse_channel_mappings,
-                    current_cycle=cycle,
                 )
                 result[cycle].extend(expanded)
         else:
-            # Process non-cycle-grouped pipeline
-            expanded = expand_field_with_cycles(
+            # Handle non-cycle-grouped pipelines
+            # Handle metadata fields first
+            metadata_field = extract_metadata_field(field_name, field_source, metadata)
+            if metadata_field:
+                result.append(metadata_field)
+                continue
+
+            # Determine channel type, channels list, and cycles to use
+            if "{cp_channel}" in field_name:
+                channel_type = "cp"
+                channels = cp_channels
+                cycles_to_use = [0]  # Default for CP channels
+            elif "{bc_channel}" in field_name:
+                channel_type = "bc"
+                channels = bc_channels
+                cycles_to_use = cycles  # Use all cycles directly
+            else:
+                # Skip if not a channel field
+                continue
+
+            # Expand the field
+            expanded = expand_field(
                 field_name,
                 field_source,
-                pipeline_name,
                 pipeline,
                 pipelines,
                 metadata,
-                cycles,  # All cycles (for BC channels)
-                cp_channels,
-                bc_channels,
+                cycles_to_use,
+                channel_type,
+                channels,
                 reverse_channel_mappings,
-                current_cycle=None,
             )
             result.extend(expanded)
 
