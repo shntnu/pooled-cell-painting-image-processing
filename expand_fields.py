@@ -7,8 +7,8 @@ from copy import deepcopy
 ###### Utility functions ######
 
 
-def get_required_source(field, pipeline_name):
-    """Extract and validate the required source field."""
+def validate_field_source(field, pipeline_name):
+    """Validate and extract the required source field."""
     field_name = field["name"]
 
     # Source is required
@@ -47,10 +47,10 @@ def apply_metadata_to_pattern(pattern, metadata):
     return result
 
 
-def expand_channel_pattern(
+def substitute_channel_in_pattern(
     pattern, channel, channel_type, microscope_var, reverse_channel_mappings
 ):
-    """Expand a pattern with channel and microscope mappings"""
+    """Substitute channel and microscope channel placeholders in a pattern"""
     result = pattern
 
     # Handle microscope channel mapping using direct lookup
@@ -66,8 +66,8 @@ def expand_channel_pattern(
     return result
 
 
-def resolve_input_source(pipelines, source, metadata):
-    """Recursively resolve an input source to its file patterns"""
+def resolve_pattern_from_source(pipelines, source, metadata):
+    """Resolve an input source to its file patterns with metadata substitution"""
     parts = source.split(".")
     pipeline_name = parts[0]
     output_type = parts[2]
@@ -94,8 +94,8 @@ def resolve_input_source(pipelines, source, metadata):
 ###### Field processing functions ######
 
 
-def extract_metadata_field(field_name, field_source, metadata, cycle=None):
-    """Extract a metadata field and return it if valid."""
+def create_metadata_field(field_name, field_source, metadata, cycle=None):
+    """Create a metadata field object if the field is a valid metadata field."""
     if not field_name.startswith("Metadata_"):
         return None
 
@@ -112,7 +112,7 @@ def extract_metadata_field(field_name, field_source, metadata, cycle=None):
     return None
 
 
-def expand_field(
+def generate_field_variants(
     field_name,
     field_source,
     pipeline,
@@ -123,7 +123,7 @@ def expand_field(
     channels,
     reverse_channel_mappings,
 ):
-    """Expand a single field with channel and cycle substitutions"""
+    """Generate all variants of a field by combining channel and cycle combinations"""
     results = []
 
     # Skip if source is not specified
@@ -153,7 +153,9 @@ def expand_field(
             for cycle in cycles:
                 cycle_metadata = deepcopy(metadata)
                 cycle_metadata["cycle"] = cycle
-                patterns = resolve_input_source(pipelines, input_source, cycle_metadata)
+                patterns = resolve_pattern_from_source(
+                    pipelines, input_source, cycle_metadata
+                )
                 if patterns:
                     cycle_patterns[cycle] = patterns[0]
 
@@ -162,7 +164,7 @@ def expand_field(
                 return results
         else:
             # If input_source doesn't depend on cycle, use the same pattern for all cycles
-            patterns = resolve_input_source(pipelines, input_source, metadata)
+            patterns = resolve_pattern_from_source(pipelines, input_source, metadata)
             if not patterns:
                 return results
 
@@ -170,7 +172,7 @@ def expand_field(
             cycle_patterns = {cycle: patterns[0] for cycle in cycles}
     else:
         # For non-cycle fields, we just need one pattern
-        patterns = resolve_input_source(pipelines, input_source, metadata)
+        patterns = resolve_pattern_from_source(pipelines, input_source, metadata)
         if not patterns:
             return results
 
@@ -246,7 +248,7 @@ def expand_field(
 ###### Pipeline processing functions ######
 
 
-def expand_pipeline_fields(
+def process_pipeline_location_fields(
     pipeline_name,
     pipeline,
     pipelines,
@@ -258,7 +260,7 @@ def expand_pipeline_fields(
     pipeline_results,
     reverse_channel_mappings,
 ):
-    """Expand fields for a specific pipeline and location"""
+    """Process all fields for a specific pipeline and location"""
     # Get the load_data_csv_config
     load_data_config = pipeline["load_data_csv_config"]
     grouping_keys = load_data_config["grouping_keys"]
@@ -278,7 +280,7 @@ def expand_pipeline_fields(
     # Process all fields
     for field in fields:
         # Get required field name and source
-        field_name, field_source = get_required_source(field, pipeline_name)
+        field_name, field_source = validate_field_source(field, pipeline_name)
 
         if cycle_is_grouping_key:
             # Process each cycle separately for cycle-grouped pipelines
@@ -288,7 +290,7 @@ def expand_pipeline_fields(
                 cycle_metadata["cycle"] = cycle
 
                 # Handle metadata fields first
-                metadata_field = extract_metadata_field(
+                metadata_field = create_metadata_field(
                     field_name, field_source, cycle_metadata, cycle
                 )
                 if metadata_field:
@@ -309,7 +311,7 @@ def expand_pipeline_fields(
                     continue
 
                 # Expand the field
-                expanded = expand_field(
+                expanded = generate_field_variants(
                     field_name,
                     field_source,
                     pipeline,
@@ -324,7 +326,7 @@ def expand_pipeline_fields(
         else:
             # Handle non-cycle-grouped pipelines
             # Handle metadata fields first
-            metadata_field = extract_metadata_field(field_name, field_source, metadata)
+            metadata_field = create_metadata_field(field_name, field_source, metadata)
             if metadata_field:
                 result.append(metadata_field)
                 continue
@@ -343,7 +345,7 @@ def expand_pipeline_fields(
                 continue
 
             # Expand the field
-            expanded = expand_field(
+            expanded = generate_field_variants(
                 field_name,
                 field_source,
                 pipeline,
@@ -360,8 +362,8 @@ def expand_pipeline_fields(
     pipeline_results[location_key] = result
 
 
-def expand_fields(io_json_path, config=None):
-    """Expand all fields in the load_data_csv_config for all pipelines"""
+def generate_all_pipeline_fields(io_json_path, config=None):
+    """Generate fields for all pipeline configurations from an IO JSON file"""
     # Default config if none provided
     if config is None:
         config = {
@@ -437,7 +439,7 @@ def expand_fields(io_json_path, config=None):
                 location_key = f"{well}-{location_value}"
 
                 # Process the fields for this location
-                expand_pipeline_fields(
+                process_pipeline_location_fields(
                     pipeline_name,
                     pipeline,
                     pipelines,
@@ -493,8 +495,8 @@ def parse_args():
     return parser.parse_args()
 
 
-def write_fields_to_json(results, output_file):
-    """Write the expanded fields to a JSON file"""
+def serialize_fields_to_json(results, output_file):
+    """Serialize the generated fields to a JSON file"""
     # Convert cycle keys from int to str for JSON serialization
     json_results = {}
 
@@ -542,7 +544,7 @@ if __name__ == "__main__":
         }
 
     # Expand the fields
-    results = expand_fields(args.io_json, config)
+    results = generate_all_pipeline_fields(args.io_json, config)
     # Save to JSON if output file is specified
     if args.output:
-        write_fields_to_json(results, args.output)
+        serialize_fields_to_json(results, args.output)
