@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 import json
 import argparse
-import itertools
 from copy import deepcopy
 
 
@@ -156,7 +155,7 @@ def expand_fields(io_json_path, config=None):
                 "plate": "Plate1",
                 "raw_image_template": "FOV",
             },
-            "wells": ["A01"],
+            "wells": ["A1"],
             "sites": [1],
             "tile_numbers": [1, 2, 3, 4],
             "cycles": [1, 2],
@@ -175,14 +174,20 @@ def expand_fields(io_json_path, config=None):
     bc_channels = metadata_schema.get("bc_channel", {}).get("enum", [])
     channel_mappings = metadata_schema.get("channel_mapping", {})
 
-    # Get parameters from config
-    wells = config.get("wells", ["A01"])
-    sites = config.get("sites", [1])
-    tile_numbers = config.get("tile_numbers", [1, 2, 3, 4])
-    cycles = config.get("cycles", [1, 2])
+    # Get parameters from config - these must exist
+    assert "wells" in config, "wells must be specified in config"
+    assert "sites" in config, "sites must be specified in config"
+    assert "tile_numbers" in config, "tile_numbers must be specified in config"
+    assert "cycles" in config, "cycles must be specified in config"
+    assert "metadata" in config, "metadata must be specified in config"
+
+    wells = config["wells"]
+    sites = config["sites"]
+    tile_numbers = config["tile_numbers"]
+    cycles = config["cycles"]
 
     # Get basic metadata that's the same for all locations
-    base_metadata = config.get("metadata", {})
+    base_metadata = config["metadata"]
 
     # Process each pipeline
     results = {}
@@ -194,63 +199,38 @@ def expand_fields(io_json_path, config=None):
         # Create a result container for this pipeline
         pipeline_results = {}
 
-        # Determine if this pipeline uses tile_number instead of site
-        uses_tile_as_location = False
-        if pipeline_name == "9_Analysis":
-            uses_tile_as_location = True
+        # Check if this pipeline uses tile_number as a grouping key
+        grouping_keys = pipeline["load_data_csv_config"]["grouping_keys"]
+        uses_tile_number = "tile_number" in grouping_keys
 
-        # For most pipelines, we use well+site combinations
-        # For pipeline 9, we use well+tile combinations
-        if uses_tile_as_location:
-            # Process combinations of well and tile (pipeline 9)
-            for well in wells:
-                for tile_number in tile_numbers:
-                    # Create a location key
-                    location_key = f"{well}-{tile_number}"
+        # Determine which location parameter to use based on grouping keys
+        location_param = tile_numbers if uses_tile_number else sites
+        location_key_name = "tile_number" if uses_tile_number else "site"
 
-                    # Create metadata for this location
-                    metadata = deepcopy(base_metadata)
-                    metadata["well"] = well
-                    metadata["tile_number"] = tile_number
+        # Process locations based on grouping keys
+        for well in wells:
+            for location_value in location_param:
+                # Create metadata for this combination
+                metadata = deepcopy(base_metadata)
+                metadata["well"] = well
+                metadata[location_key_name] = location_value
 
-                    # Process the fields for this well + tile combination
-                    process_pipeline_fields(
-                        pipeline_name,
-                        pipeline,
-                        pipelines,
-                        metadata,
-                        cycles,
-                        cp_channels,
-                        bc_channels,
-                        channel_mappings,
-                        location_key,
-                        pipeline_results,
-                    )
-        else:
-            # Process combinations of well and site (most pipelines)
-            for well in wells:
-                for site in sites:
-                    # Create a location key
-                    location_key = f"{well}-{site}"
+                # Create a location key with well and location value
+                location_key = f"{well}-{location_value}"
 
-                    # Create metadata for this location
-                    metadata = deepcopy(base_metadata)
-                    metadata["well"] = well
-                    metadata["site"] = site
-
-                    # Process the fields for this well + site combination
-                    process_pipeline_fields(
-                        pipeline_name,
-                        pipeline,
-                        pipelines,
-                        metadata,
-                        cycles,
-                        cp_channels,
-                        bc_channels,
-                        channel_mappings,
-                        location_key,
-                        pipeline_results,
-                    )
+                # Process the fields for this location
+                process_pipeline_fields(
+                    pipeline_name,
+                    pipeline,
+                    pipelines,
+                    metadata,
+                    cycles,
+                    cp_channels,
+                    bc_channels,
+                    channel_mappings,
+                    location_key,
+                    pipeline_results,
+                )
 
         # Add this pipeline's results to the overall results
         results[pipeline_name] = pipeline_results
@@ -294,23 +274,19 @@ def process_pipeline_fields(
 
                 # Handle metadata fields
                 if field_name.startswith("Metadata_"):
-                    meta_key = field_name[9:]
-                    if meta_key == "SBSCycle" and "cycle" in cycle_metadata:
-                        cycle_fields.append({"name": field_name, "value": cycle})
-                    elif meta_key.lower() in ["tile", "site", "well", "plate", "batch"]:
-                        # Handle special case for Metadata_Tile which maps to tile_number
-                        source_key = (
-                            meta_key.lower()
-                            if meta_key.lower() != "tile"
-                            else "tile_number"
-                        )
-                        if source_key in cycle_metadata:
+                    source = field.get("source", "")
+                    if source.startswith("metadata."):
+                        # Extract the metadata key from the source
+                        meta_key = source.split(".")[1]
+                        if meta_key in cycle_metadata:
                             cycle_fields.append(
-                                {
-                                    "name": field_name,
-                                    "value": cycle_metadata[source_key],
-                                }
+                                {"name": field_name, "value": cycle_metadata[meta_key]}
                             )
+                    elif (
+                        field_name == "Metadata_SBSCycle" and "cycle" in cycle_metadata
+                    ):
+                        # Special case for SBSCycle
+                        cycle_fields.append({"name": field_name, "value": cycle})
                     continue
 
                 # Process channel fields
@@ -357,17 +333,13 @@ def process_pipeline_fields(
 
             # Handle metadata fields
             if field_name.startswith("Metadata_"):
-                meta_key = field_name[9:]
-                if meta_key.lower() in ["tile", "site", "well", "plate", "batch"]:
-                    # Handle special case for Metadata_Tile which maps to tile_number
-                    source_key = (
-                        meta_key.lower()
-                        if meta_key.lower() != "tile"
-                        else "tile_number"
-                    )
-                    if source_key in metadata:
+                source = field.get("source", "")
+                if source.startswith("metadata."):
+                    # Extract the metadata key from the source
+                    meta_key = source.split(".")[1]
+                    if meta_key in metadata:
                         expanded_fields.append(
-                            {"name": field_name, "value": metadata[source_key]}
+                            {"name": field_name, "value": metadata[meta_key]}
                         )
                 continue
 
@@ -408,31 +380,6 @@ def process_pipeline_fields(
                 expanded_fields.extend(expanded)
 
         pipeline_results[location_key] = expanded_fields
-
-
-def print_expanded_fields(results):
-    """Print the expanded fields in a readable format"""
-    # Iterate through pipelines
-    for pipeline_name, locations in results.items():
-        print(f"\n\n=== Pipeline: {pipeline_name} ===")
-
-        # Print each location's results
-        for location_key, fields in locations.items():
-            print(f"\n== Location: {location_key} ==")
-
-            # Check if this location has cycle-grouped fields
-            if isinstance(fields, dict) and all(
-                isinstance(key, int) for key in fields.keys()
-            ):
-                # Print each cycle's fields separately
-                for cycle, cycle_fields in fields.items():
-                    print(f"\n--- Cycle {cycle} ---")
-                    for field in cycle_fields:
-                        print(f"{field['name']}: {field['value']}")
-            else:
-                # Regular non-cycle-grouped fields
-                for field in fields:
-                    print(f"{field['name']}: {field['value']}")
 
 
 def save_expanded_fields_as_json(results, output_file):
@@ -477,8 +424,8 @@ def parse_args():
         "--wells",
         type=str,
         nargs="+",
-        default=["A01"],
-        help="Well identifiers (e.g. A01 B02)",
+        default=["A1"],
+        help="Well identifiers (e.g. A1 B02)",
     )
     parser.add_argument(
         "--sites", type=int, nargs="+", default=[1], help="Site numbers"
@@ -519,10 +466,6 @@ if __name__ == "__main__":
 
     # Expand the fields
     results = expand_fields(args.io_json, config)
-
-    # Print the results
-    print_expanded_fields(results)
-
     # Save to JSON if output file is specified
     if args.output:
         save_expanded_fields_as_json(results, args.output)
