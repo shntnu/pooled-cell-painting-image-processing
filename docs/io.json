@@ -122,9 +122,7 @@
         },
         "load_data_csv_config": {
             "grouping_keys": [
-                "plate",
-                "well",
-                "site"
+                "plate"
             ],
             "fields": [
                 {
@@ -318,8 +316,6 @@
         "load_data_csv_config": {
             "grouping_keys": [
                 "plate",
-                "well",
-                "site",
                 "cycle"
             ],
             "fields": [
