@@ -7,14 +7,6 @@ from copy import deepcopy
 ###### Utility functions ######
 
 
-def apply_metadata_to_pattern(pattern, metadata):
-    """Apply all metadata substitutions to a pattern"""
-    result = pattern
-    for key, value in metadata.items():
-        result = result.replace(f"{{{key}}}", str(value))
-    return result
-
-
 def get_required_source(field, pipeline_name):
     """Extract and validate the required source field."""
     field_name = field["name"]
@@ -44,41 +36,15 @@ def create_reverse_channel_mappings(channel_mappings):
     return reverse_mappings
 
 
-def parse_args():
-    """Parse command line arguments"""
-    parser = argparse.ArgumentParser(
-        description="Expand fields for CellProfiler pipelines"
-    )
-    parser.add_argument(
-        "--io_json", type=str, default="docs/io.json", help="Path to the io.json file"
-    )
-    parser.add_argument("--config", type=str, help="Path to a JSON config file")
-    parser.add_argument("--batch", type=str, default="Batch1", help="Batch identifier")
-    parser.add_argument("--plate", type=str, default="Plate1", help="Plate identifier")
-    parser.add_argument(
-        "--wells",
-        type=str,
-        nargs="+",
-        default=["A1"],
-        help="Well identifiers (e.g. A1 B02)",
-    )
-    parser.add_argument(
-        "--sites", type=int, nargs="+", default=[1], help="Site numbers"
-    )
-    parser.add_argument(
-        "--raw_image_template", type=str, default="FOV", help="Raw image template"
-    )
-    parser.add_argument(
-        "--cycles", type=int, nargs="+", default=[1, 2], help="Cycle numbers"
-    )
-    parser.add_argument(
-        "--tile_numbers", type=int, nargs="+", default=[1, 2, 3, 4], help="Tile numbers"
-    )
-    parser.add_argument("--output", type=str, help="Output file path for JSON results")
-    return parser.parse_args()
-
-
 ###### Pattern resolution functions ######
+
+
+def expand_metadata_pattern(pattern, metadata):
+    """Apply all metadata substitutions to a pattern"""
+    result = pattern
+    for key, value in metadata.items():
+        result = result.replace(f"{{{key}}}", str(value))
+    return result
 
 
 def expand_channel_pattern(
@@ -155,8 +121,6 @@ def expand_field(
     cycles,
     channel_type,
     channels,
-    channel_mappings,
-    pipeline_name,
     reverse_channel_mappings,
 ):
     """Expand a single field with channel and cycle substitutions"""
@@ -212,7 +176,7 @@ def expand_field(
             if needs_cycle:
                 cycle_metadata["cycle"] = cycle
 
-            expanded_pattern = apply_metadata_to_pattern(pattern, cycle_metadata)
+            expanded_pattern = expand_metadata_pattern(pattern, cycle_metadata)
 
             # Apply channel mapping and substitution
             microscope_var = f"{{{channel_type}_microscope_channel}}"
@@ -243,7 +207,6 @@ def expand_field_with_cycles(
     cycles_to_use,
     cp_channels,
     bc_channels,
-    channel_mappings,
     reverse_channel_mappings,
     current_cycle=None,
 ):
@@ -291,8 +254,6 @@ def expand_field_with_cycles(
         cycles_to_use,
         channel_type,
         channels,
-        channel_mappings,
-        pipeline_name,
         reverse_channel_mappings,
     )
 
@@ -308,7 +269,6 @@ def expand_pipeline_fields(
     cycles,
     cp_channels,
     bc_channels,
-    channel_mappings,
     location_key,
     pipeline_results,
     reverse_channel_mappings,
@@ -349,7 +309,6 @@ def expand_pipeline_fields(
                     cycles,  # All cycles (function will use only current cycle)
                     cp_channels,
                     bc_channels,
-                    channel_mappings,
                     reverse_channel_mappings,
                     current_cycle=cycle,
                 )
@@ -366,7 +325,6 @@ def expand_pipeline_fields(
                 cycles,  # All cycles (for BC channels)
                 cp_channels,
                 bc_channels,
-                channel_mappings,
                 reverse_channel_mappings,
                 current_cycle=None,
             )
@@ -461,7 +419,6 @@ def expand_fields(io_json_path, config=None):
                     cycles,
                     cp_channels,
                     bc_channels,
-                    channel_mappings,
                     location_key,
                     pipeline_results,
                     reverse_channel_mappings,
@@ -473,7 +430,41 @@ def expand_fields(io_json_path, config=None):
     return results
 
 
-###### Output functions ######
+###### Input / Output functions ######
+
+
+def parse_args():
+    """Parse command line arguments"""
+    parser = argparse.ArgumentParser(
+        description="Expand fields for CellProfiler pipelines"
+    )
+    parser.add_argument(
+        "--io_json", type=str, default="docs/io.json", help="Path to the io.json file"
+    )
+    parser.add_argument("--config", type=str, help="Path to a JSON config file")
+    parser.add_argument("--batch", type=str, default="Batch1", help="Batch identifier")
+    parser.add_argument("--plate", type=str, default="Plate1", help="Plate identifier")
+    parser.add_argument(
+        "--wells",
+        type=str,
+        nargs="+",
+        default=["A1"],
+        help="Well identifiers (e.g. A1 B02)",
+    )
+    parser.add_argument(
+        "--sites", type=int, nargs="+", default=[1], help="Site numbers"
+    )
+    parser.add_argument(
+        "--raw_image_template", type=str, default="FOV", help="Raw image template"
+    )
+    parser.add_argument(
+        "--cycles", type=int, nargs="+", default=[1, 2], help="Cycle numbers"
+    )
+    parser.add_argument(
+        "--tile_numbers", type=int, nargs="+", default=[1, 2, 3, 4], help="Tile numbers"
+    )
+    parser.add_argument("--output", type=str, help="Output file path for JSON results")
+    return parser.parse_args()
 
 
 def write_fields_to_json(results, output_file):
