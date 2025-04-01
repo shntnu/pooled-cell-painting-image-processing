@@ -667,7 +667,7 @@ This parameterization approach enables the same pipeline code to process differe
 Note: 
 - The input / outputs are also in parseable form [`io.json`](io.json).
 - In the jsons, `{1_CP_Illum|2_CP_Apply_Illum|5_BC_Illum|6_BC_Apply_Illum}.input.images.pattern` are mockups
-- Sample outputs of paths and LoadData CSVs generated using [`io.json`](io.json) are [here](https://github.com/shntnu/pooled-cell-painting-image-processing/tree/master/docs/generate_structures/sample_outputs).
+- Sample outputs of paths and LoadData CSVs generated using [`io.json`](io.json) are [here](generate_structures/sample_outputs).
 
 ### Cell Painting 
 
@@ -887,6 +887,8 @@ Note:
 ## Quality Control Steps and Scripts
 
 Each pipeline stage includes specific quality control measures to ensure data quality and processing accuracy. The following scripts provide visualization and analysis tools for QC:
+
+Location: [notebooks](../notebooks)
 
 ### QC Scripts and Their Applications
 
