@@ -7,7 +7,7 @@ os.makedirs("csv_output", exist_ok=True)
 os.makedirs("filelist_output", exist_ok=True)
 
 # Load the JSON file
-with open("result.json", "r") as f:
+with open("generated_csvs.json", "r") as f:
     data = json.load(f)
 
 # Process each section

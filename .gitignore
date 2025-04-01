@@ -4,3 +4,4 @@ scratch/
 load_data_csv_headers_and_first_row
 Source1
 /docs/generate_structures/csv_output
+/docs/generate_structures/filelist_output
