@@ -71,7 +71,6 @@ def apply_metadata_to_pattern(pattern, metadata):
         str: Pattern with all metadata placeholders replaced with values
     """
     result = pattern
-    print(metadata)
     for key, value in metadata.items():
         # Special handling for cycle to ensure consistent zero-padding
         if key == "cycle":
