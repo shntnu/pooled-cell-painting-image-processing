@@ -30,6 +30,8 @@ for section_name, section_data in data.items():
         path_file = f"filelist_output/{section_name}_filepaths.txt"
         with open(path_file, "w") as f:
             f.write("\n".join(all_paths))
+            f.write("\n")
+
         print(f"Created {path_file} with {len(all_paths)} filepaths")
 
     # Split FilePath columns into FileName and PathName

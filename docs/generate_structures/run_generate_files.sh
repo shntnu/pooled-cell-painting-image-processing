@@ -17,4 +17,4 @@ python3 generate_outputs.py \
     --base-path Source1/
 
 
-jq -r '.[][].[]' generated_paths.json |sort|uniq > generated_paths.txt
+jq -r '.[][] | .[]' generated_paths.json|sort|uniq > generated_paths.txt
