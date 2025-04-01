@@ -71,8 +71,13 @@ def apply_metadata_to_pattern(pattern, metadata):
         str: Pattern with all metadata placeholders replaced with values
     """
     result = pattern
+    print(metadata)
     for key, value in metadata.items():
-        result = result.replace(f"{{{key}}}", str(value))
+        # Special handling for cycle to ensure consistent zero-padding
+        if key == "cycle":
+            result = result.replace(f"{{{key}}}", f"{value:02d}")
+        else:
+            result = result.replace(f"{{{key}}}", str(value))
     return result
 
 
@@ -143,7 +148,13 @@ def resolve_pattern_from_source(pipelines, source, metadata):
     for pattern in output_patterns:
         resolved_pattern = pattern
         for key, value in metadata.items():
-            resolved_pattern = resolved_pattern.replace(f"{{{key}}}", str(value))
+            # Special handling for cycle to ensure consistent zero-padding
+            if key == "cycle":
+                resolved_pattern = resolved_pattern.replace(
+                    f"{{{key}}}", f"{value:02d}"
+                )
+            else:
+                resolved_pattern = resolved_pattern.replace(f"{{{key}}}", str(value))
         resolved_patterns.append(resolved_pattern)
 
     return resolved_patterns
@@ -282,7 +293,7 @@ def generate_field_variants(
             # Process pattern for each cycle when field name contains cycle
             for cycle, pattern in cycle_patterns.items():
                 # Create expanded field name with cycle
-                expanded_name = base_name.replace("{cycle}", str(cycle))
+                expanded_name = base_name.replace("{cycle}", f"{cycle:02d}")
 
                 # Apply metadata (including cycle) to pattern
                 cycle_metadata = deepcopy(metadata)
@@ -302,7 +313,9 @@ def generate_field_variants(
 
                 # Handle cycle substitution in pattern if needed
                 if "{cycle}" in expanded_pattern:
-                    expanded_pattern = expanded_pattern.replace("{cycle}", str(cycle))
+                    expanded_pattern = expanded_pattern.replace(
+                        "{cycle}", f"{cycle:02d}"
+                    )
 
                 results.append({"name": expanded_name, "value": expanded_pattern})
         else:
@@ -327,7 +340,7 @@ def generate_field_variants(
             if "{cycle}" in expanded_pattern:
                 # Create one entry per cycle
                 for cycle in cycles:
-                    cycle_pattern = expanded_pattern.replace("{cycle}", str(cycle))
+                    cycle_pattern = expanded_pattern.replace("{cycle}", f"{cycle:02d}")
                     results.append({"name": expanded_name, "value": cycle_pattern})
             else:
                 # No cycle in pattern - just one result
