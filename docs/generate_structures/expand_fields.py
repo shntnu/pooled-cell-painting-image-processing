@@ -623,7 +623,7 @@ def parse_args():
         "--sites", type=int, nargs="+", default=[1], help="Site numbers"
     )
     parser.add_argument(
-        "--raw_image_template", type=str, default="FOV", help="Raw image template"
+        "--raw_image_template", type=str, default="IMAGE", help="Raw image template"
     )
     parser.add_argument(
         "--cycles", type=int, nargs="+", default=[1, 2], help="Cycle numbers"
