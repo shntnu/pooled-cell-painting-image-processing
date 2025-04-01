@@ -665,7 +665,7 @@ This parameterization approach enables the same pipeline code to process differe
 ## Pipeline Input Output Specifications
 
 Note: 
-- The input / outputs are also in parseable form [`io.json`](io.json).
+- The input / outputs are also in parseable form [`io.json`](io.json). Note that it uses `Tile` instead of `Site` when referring to the outputs of Pipelines 4 and 8.
 - In the jsons, `{1_CP_Illum|2_CP_Apply_Illum|5_BC_Illum|6_BC_Apply_Illum}.input.images.pattern` are mockups
 - Sample outputs of paths and LoadData CSVs generated using [`io.json`](io.json) are [here](generate_structures/sample_outputs).
 
