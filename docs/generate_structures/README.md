@@ -1,94 +1,48 @@
-# CSV Filtering Script for Cell Painting Data
+# Simulate Cell Painting Directory Structures
 
-This script allows filtering of cell painting CSV files by cycles, sites, wells, and plates.
+The utilities in this directory help simulate and validate the expected directory structure and file organization for pooled Cell Painting experiments.
 
-## Features
+## Overview
 
-- Handles different CSV formats from various pipelines
-- Automatically detects pipeline type based on CSV structure
-- Provides different filtering behavior for:
-  - Pipelines 1-3: No cycle field
-  - Pipeline 5: Has `Metadata_SBSCycle` field (filtered row-wise)
-  - Pipelines 6, 7, 9: Has cycle in column names (filtered column-wise)
-- Comprehensive logging system for debugging and monitoring
+This directory contains tools to:
+1. Generate CSV files that represent the expected metadata structure
+2. Generate a simulated file structure based on the project's IO configuration
+3. Compare the generated paths to validate consistency between approaches
 
-## Requirements
+## Available Scripts
 
-- Python 3.6+
-- pandas
+### generate_csvs.py
+Generates CSV files containing metadata and file paths based on the experiment configuration.
+- Simulates metadata fields, file paths, and other parameters for Cell Painting pipelines
+- Creates JSON that is processed into CSV files by process_json.py
 
-## Installation
+### generate_outputs.py
+Creates simulated directory structures and placeholder files based on the IO configuration.
+- Can create actual placeholder files with the `--create-files` flag
+- Outputs the paths in both JSON and plain text formats
 
-```bash
-pip install pandas
-```
+### process_json.py
+Processes the JSON output from generate_csvs.py into:
+- CSV files suitable for CellProfiler pipelines (in csv_output/)
+- Text files listing all file paths (in filelist_output/)
 
 ## Usage
 
 ```bash
-python filter_csv.py <csv_path> <output_path> [OPTIONS]
+# Generate CSV files and filelist
+./run_generate_csvs.sh
+
+# Generate simulated file structure
+./run_generate_files.sh 
+
+# Compare the paths from both methods to check for discrepancies
+comm -23 generated_paths_from_csvs.txt generated_paths.txt
 ```
 
-### Arguments
+## Example Output
 
-- `csv_path`: Path to the CSV file to be filtered
-- `output_path`: Path where the filtered CSV will be saved
-
-### Options
-
-- `--cycles`: Cycle numbers to include (not relevant for pipelines 1-3)
-- `--sites`: Site IDs to include
-- `--wells`: Well IDs to include
-- `--plates`: Plate IDs to include
-- `--log-level`: Set logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL, default: INFO)
-
-### Logging
-
-The script includes comprehensive logging that captures:
-- Pipeline type detection
-- Filter operations and their effects
-- Full exception tracebacks for error diagnosis
-- Statistics about the original and filtered data
-
-Logs are written to both:
-- Console (standard output)
-- Log files in the `logs` directory with timestamps in filenames
-
-For detailed debugging information, use:
-```bash
-python filter_csv.py input.csv output.csv --log-level DEBUG
-```
-
-### Examples
-
-1. Filter by specific wells and sites:
-```bash
-python filter_csv.py input.csv filtered.csv --wells WellA1 WellB2 --sites 0 1 2
-```
-
-2. Filter pipeline 5 CSVs by cycle:
-```bash
-python filter_csv.py pipeline5.csv filtered.csv --cycles 1 2 --wells WellA1
-```
-
-3. Filter pipeline 6/7/9 CSVs by cycle (filters columns):
-```bash
-python filter_csv.py pipeline6.csv filtered.csv --cycles 1 2 3 --plates Plate1
-```
-
-4. Run with debug logging:
-```bash
-python filter_csv.py input.csv filtered.csv --wells WellA1 --log-level DEBUG
-```
-
-## Pipeline Type Detection
-
-The script automatically determines the pipeline type by:
-1. First checking the filename for pattern `pipeline<number>`
-2. If that fails, analyzing the header structure
-
-## Notes
-
-- For pipelines 1-3: No cycle filtering is performed
-- For pipeline 5: The `Metadata_SBSCycle` column is used for cycle filtering
-- For pipelines 6-7-9: Column names containing cycle patterns are filtered 
+After running these scripts, you'll get:
+- `csv_output/`: Directory containing CSV files with metadata and path information
+- `filelist_output/`: Directory containing text files with all generated file paths
+- `Source1/`: Directory structure with simulated placeholder files (if --create-files was used)
+- `generated_paths.txt` and `generated_paths_from_csvs.txt`: Text files for comparison
