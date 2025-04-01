@@ -1,10 +1,6 @@
 .DS_Store
 */.DS_Store
-substitutions.json
 scratch/
 load_data_csv_headers_and_first_row
 Source1
-list.txt
-output.csv
-output_paths.json
 /docs/generate_structures/csv_output
