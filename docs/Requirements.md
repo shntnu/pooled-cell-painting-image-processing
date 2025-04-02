@@ -1,8 +1,9 @@
 # Pooled Cell Painting Image Processing System Requirements
 
 Key: 
-- starrynight roadmap (per Shantanu): 🔵 planned 🟡 in progress 🔴 not planned
-- priority (per Shantanu): ⭐ low ⭐⭐ medium ⭐⭐⭐ high
+
+- starrynight roadmap: 🔵 planned 🟡 in progress 🔴 not planned
+- priority: ⭐ low ⭐⭐ medium ⭐⭐⭐ high
 
 ## 1. System Overview
 
@@ -81,16 +82,16 @@ TODO:
   - Optimize resource allocation for memory-intensive vs. CPU-intensive tasks
   - Support parallel processing of independent tasks
 
-- 🔵 ⭐⭐: **Must work across diverse compute environments**:
-  - Cloud platforms (⭐⭐⭐: AWS, ⭐: Azure, ⭐: GCP)
-  - ⭐: On-premises high-performance computing clusters
+- 🟡 ⭐⭐: **Must work across diverse compute environments**:
+  - Cloud platforms (⭐⭐⭐: AWS, 🔴: Azure, 🔴: GCP)
+  - 🔴: On-premises high-performance computing clusters
   - ⭐⭐⭐: Local workstations (with appropriate scaling)
 
 ### 2.5 Data Management
 
 - 🟡 ⭐⭐⭐: **Must organize input and output data** in a consistent, browsable structure:
-  - Must maintain compatibility with existing input data structures
-  - Must produce outputs that match current output structures (unless explicitly modified by design)
+  - Must maintain compatibility with existing input and output data structures
+  - Must produce outputs that match current output structures, which will remain rigid unless changed at the level of code
   - Must provide clear documentation for any structural changes
 
 - 🔵 ⭐⭐: **Must track data provenance** including:
@@ -98,7 +99,9 @@ TODO:
   - Parameters used at each stage
   - Software versions and dependencies
 
-- 🔵 ⭐⭐⭐: **Must handle large data volumes** (terabytes) efficiently with appropriate streaming and caching strategies.
+Implementation should prioritize critical tracking elements needed for reproducibility while balancing system performance.
+
+- 🟡 ⭐⭐⭐: **Must handle large data volumes** (terabytes) with AWS backend.
 
 - 🟡 ⭐⭐⭐: **Must implement flexible path parsing and data organization**:
   - Standardized but configurable system for extracting metadata from file paths
@@ -112,136 +115,35 @@ TODO:
   - Web-based or desktop GUI for visualization and control
   - Programmatic API for integration with other systems
 
-- 🔵 ⭐⭐⭐: **Must support both expert and non-expert users** with appropriate levels of abstraction and guidance.
+- 🟡 ⭐⭐⭐: **Must support both expert and non-expert users** with appropriate levels of abstraction and guidance.
+  - Web-based UI must provide two abstraction levels:
+    - Simplified interface for non-computational scientists with guided workflows and sensible defaults
+    - Advanced interface with full parameter control for experienced users
+  - Command-line interface and programmatic API will target computational experts only, with comprehensive documentation" 
 
-- 🔵 ⭐⭐⭐: **Must integrate result visualization and quality control**:
+- 🟡 ⭐⭐⭐: **Must integrate result visualization and quality control**:
   - Built-in visualization tools for reviewing processing results, including cell segmentation, barcode calling, and feature data
   - Integrated quality control metrics with contextual interpretations
 
-- 🔵 ⭐⭐⭐: **Must provide interactive inspection tools**:
+- 🟡 ⭐⭐⭐: **Must provide interactive inspection tools**:
   - Support for Jupyter notebooks (or similar) as a first-class inspection interface
-  - Widgets for visualizing image 
 
 ## 3. Technical Requirements
 
-### 3.1 System Architecture
+### 3.1 Cross-Platform Support
 
-- 🔵 ⭐⭐: **Must implement a modular architecture** with:
-  - ⭐⭐⭐: Clear separation between workflow orchestration, execution, and configuration
-  - ⭐⭐⭐: Well-defined interfaces between components
-  - ⭐: Plugin system for extensibility
+- 🔵 ⭐: **Must run on ⭐⭐⭐Linux, ⭐⭐MacOS, and ⭐Windows (WSL)** operating systems.
 
-- 🔵 ⭐⭐⭐: **Must support distributed processing** across multiple compute nodes.
-
-- 🔵 ⭐⭐⭐: **Must be resilient to failures** with appropriate error handling and recovery mechanisms.
-
-### 3.2 Configuration System
-
-- 🔵 ⭐⭐⭐: **Must implement a multi-layered configuration approach** separating:
-  - Experimental parameters (what data to process and how)
-  - Computational resource parameters (how much compute power to allocate)
-  - Infrastructure parameters (where the processing will occur)
-
-- 🔵 ⭐⭐: **Must validate configuration** against schema to catch errors early.
-
-- 🔴 ⭐: **Must allow configuration overrides** at different levels (system, experiment, batch, plate).
-
-### 3.3 Cross-Platform Support
-
-- 🔵 ⭐: **Must run on ⭐⭐⭐Linux, ⭐⭐MacOS, and ⭐Windows** operating systems.
-
-- 🔵 ⭐: **Must provide consistent interfaces** across platforms.
-
-- 🔵 ⭐: **Must accommodate platform-specific resources** (GPU acceleration, memory limits).
-
-### 3.4 Extensibility
+### 3.2 Extensibility
 
 - 🔵 ⭐⭐⭐: **Must allow addition of new processing tools** beyond CellProfiler.
 
 - 🔵 ⭐: **Must support custom analysis modules** for specialized experiments.
 
-- 🔴 ⭐: **Must enable integration with external systems** via APIs and data exchange formats.
-
-### 3.5 Documentation and Support
+### 3.3 Documentation and Support
 
 - 🟡 ⭐⭐⭐: **Must provide comprehensive user documentation** including installation and setup guides, configuration reference, workflow tutorials, and troubleshooting information.
+  - Workflow tutorials and certain aspects of troubleshooting/setup guides will be developed collaboratively with end users, with the expectation that users will eventually maintain these materials
 
-- 🟡 ⭐⭐⭐: **Must include developer documentation** covering architecture overview, API references, extension guides, development setup
-
-## 4. Implementation Recommendations
-
-Unlike the previous sections which define WHAT the system must do (requirements), this section provides guidance on HOW these requirements might be implemented. These recommendations are not mandatory specifications but suggested approaches based on best practices and domain expertise.
-
-<details>
-  
-### 4.1 System Components
-
-- **Workflow Engine**: Orchestrates pipeline steps, manages dependencies, and tracks state.
-- **Resource Manager**: Allocates and monitors compute resources across infrastructure.
-- **Configuration Manager**: Handles loading, validation, and distribution of parameters.
-- **Execution Engine**: Runs image processing tools with appropriate parameters.
-- **Data Manager**: Organizes and tracks files throughout the processing pipeline.
-- **User Interfaces**: CLI, GUI, and API implementations for system interaction.
-
-### 4.2 Key Technical Approaches
-
-- **Container-Based Deployment**: Package tools and dependencies in containers for consistent execution.
-- **State Management**: Persist workflow state to enable resumption after interruptions.
-- **Event-Driven Architecture**: Use events to coordinate pipeline progression and notifications.
-- **Distributed Computing**: Implement task distribution for parallel processing.
-- **Pluggable Storage**: Support multiple storage backends (local, network, cloud).
-- **Leverage Existing Tools**: Prefer established, maintained tools over custom solutions whenever possible, even if they have limitations, to minimize maintenance burden.
-
-### 4.3 User Experience Considerations
-
-- **Progress Visualization**: Provide clear indication of pipeline progress and estimated completion.
-- **Result Browsing**: Enable navigation and inspection of intermediate and final results.
-- **Error Handling**: Present clear error messages with actionable remediation steps.
-- **Parameter Exploration**: Support interactive adjustment of processing parameters.
-- **Notebook Integration**: 
-  - Include example notebooks for common inspection tasks
-
-</details>
-
-## 5. Additional Information Needed for Implementation
-
-The following information would greatly enhance implementation efforts and should be provided by domain experts:
-
-<details>
-
-### 5.1 Prioritization and Constraints
-
-- **Feature Prioritization**: Which requirements are absolutely critical vs. nice-to-have?
-- **Performance Requirements**: 
-  - What are acceptable processing times for each pipeline step?
-  - What dataset sizes must be supported initially vs. eventually?
-  - Are there specific memory constraints for typical workstations?
-- **Scalability Targets**: Maximum number of images, wells, or plates to process in a single experiment
-
-### 5.2 User Workflows and Context
-
-- **Typical Workflows**: Step-by-step examples of how scientists currently execute experiments
-- **Decision Points**: When and why do researchers need to evaluate intermediate results?
-- **Common Bottlenecks**: Current pain points and processing areas that require most attention
-- **Error Handling Preferences**: How should the system manage and communicate different error types?
-
-### 5.3 Validation and Testing
-
-- **Representative Test Data**: Sample datasets of varying complexity for development and testing
-- **Quality Assurance**: 
-  - Examples of successful vs. problematic outputs at each stage
-  - Specific metrics for evaluating processing quality
-  - Tolerance limits for various processing artifacts
-- **Backward Compatibility**: Test cases that must pass for compatibility with existing data
-
-### 5.4 Integration Requirements
-
-- **Third-Party Tools**: Complete list of external tools that must be supported
-- **API Requirements**: Specifications for APIs to interact with other research systems if any
-- **Data Exchange**: Standards or formats required for interoperability with other software
-- **Security Considerations**: Requirements for data protection, user authentication, and access control
-
-Providing this information will help ensure the system not only meets the technical requirements but also delivers maximum value to researchers in their specific scientific contexts.
-
-</details>
+- 🟡 ⭐⭐⭐: **Must include developer documentation** covering architecture overview, API references, extension guides, development setup, and technical decision rationale that explains key design choices and alternatives considered
 
