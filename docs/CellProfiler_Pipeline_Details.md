@@ -668,6 +668,7 @@ Note:
 - The input / outputs are also in parseable form [`io.json`](io.json). Note that it uses `Tile` instead of `Site` when referring to the outputs of Pipelines 4 and 8.
 - In the jsons, `{1_CP_Illum|2_CP_Apply_Illum|5_BC_Illum|6_BC_Apply_Illum}.input.images.pattern` are mockups
 - Sample outputs of paths and LoadData CSVs generated using [`io.json`](io.json) are [here](generate_structures/sample_outputs).
+- FIXME: We also need to specify as input, the channels that (1) will be used for nuclear segmentation (2) cell segmentation (3) mitochondria (for some filtering that happens in Pipeline 9)
 
 ### Cell Painting 
 
@@ -903,23 +904,27 @@ Location: [notebooks](../notebooks)
      - Pipeline 1 (Cell Painting Illumination Correction): Validates illumination correction functions for cell painting channels
      - Pipeline 5 (Barcoding Illumination Correction): Validates illumination correction functions for barcoding channels
    - QC Focus: Ensures consistent and appropriate illumination correction
-   - QC Metrics:
+   - QC Metrics implemented:
+     - None
+   - QC performed by expert:
+     - Compare correction patterns across channels
      - Check for uniform illumination patterns
      - Verify no extreme variations in correction functions
      - Identify potential plate-specific issues
-     - Compare correction patterns across channels
 
 2. **`make_fiji_montages_std.py`**
    - Purpose: Creates visual montages of segmentation check results
    - Functionality:
      - Organizes PNG images by plate
-     - Creates a grid montage (10x6 for 96-well plates)
-     - Uses FIJI's montage tool with 0.75x scaling and 1px borders
+     - Creates a grid montage 
+     - Uses FIJI's montage tool with appropriate scaling and borders
      - Saves output as TIFF files named after each plate
    - Used in:
      - Pipeline 3 (Segmentation Check): Visual assessment of segmentation quality across wells
    - QC Focus: Visual assessment of segmentation quality across wells
-   - QC Metrics:
+   - QC Metrics implemented:
+     - None
+   - QC performed by expert:
      - Visual inspection of segmentation across wells
      - Check for consistent segmentation patterns
      - Verify no systematic failures
@@ -936,7 +941,9 @@ Location: [notebooks](../notebooks)
      - Pipeline 4 (Cell Painting Stitching): Validates stitching quality for cell painting images
      - Pipeline 8 (Barcoding Stitching): Validates stitching quality for barcoding images
    - QC Focus: Verifies proper stitching and alignment of image quadrants
-   - QC Metrics:
+   - QC Metrics implemented:
+     - None
+   - QC performed by expert:
      - Verify quadrant alignment
      - Check for stitching artifacts
      - Validate image continuity
@@ -956,9 +963,10 @@ Location: [notebooks](../notebooks)
    - Used in:
      - Pipeline 6 (Barcoding Alignment): Ensures proper alignment between barcoding cycles
    - QC Focus: Ensures proper alignment between barcoding cycles
-   - QC Metrics:
-     - Pixel shifts should be within ±200 pixels
-     - Correlation scores should be >0.9
+   - QC Metrics implemented:
+     - Pixel shifts should be within ±200 pixels (typically)
+     - Correlation scores should be >0.9 (typically)
+   - QC performed by expert:
      - Monitor spatial distribution of alignment issues
 
 5. **`7_BarcodePreprocessing.py`**
@@ -977,8 +985,8 @@ Location: [notebooks](../notebooks)
    - Used in:
      - Pipeline 7 (Barcoding Preprocessing): Validates barcode detection and calling accuracy
    - QC Focus: Validates barcode detection and calling accuracy
-   - QC Metrics:
-     - Perfect match percentage
-     - Nucleotide distribution across cycles
-     - Spatial distribution of barcode quality
-     - Repeat sequence analysis
+   - QC Metrics implemented:
+     - As described above in functionality
+   - QC performed by expert:
+     - Inpsect the metrics 
+
